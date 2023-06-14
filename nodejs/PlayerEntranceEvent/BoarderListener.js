@@ -1,5 +1,5 @@
 
-const RegionRectangle=require("./lib/RegionRectangle.js");
+const RegionRectangle=require("..\\..\\lib\\RegionRectangle.js");
 
 class BorderListener{
     //frequency是每多少刻执行一次，不是按秒来的
