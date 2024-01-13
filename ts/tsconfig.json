@@ -1,0 +1,8 @@
+{
+  "exclude": ["./v0/**", "./dist/**"],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "resolveJsonModule": true
+  }
+}
