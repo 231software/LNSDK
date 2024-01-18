@@ -5,7 +5,8 @@ enum SupportedPlatforms{
     LiteLoaderBDS,
     LeviLamina,
     LLSE_Lib,
-    BDSX
+    BDSX,
+    GMLib
 }
 /**
  * 将当前运行平台的所有信息存储在这里
@@ -22,6 +23,7 @@ class PlatformDetector{
         if(typeof ll !== 'undefined'){
             return SupportedPlatforms.LiteLoaderBDS;
         }
+        //检测到levisciprt时，先检测gmlib，如果没有再设置为leviscript
         //NodeJS
         if(typeof console !== 'undefined'){
             return SupportedPlatforms.NodeJS;
