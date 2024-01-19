@@ -1,0 +1,8 @@
+{
+    "dont_copy_list":[
+        "index.ts",
+        ".DS_Store"
+    ],
+    "src_dir":"src",
+    "build_dir":"../out"
+}

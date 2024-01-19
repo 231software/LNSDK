@@ -1,5 +1,11 @@
 .DS_Store
 .vscode/settings.json
+ts/compileandrun.command
+ts/testbuild.command
+ts/out
+ts/node_modules
+out
+LNSDK
 
 #以下是bdsx的依赖
 bdsx/.eslintrc.json

@@ -1,8 +1,10 @@
 {
   "exclude": ["./v0/**", "./dist/**"],
+  "lib": [ "dom", "es5", "es2015.promise" ,"es2015", "es2017"],
   "compilerOptions": {
+    "moduleResolution": "node" ,
     "outDir": "./dist",
-    "rootDir": ".",
-    "resolveJsonModule": true
+    "target": "ES2016",
+    "rootDir": "."
   }
 }
