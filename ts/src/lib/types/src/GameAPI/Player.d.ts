@@ -7,8 +7,8 @@ declare enum sendTextType {
   json = 9,
 }
 
-/** 玩家 */
-declare class Player {
+/** LLSE玩家 */
+declare class ll2Player {
   /** 玩家名 */
   readonly name: string;
 
@@ -244,7 +244,7 @@ declare class Player {
    * @param text 模拟说话内容
    * @returns boolean 是否执行成功
    */
-  talkAs(target: Player, text: string): boolean;
+  talkAs(target: ll2Player, text: string): boolean;
 
 
   /**
@@ -252,14 +252,14 @@ declare class Player {
    * @param pos 目标位置
    * @returns 到坐标的距离(方块)
    */
-  distanceToSqr(pos: Entity | Player | IntPos | FloatPos): number;
+  distanceToSqr(pos: Entity | ll2Player | IntPos | FloatPos): number;
 
   /**
    * ### 获取实体到坐标的距离
    * @param pos 目标位置
    * @returns 到坐标的距离(方块)
    */
-  distanceTo(pos: Entity | Player | IntPos | FloatPos): number;
+  distanceTo(pos: Entity | ll2Player | IntPos | FloatPos): number;
 
   /**
    * 传送玩家至指定位置
@@ -817,7 +817,7 @@ declare class Player {
     content: string,
     confirmButton: string,
     cancelButton: string,
-    callback: (player: Player, result: boolean | null) => void
+    callback: (player: ll2Player, result: boolean | null) => void
   ): number | null;
 
   /**
@@ -833,7 +833,7 @@ declare class Player {
     content: string,
     buttons: Array<string>,
     images: Array<string>,
-    callback: (player: Player, id: number | null) => void
+    callback: (player: ll2Player, id: number | null) => void
   ): number | null;
 
   /**
@@ -843,7 +843,7 @@ declare class Player {
    */
   sendCustomForm(
     json: string,
-    callback: (player: Player, data: Array<any> | null) => void
+    callback: (player: ll2Player, data: Array<any> | null) => void
   ): number | null;
 
   /**
@@ -853,7 +853,7 @@ declare class Player {
    */
   sendForm(
     fm: SimpleForm,
-    callback: (player: Player, id: number | null) => void
+    callback: (player: ll2Player, id: number | null) => void
   ): number | null;
 
   /**
@@ -863,7 +863,7 @@ declare class Player {
    */
   sendForm(
     fm: CustomForm,
-    callback: (player: Player, data: Array<any> | null) => void
+    callback: (player: ll2Player, data: Array<any> | null) => void
   ): number | null;
 
   /**
@@ -873,7 +873,7 @@ declare class Player {
    */
   sendForm(
     fm: CustomForm | SimpleForm,
-    callback: (player: Player, data: number | Array<any> | null) => void
+    callback: (player: ll2Player, data: number | Array<any> | null) => void
   ): number | null;
 
   /**
@@ -922,6 +922,10 @@ declare class Player {
   addEffect(arg1:number,arg2:number,arg3:number,arg4:boolean):boolean
 
   removeEffect(arg1:number):boolean
+}
+/** LeviScript玩家 */
+declare class ll3Player {
+  
 }
 
 declare namespace mc {
@@ -984,13 +988,13 @@ declare namespace mc {
    * @param info 玩家的名字或者Xuid
    * @returns Player 生成的玩家对象
    */
-  function getPlayer(info: string): Player;
+  function getPlayer(info: string): ll2Player;
 
   /**
    * 获取所有在线玩家
    * @returns Array<Player> 玩家对象的数组
    */
-  function getOnlinePlayers(): Array<Player>;
+  function getOnlinePlayers(): Array<ll2Player>;
 
   /**
    * 获取玩家对应的NBT对象
@@ -1037,14 +1041,14 @@ declare enum sidebar {
   Ascending = 0,
 }
 
-declare class LLSE_Player extends Player { }
+declare class LLSE_Player extends ll2Player { }
 
 /**
  * 模拟玩家
  * @see [🏃‍♂️ 玩家对象](https://docs.litebds.com/zh-Hans/#/LLSEPluginDevelopment/GameAPI/Player?id=%e6%a8%a1%e6%8b%9f%e7%8e%a9%e5%ae%b6%ef%bc%88%e7%94%b1%e4%ba%8e%e4%b8%8e%e7%8e%a9%e5%ae%b6api%e9%87%8d%e5%90%88%e8%bf%87%e5%a4%9a%ef%bc%8c%e6%9c%aa%e7%94%9f%e6%88%90%e6%96%b0%e7%9a%84%e6%a8%a1%e6%8b%9f%e7%8e%a9%e5%ae%b6%e7%b1%bb%ef%bc%89)
  * @see [mojang-gametest docs](https://docs.microsoft.com/zh-cn/minecraft/creator/scriptapi/mojang-gametest/simulatedplayer)
  */
-declare class SimulatedPlayer extends Player {
+declare class SimulatedPlayer extends ll2Player {
   /**
    * 模拟攻击
    * @param target （可选参数）攻击目标，默认为视线方向上的实体

@@ -1,5 +1,0 @@
-class Init{
-    constructor(){
-        
-    }
-}
