@@ -33,9 +33,6 @@ console.log("生成index.ts")
 const indexfile=fs.openSync("index.ts","w+")
 fs.writeFileSync("index.ts",`import "./${CONF.src_dir}/${CONF.main}"`);
 fs.close(indexfile);
-
-console.log(fs.readFileSync("index.ts").toString());
-
 console.log("编译插件（必须放前面，因为需要用这步清理构建目录）");
 child_process.spawnSync("tsc")
 
