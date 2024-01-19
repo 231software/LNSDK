@@ -10,6 +10,7 @@ var SupportedPlatforms;
     SupportedPlatforms[SupportedPlatforms["LeviLamina"] = 3] = "LeviLamina";
     SupportedPlatforms[SupportedPlatforms["LLSE_Lib"] = 4] = "LLSE_Lib";
     SupportedPlatforms[SupportedPlatforms["BDSX"] = 5] = "BDSX";
+    SupportedPlatforms[SupportedPlatforms["GMLib"] = 6] = "GMLib";
 })(SupportedPlatforms || (exports.SupportedPlatforms = SupportedPlatforms = {}));
 /**
  * 将当前运行平台的所有信息存储在这里
@@ -24,6 +25,7 @@ var PlatformDetector = /** @class */ (function () {
         if (typeof ll !== 'undefined') {
             return SupportedPlatforms.LiteLoaderBDS;
         }
+        //检测到levisciprt时，先检测gmlib，如果没有再设置为leviscript
         //NodeJS
         if (typeof console !== 'undefined') {
             return SupportedPlatforms.NodeJS;
