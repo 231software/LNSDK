@@ -1,0 +1,11 @@
+{
+    "name":"LNSDK plugin example",
+    "main":"main.js",
+    "dependencies": { },
+    "description":"A plugin developed with LNSDK.",
+    "build_dir":"dist",
+    "supported_platforms":{
+        "mode":"bl",
+        "list":[]
+    }
+}
