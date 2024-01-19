@@ -1,6 +1,6 @@
 {
     "name":"LNSDK plugin example",
-    "main":"main.js",
+    "main":"index",
     "dependencies": { },
     "description":"A plugin developed with LNSDK.",
     "build_dir":"dist",

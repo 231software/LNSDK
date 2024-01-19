@@ -15,7 +15,8 @@ fs.readdir(CONF.build_dir,(err,files)=>{
     if(err)if(err.code=="ENOENT")fs.mkdir(CONF.build_dir,()=>{})
 });
 */
-//生成tsconfig.json
+
+console.log("生成tsconfig.json");
 const tsconfig={
     exclude: ["./v0/**", "./dist/**"],
     compilerOptions: {
@@ -27,17 +28,29 @@ const tsconfig={
 const tsconfigfile=fs.openSync("tsconfig.json","w+");
 fs.writeFileSync("tsconfig.json",JSON.stringify(tsconfig,undefined,4));
 fs.close(tsconfigfile);
-//编译插件（必须放前面，因为需要用这步清理构建目录）
-child_process.spawn("tsc")
-//生成适用npm，LLSE，LeviScript，BDSX的package.json
+
+console.log("生成index.ts")
+const indexfile=fs.openSync("index.ts","w+")
+fs.writeFileSync("index.ts",`import "./${CONF.src_dir}/${CONF.main}.ts"`);
+fs.close(indexfile);
+
+console.log(fs.readFileSync("index.ts").toString());
+
+console.log("编译插件（必须放前面，因为需要用这步清理构建目录）");
+child_process.spawnSync("tsc")
+
+console.log("生成适用npm，LLSE，LeviScript，BDSX的package.json");
 const npm_package={
     name:CONF.name,
-    main:CONF.main,
+    main:CONF.main+".js",
     dependencies:CONF.dependencies,
     description:CONF.description
 }
 const npmpkgfile=fs.openSync(CONF.build_dir+"/package.json","w+");
 fs.writeFileSync(CONF.build_dir+"/package.json",JSON.stringify(npm_package,undefined,4));
 fs.close(npmpkgfile);
-//清理目录
+
+console.log("清理目录");
 fs.unlinkSync("tsconfig.json")
+fs.unlinkSync("index.ts")
+fs.unlinkSync(CONF.build_dir+"/build.js")
