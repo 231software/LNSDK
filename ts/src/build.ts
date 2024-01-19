@@ -31,7 +31,7 @@ fs.close(tsconfigfile);
 
 console.log("生成index.ts")
 const indexfile=fs.openSync("index.ts","w+")
-fs.writeFileSync("index.ts",`import "./${CONF.src_dir}/${CONF.main}.ts"`);
+fs.writeFileSync("index.ts",`import "./${CONF.src_dir}/${CONF.main}"`);
 fs.close(indexfile);
 
 console.log(fs.readFileSync("index.ts").toString());
