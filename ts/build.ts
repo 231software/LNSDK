@@ -11,11 +11,11 @@ const CONF=JSON.parse(fs.readFileSync("build.json").toString());
 const DONT_COPY_LIST:Array<string>=CONF.dont_copy_list;
 const SRC_DIR:string=CONF.src_dir
 const BUILD_DIR=CONF.build_dir
-//清空LNSDK文件夹
+//清空LNSDK文件夹，改同步
 fs.readdir(BUILD_DIR,(err,files)=>{
     if(!err)fs.rmdir(BUILD_DIR,(err)=>{})
 })
-//创建LNSDK文件夹
+//创建LNSDK文件夹，改同步
 fs.readdir(BUILD_DIR,(err,files)=>{
     if(err)if(err.code=="ENOENT")fs.mkdir(BUILD_DIR,()=>{})
 });
