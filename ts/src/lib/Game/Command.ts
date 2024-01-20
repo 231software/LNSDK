@@ -91,16 +91,17 @@ export enum LNCommandExecutorType{
     Player=0,
     Entity,
     Console,
+    CommandBlock,
     Unknown
 }
-export function toll2commandOrigin(type:LNCommandExecutorType){
+export function toll2commandExecutorType(type:LNCommandExecutorType){
     switch(type){
         case LNCommandExecutorType.Player:
     }
 }
-export function fromll2commandOrigin(type:number):LNCommandExecutorType{
+export function fromll2commandExecutorType(type:number):LNCommandExecutorType{
     switch(type){
-        case 1:return LNCommandExecutorType.Player;
+        case 0:return LNCommandExecutorType.Player;
         case 7:return LNCommandExecutorType.Console;
         default:return LNCommandExecutorType.Unknown;
     }
@@ -131,6 +132,17 @@ export abstract class LNCommand{
     permission:LNInternalPermission;
     aliases:Array<string>;
     flag:any;
+    /**
+     * 
+     * @param name 
+     * @param description 
+     * @param usageMessage 
+     * @param args 
+     * @param overloads 
+     * @param permission 
+     * @param aliases 对于LLSE，由于只支持一个别名，所以仅有数组最后一个元素会作为该唯一的别名。
+     * @param flag 
+     */
     constructor(
         name:string,
         description:string|undefined=undefined,
@@ -174,30 +186,44 @@ export abstract class LNCommand{
                     }
                     switch(command.args[argid].type){
                         case LNCommandParamType.Mandatory:
-                            ll2cmd.mandatory(
-                                command.args[argid].name,
-                                toll2ParamType(command.args[argid].dataType),
-                                command.args[argid].bindEnum===undefined?undefined:argid.toString(),
-                                command.args[argid].bindEnum===undefined?undefined:argid.toString(),                           
-                                command.args[argid].enumOptions
-                            )
+                            command.args[argid].bindEnum===undefined?
+                                ll2cmd.optional(
+                                    command.args[argid].name,
+                                    toll2ParamType(command.args[argid].dataType),
+                                )
+                                :
+                                ll2cmd.optional(
+                                    command.args[argid].name,
+                                    toll2ParamType(command.args[argid].dataType),
+                                    argid.toString(),
+                                    argid.toString(),     
+                                    command.args[argid].enumOptions
+                                )
+                            break;
                         case LNCommandParamType.Optional:
-                            ll2cmd.optional(
-                                command.args[argid].name,
-                                toll2ParamType(command.args[argid].dataType),
-                                command.args[argid].bindEnum===undefined?undefined:argid.toString(),
-                                command.args[argid].bindEnum===undefined?undefined:argid.toString(),                           
-                                command.args[argid].enumOptions
-                            )
+                            command.args[argid].bindEnum===undefined?
+                                ll2cmd.optional(
+                                    command.args[argid].name,
+                                    toll2ParamType(command.args[argid].dataType),
+                                )
+                                :
+                                ll2cmd.optional(
+                                    command.args[argid].name,
+                                    toll2ParamType(command.args[argid].dataType),
+                                    argid.toString(),
+                                    argid.toString(),     
+                                    command.args[argid].enumOptions
+                                )
+                            break;
                     }
                 }
                 LNLogger.info("指令注册：设置回调");
                 ll2cmd.setCallback((cmd,ll2origin,output,ll2results)=>{
-                    let executor_type=fromll2commandOrigin(ll2origin.type)
+                    let executor_type=fromll2commandExecutorType(ll2origin.type)
                     let origin:any
                     switch(executor_type){
-                        case LNCommandExecutorType.Player:origin=new LNPlayer(ll2origin.player);
-                        case LNCommandExecutorType.Console:origin=undefined;
+                        case LNCommandExecutorType.Player:origin=new LNPlayer(ll2origin.player);break;
+                        case LNCommandExecutorType.Console:origin=undefined;break;
                     }
                     let result:LNCommandResult=new LNCommandResult(new LNCommandExecutor(origin,executor_type),ll2results);
                     command.callback(result)

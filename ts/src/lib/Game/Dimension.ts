@@ -14,11 +14,11 @@ export function fromll2dimid(ll2dimid:number):LNDefaultDimension{
 }
 export function toll2dimid(dim:LNDefaultDimension):0|1|2{
     switch(dim){
-        default:
-        case LNDefaultDimension.NotDefault:
-        case LNDefaultDimension.Overworld:return 0;
         case LNDefaultDimension.Nether:return 1;
         case LNDefaultDimension.TheEnd:return 2;
+        case LNDefaultDimension.NotDefault:
+        case LNDefaultDimension.Overworld:
+        default:return 0;
     }
 }
 export class Dimension{
