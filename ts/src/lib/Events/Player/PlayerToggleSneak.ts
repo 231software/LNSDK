@@ -1,18 +1,18 @@
-import { Platform, SupportedPlatforms } from "../../Platform";
-import { Player } from "../../Game/Player";
-export class PlayerToggleSneakEvent{
-    player:Player
+import { LNPlatform, LNSupportedPlatforms } from "../../Platform";
+import { LNPlayer } from "../../Game/Player";
+export class LNPlayerToggleSneakEvent{
+    player:LNPlayer
     isSneaking:boolean
-    constructor(player:Player,isSneaking:boolean){
+    constructor(player:LNPlayer,isSneaking:boolean){
         this.player=player;
         this.isSneaking=isSneaking;
     }
-    static on(callback:(event:PlayerToggleSneakEvent)=>boolean|void){
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
+    static on(callback:(event:LNPlayerToggleSneakEvent)=>boolean|void){
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.NodeJS:break;
+            case LNSupportedPlatforms.LiteLoaderBDS:
                 mc.listen("onSneak",(player,isSneaking)=>{
-                    callback(new PlayerToggleSneakEvent(new Player(player),isSneaking));
+                    callback(new LNPlayerToggleSneakEvent(new LNPlayer(player),isSneaking));
                 })
         }
     }

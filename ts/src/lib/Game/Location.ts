@@ -1,46 +1,58 @@
-import { Platform, SupportedPlatforms } from "../Platform";
-import { Dimension } from "./Dimension";
-
-export class LNLocation{
-    rawlocation:any;
+import { LNPlatform, LNSupportedPlatforms } from "../Platform";
+import { LNDefaultDimension, Dimension, toll2dimid } from "./Dimension";
+export class LNManualConstructedLocation{
     x:number;
     y:number;
     z:number;
     dimension:Dimension;
-    constructor(x:number|Object,y?:number,z?:number,dimension?:Dimension){
-        if(typeof x=="number"){
-            this.rawlocation=undefined;
-            this.x=x;
-            this.y=y;
-            this.z=z;
-            this.dimension=dimension;
-        }
-        else{
-            this.rawlocation=x;
+    constructor(
+
+        x:number,
+        y:number,
+        z:number,
+        dimension:Dimension
+    ){
+        this.x=x;
+        this.y=y;
+        this.z=z;
+        this.dimension=dimension;
+    }
+}
+export class LNLocation{
+    /** 原始坐标对象 */
+    rawlocation:any;
+    /**
+     * 
+     * @param rawlocation 原始坐标对象
+     * @param manualConstructed 是否由用户手动生成
+     */
+    constructor(rawlocation:any,manualConstructed:boolean){
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:
+                if(manualConstructed)this.rawlocation=mc.newFloatPos(rawlocation.x,rawlocation.y,rawlocation.z,toll2dimid(rawlocation.dimension))
+                else this.rawlocation=rawlocation;
+            default:this.rawlocation=rawlocation;
         }
     }
     getX():number{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:{
-                return this.rawlocation.x;
-            }
+        switch(LNPlatform.getType()){
+            default:
+            case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.x;
         }
     }
     getY():number{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:{
-                return this.rawlocation.y;
-            }
+        switch(LNPlatform.getType()){
+            default:
+            case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.y
         }
     }
     getZ():number{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:{
-                return this.rawlocation.z;
-            }
+        switch(LNPlatform.getType()){
+            default:
+            case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.z
         }
+    }
+    static new(x:number,y:number,z:number,dimension:Dimension=new Dimension(LNDefaultDimension.Overworld)):LNLocation{
+        return new LNLocation({x:x,y:y,z:z,dimension:dimension},true);
     }
 }

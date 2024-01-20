@@ -1,73 +1,73 @@
-import {Version,VersionStatus} from "./Versions";
-enum SupportedPlatforms{
+import {LNVersion,LNVersionStatus} from "./Versions";
+enum LNSupportedPlatforms{
     Unsupported=0,
     NodeJS,
     LiteLoaderBDS,
-    LeviLamina,
+    LeviScript,
+    GMLib,
     LLSE_Lib,
-    BDSX,
-    GMLib
+    BDSX
 }
 /**
  * 将当前运行平台的所有信息存储在这里
  */
-class PlatformDetector{
-    type:SupportedPlatforms;
-    version:Version;
+class LNPlatformDetector{
+    type:LNSupportedPlatforms;
+    version:LNVersion;
     constructor(){
         this.type=this.getType();
         this.version=this.getVersion();
     }
-    getType():SupportedPlatforms{
+    getType():LNSupportedPlatforms{
         //LLSE(LegacyScriptEngine)/LeviScript/LLSE_Lib
         if(typeof ll !== 'undefined'){
-            return SupportedPlatforms.LiteLoaderBDS;
+            return LNSupportedPlatforms.LiteLoaderBDS;
         }
         //检测到levisciprt时，先检测gmlib，如果没有再设置为leviscript
         //NodeJS
         if(typeof console !== 'undefined'){
-            return SupportedPlatforms.NodeJS;
+            return LNSupportedPlatforms.NodeJS;
         }
-        return SupportedPlatforms.Unsupported;
+        return LNSupportedPlatforms.Unsupported;
     }
-    getVersion():Version{
+    getVersion():LNVersion{
         switch (this.type){
-            case SupportedPlatforms.LiteLoaderBDS:
+            case LNSupportedPlatforms.LiteLoaderBDS:
                 return liteloaderversion2lnsdkversion(ll.version());
-            case SupportedPlatforms.NodeJS:
+            case LNSupportedPlatforms.NodeJS:
                 return nodejsversion2lnsdkversion(process.version);
         }
     }
 }
-function liteloaderversion2lnsdkversion(rawversion:liteloaderversion):Version{
-    let version:Version=new Version();
+function liteloaderversion2lnsdkversion(rawversion:liteloaderversion):LNVersion{
+    let version:LNVersion=new LNVersion();
     version.major=rawversion.major;
     version.minor=rawversion.minor;
     version.revision=rawversion.revision;
-    if(rawversion.isBeta)version.versionStatus=VersionStatus.Beta;
-    else version.versionStatus=VersionStatus.Release;
+    if(rawversion.isBeta)version.versionStatus=LNVersionStatus.Beta;
+    else version.versionStatus=LNVersionStatus.Release;
     return version;
 }
-function nodejsversion2lnsdkversion(rawversion:string):Version{
-    let version:Version=new Version();
+function nodejsversion2lnsdkversion(rawversion:string):LNVersion{
+    let version:LNVersion=new LNVersion();
     rawversion=rawversion.replace("v","");
     let rawversionlist:Array<string>=rawversion.split(".");
     version.major=Number(rawversionlist[0]);
     version.minor=Number(rawversionlist[1]);
     version.revision=Number(rawversionlist[2]);
-    version.versionStatus=VersionStatus.Release;
+    version.versionStatus=LNVersionStatus.Release;
     return version;
 }
 
 
-let currentPlatform:PlatformDetector=new PlatformDetector();
-class Platform{
-    static getType():SupportedPlatforms{
+let currentPlatform:LNPlatformDetector=new LNPlatformDetector();
+class LNPlatform{
+    static getType():LNSupportedPlatforms{
         return currentPlatform.getType();
     }
-    static getVersion():Version{
+    static getVersion():LNVersion{
         return currentPlatform.getVersion();
     }
 }
 
-export {Platform,SupportedPlatforms}
+export {LNPlatform,LNSupportedPlatforms}

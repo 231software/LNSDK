@@ -1,4 +1,4 @@
-import { Platform, SupportedPlatforms } from "./Platform";
+import { LNPlatform,LNSupportedPlatforms } from "./Platform";
 export class LNLogger{
     static parseParams(params:any[]):string{
         let msg:string="";
@@ -9,12 +9,23 @@ export class LNLogger{
     }
     static info(...message:any[]):void{
         let msg=this.parseParams(message);
-        switch (Platform.getType()){
-            case SupportedPlatforms.LiteLoaderBDS:
+        switch (LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:
                 logger.info(msg);
                 break;
-            case SupportedPlatforms.NodeJS:
+            case LNSupportedPlatforms.NodeJS:
                 console.log(msg);
+                break;
+        }
+    }
+    static debug(...message:any[]):void{
+        let msg=this.parseParams(message);
+        switch (LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:
+                logger.debug(msg);
+                break;
+            case LNSupportedPlatforms.NodeJS:
+                console.debug(msg);
                 break;
         }
     }

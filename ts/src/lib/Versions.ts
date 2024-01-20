@@ -1,19 +1,19 @@
-class Version{
+class LNVersion{
     major:number
     minor:number
     revision:number
-    versionStatus:VersionStatus
+    versionStatus:LNVersionStatus
     constructor(){
         this.major=0;
         this.minor=0;
         this.revision=1;
-        this.versionStatus=VersionStatus.Dev;
+        this.versionStatus=LNVersionStatus.Dev;
     }
 }
-enum VersionStatus{
+enum LNVersionStatus{
     Release=0,
     Beta,
     Alpha,
     Dev
 }
-export {Version,VersionStatus}
+export {LNVersion,LNVersionStatus}

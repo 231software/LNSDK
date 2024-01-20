@@ -1,18 +1,18 @@
-import { Platform, SupportedPlatforms } from "../../Platform";
+import { LNPlatform, LNSupportedPlatforms } from "../../Platform";
 let ScriptDone = ():boolean|void=>{};
-export class InitEvent{
+export class LNInitEvent{
     constructor(){
     }
-    static on(callback:(event:InitEvent)=>boolean|void){
-        switch (Platform.getType()){
-            case SupportedPlatforms.LiteLoaderBDS:
+    static on(callback:(event:LNInitEvent)=>boolean|void){
+        switch (LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:
                 mc.listen("onServerStarted",()=>{
-                    callback(new InitEvent());
+                    callback(new LNInitEvent());
                 });
                 break;
-            case SupportedPlatforms.NodeJS:
+            case LNSupportedPlatforms.NodeJS:
                 ScriptDone=()=>{
-                    callback(new InitEvent());
+                    callback(new LNInitEvent());
                 }
                 break;
         }

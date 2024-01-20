@@ -25,7 +25,7 @@ declare enum PermType {
 }
 
 /**
- * ### 命令参数类型
+ * ### 原始命令参数类型，请勿使用！
  *
  * @see [有效的指令参数及其解释](https://docs.litebds.com/zh-Hans/#/LLSEPluginDevelopment/GameAPI/Command?id=%e6%9c%89%e6%95%88%e7%9a%84%e5%91%bd%e4%bb%a4%e5%8f%82%e6%95%b0%e7%b1%bb%e5%9e%8b%e5%8f%8a%e8%a7%a3%e9%87%8a)
  * @see [`Command.mandatory()`](Command.d.ts)

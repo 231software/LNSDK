@@ -1,27 +1,27 @@
-import { Platform, SupportedPlatforms } from "../Platform";
+import { LNPlatform, LNSupportedPlatforms } from "../Platform";
 import { LNLocation } from "./Location";
-export enum Gamemode{
+export enum LNGamemode{
     Survival=0,
     Creative=1,
     Adventure=2,
     Spectator=3,
     Unknown
 }
-export function fromll2gamemode(ll2gamemode:number):Gamemode{
+export function fromll2gamemode(ll2gamemode:number):LNGamemode{
     switch(ll2gamemode){
-        case 0:return Gamemode.Survival;
-        case 1:return Gamemode.Creative;
-        case 2:return Gamemode.Adventure;
-        case 3:return Gamemode.Spectator;
-        default:return Gamemode.Unknown;
+        case 0:return LNGamemode.Survival;
+        case 1:return LNGamemode.Creative;
+        case 2:return LNGamemode.Adventure;
+        case 3:return LNGamemode.Spectator;
+        default:return LNGamemode.Unknown;
     }
 }
-export function toll2gamemode(gamemode:Gamemode):number{
+export function toll2gamemode(gamemode:LNGamemode):number{
     switch(gamemode){
-        case Gamemode.Survival:return 0;
-        case Gamemode.Creative:return 1;
-        case Gamemode.Adventure:return 2;
-        case Gamemode.Spectator:return 3;
+        case LNGamemode.Survival:return 0;
+        case LNGamemode.Creative:return 1;
+        case LNGamemode.Adventure:return 2;
+        case LNGamemode.Spectator:return 3;
         default://错误系统没写完
     }
 }
@@ -32,7 +32,7 @@ export enum sendTestType{
     tip,
     json,
 }
-export class Player{
+export class LNPlayer{
     rawplayer:any;
     /*
     name:string;
@@ -63,56 +63,51 @@ export class Player{
     }
     getName():string{
         //判断平台并读取相应属性
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
-                return this.rawplayer.name;
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:return this.rawplayer.name;
+            default:return "";
         }
     }
     getXuid():string{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
-                return this.rawplayer.xuid;
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:return this.rawplayer.xuid;
+            default:return "";
         }
     }    
     getUuid():string{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
-                return this.rawplayer.uuid;
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:return this.rawplayer.uuid;
+            default:return "";
         }
     }    
-    getGamemode():Gamemode{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
-                return fromll2gamemode(this.rawplayer.gameMode);
+    getGamemode():LNGamemode{
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:return fromll2gamemode(this.rawplayer.gameMode);
+            default:return LNGamemode.Unknown;
         }
     }
     getLocation():LNLocation{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
-                return new LNLocation(this.rawplayer.pos);
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:return new LNLocation(this.rawplayer.pos,false);
+            default:return LNLocation.new(0,0,0)
         }
     }
     isSneaking():boolean{
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.NodeJS:break;
+            case LNSupportedPlatforms.LiteLoaderBDS:
                 return this.rawplayer.isSneaking;
         }
     }
     tell (msg: string, type?: sendTextType): boolean{
         //判断平台并调用相应方法
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:break;
-            case SupportedPlatforms.LiteLoaderBDS:
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.NodeJS:break;
+            case LNSupportedPlatforms.LiteLoaderBDS:
                 return this.rawplayer.tell(msg,type);
         }
     }
-    toll2Player():ll2Player{
+    toll2Player():Player{
         return mc.getPlayer(this.getXuid())
     }
 }
