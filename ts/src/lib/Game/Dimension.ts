@@ -21,7 +21,7 @@ export function toll2dimid(dim:LNDefaultDimension):0|1|2{
         default:return 0;
     }
 }
-export class Dimension{
+export class LNDimension{
     defaultdimension:LNDefaultDimension;
     constructor(defaultdimension:LNDefaultDimension){
         this.defaultdimension=defaultdimension;

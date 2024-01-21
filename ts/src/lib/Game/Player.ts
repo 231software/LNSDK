@@ -3,9 +3,9 @@ import { LNPlatform, LNSupportedPlatforms } from "../Platform";
 import { LNLocation } from "./Location";
 export enum LNGameMode{
     Survival=0,
-    Creative=1,
-    Adventure=2,
-    Spectator=3,
+    Creative,
+    Adventure,
+    Spectator,
     Unknown
 }
 export function fromll2gamemode(ll2gamemode:number):LNGameMode{
@@ -88,9 +88,12 @@ export class LNPlayer{
             default:return LNGameMode.Unknown;
         }
     }
+    /**
+     * 玩家的腿部坐标
+     */
     get location():LNLocation{
         switch(LNPlatform.getType()){
-            case LNSupportedPlatforms.LiteLoaderBDS:return new LNLocation(this.rawplayer.pos,false);
+            case LNSupportedPlatforms.LiteLoaderBDS:return new LNLocation(this.rawplayer.feetPos,false);
             default:return LNLocation.new(0,0,0)
         }
     }
@@ -109,12 +112,20 @@ export class LNPlayer{
             default:return false;
         }
     }
-    setGameMode(gamemode:LNGameMode){
+    setGameMode(gamemode:LNGameMode):boolean{
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:
                 return this.rawplayer.setGameMode(toll2gamemode(gamemode));
             default:return false;
         }
+    }
+    teleport(location:LNLocation,rotation=undefined):boolean{
+        switch(LNPlatform.getType()){
+            case LNSupportedPlatforms.LiteLoaderBDS:
+                return this.rawplayer.teleport(location.toll2FloatPos());
+            default:return false;
+        }
+        
     }
     toll2Player():Player{
         return mc.getPlayer(this.xuid)

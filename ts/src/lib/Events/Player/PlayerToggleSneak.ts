@@ -13,7 +13,8 @@ export class LNPlayerToggleSneakEvent{
             case LNSupportedPlatforms.LiteLoaderBDS:
                 mc.listen("onSneak",(player,isSneaking)=>{
                     callback(new LNPlayerToggleSneakEvent(new LNPlayer(player),isSneaking));
-                })
+                });
+                break;
         }
     }
 }

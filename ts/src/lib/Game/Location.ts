@@ -1,16 +1,16 @@
 import { LNPlatform, LNSupportedPlatforms } from "../Platform";
-import { LNDefaultDimension, Dimension, toll2dimid } from "./Dimension";
+import { LNDefaultDimension, LNDimension, toll2dimid } from "./Dimension";
 export class LNManualConstructedLocation{
     x:number;
     y:number;
     z:number;
-    dimension:Dimension;
+    dimension:LNDimension;
     constructor(
 
         x:number,
         y:number,
         z:number,
-        dimension:Dimension
+        dimension:LNDimension
     ){
         this.x=x;
         this.y=y;
@@ -29,7 +29,7 @@ export class LNLocation{
     constructor(rawlocation:any,manualConstructed:boolean){
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:
-                if(manualConstructed)this.rawlocation=mc.newFloatPos(rawlocation.x,rawlocation.y,rawlocation.z,toll2dimid(rawlocation.dimension))
+                if(manualConstructed)this.rawlocation=new FloatPos(rawlocation.x,rawlocation.y,rawlocation.z,toll2dimid(rawlocation.dimension))
                 else this.rawlocation=rawlocation;
             default:this.rawlocation=rawlocation;
         }
@@ -52,7 +52,19 @@ export class LNLocation{
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.z
         }
     }
-    static new(x:number,y:number,z:number,dimension:Dimension=new Dimension(LNDefaultDimension.Overworld)):LNLocation{
+    /**
+     * 维度系统未完成，一律返回主世界
+     */
+    get defaultDimension():LNDefaultDimension{
+        switch(LNPlatform.getType()){
+            default:
+            case LNSupportedPlatforms.LiteLoaderBDS:return LNDefaultDimension.Overworld;
+        }
+    }
+    toll2FloatPos():FloatPos{
+        return new FloatPos(this.x,this.y,this.z,toll2dimid(this.defaultDimension));
+    }
+    static new(x:number,y:number,z:number,dimension:LNDimension=new LNDimension(LNDefaultDimension.Overworld)):LNLocation{
         return new LNLocation({x:x,y:y,z:z,dimension:dimension},true);
     }
 }

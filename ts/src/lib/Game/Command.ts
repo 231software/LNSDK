@@ -13,8 +13,8 @@ export enum LNCommandParamDataType{
     String,
     Actor,
     Player,
-    IntPos,
-    FloatPos,
+    IntLocation,
+    FloatLocation,
     RawText,
     Message,
     JsonVale,
@@ -34,8 +34,8 @@ export function toll2ParamType(type:LNCommandParamDataType):ParamType{
         case LNCommandParamDataType.String:return ParamType.String
         case LNCommandParamDataType.Actor:return ParamType.Actor
         case LNCommandParamDataType.Player:return ParamType.Player
-        case LNCommandParamDataType.IntPos:return ParamType.BlockPos
-        case LNCommandParamDataType.FloatPos:return ParamType.Vec3
+        case LNCommandParamDataType.IntLocation:return ParamType.BlockPos
+        case LNCommandParamDataType.FloatLocation:return ParamType.Vec3
         case LNCommandParamDataType.RawText:return ParamType.RawText
         case LNCommandParamDataType.Message:return ParamType.Message
         case LNCommandParamDataType.JsonVale:return ParamType.JsonValue
@@ -145,8 +145,8 @@ export abstract class LNCommand{
      */
     constructor(
         name:string,
-        description:string|undefined=undefined,
-        usageMessage:string|undefined=undefined,
+        description:string=undefined,
+        usageMessage:string=undefined,
         args:Array<LNCommandParam>=[],
         overloads:Array<Array<string>>=[[]],
         permission:LNInternalPermission=LNInternalPermission.GameMasters,
@@ -156,17 +156,17 @@ export abstract class LNCommand{
         this.name=name;
         this.description=description;
         this.usageMessage=usageMessage;
+        this.permission=permission;
         this.args=args;
         this.overloads=overloads;
-        this.permission=permission;
         this.aliases=aliases;
         this.flag=flag
     }
     abstract callback(result:LNCommandResult):void
-    static register(command:LNCommand):boolean{
+    static register<T extends LNCommand>(command:T):boolean{
         LNLogger.info("指令注册：开始注册")
         switch(LNPlatform.getType()){
-            case LNSupportedPlatforms.NodeJS:return false;
+            default:return false;
             case LNSupportedPlatforms.LiteLoaderBDS:
                 LNLogger.info("指令注册：使用llse API")
                 //转换flag的值
@@ -232,6 +232,10 @@ export abstract class LNCommand{
                 //overload
                 for(let overload of command.overloads){
                     ll2cmd.overload(overload)
+                }
+                //因为不重载不能注册成功，所以当数组的时候直接重载一个空参数
+                if(command.overloads.length==0){
+                    ll2cmd.overload([])
                 }
                 LNLogger.info("指令注册：执行注册")
                 return ll2cmd.setup()
