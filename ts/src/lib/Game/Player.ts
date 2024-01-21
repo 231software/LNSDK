@@ -63,38 +63,38 @@ export class LNPlayer{
         }
         */
     }
-    getName():string{
+    get name():string{
         //判断平台并读取相应属性
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawplayer.name;
             default:return "";
         }
     }
-    getXuid():string{
+    get xuid():string{
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawplayer.xuid;
             default:return "";
         }
     }    
-    getUuid():string{
+    get uuid():string{
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawplayer.uuid;
             default:return "";
         }
     }    
-    getGameMode():LNGameMode{
+    get gameMode():LNGameMode{
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:return fromll2gamemode(this.rawplayer.gameMode);
             default:return LNGameMode.Unknown;
         }
     }
-    getLocation():LNLocation{
+    get location():LNLocation{
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:return new LNLocation(this.rawplayer.pos,false);
             default:return LNLocation.new(0,0,0)
         }
     }
-    isSneaking():boolean{
+    get isSneaking():boolean{
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.NodeJS:break;
             case LNSupportedPlatforms.LiteLoaderBDS:
@@ -117,6 +117,6 @@ export class LNPlayer{
         }
     }
     toll2Player():Player{
-        return mc.getPlayer(this.getXuid())
+        return mc.getPlayer(this.xuid)
     }
 }

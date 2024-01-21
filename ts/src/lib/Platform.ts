@@ -1,4 +1,6 @@
+import * as fs from 'fs'
 import {LNVersion,LNVersionStatus} from "./Versions";
+import {LNCONF} from "../index"
 enum LNSupportedPlatforms{
     Unsupported=0,
     NodeJS,
@@ -14,9 +16,11 @@ enum LNSupportedPlatforms{
 class LNPlatformDetector{
     type:LNSupportedPlatforms;
     version:LNVersion;
+    config:any
     constructor(){
         this.type=this.getType();
         this.version=this.getVersion();
+        this.config=this.getConfig();
     }
     getType():LNSupportedPlatforms{
         //LLSE(LegacyScriptEngine)/LeviScript/LLSE_Lib
@@ -36,6 +40,29 @@ class LNPlatformDetector{
                 return liteloaderversion2lnsdkversion(ll.version());
             case LNSupportedPlatforms.NodeJS:
                 return nodejsversion2lnsdkversion(process.version);
+        }
+    }
+    getConfig():any{
+        let conf={
+            sqlite3:false,
+            data_dir:""
+        }
+        //判断是否有各已确定兼容性不好的依赖
+        if(LNCONF.dependencies){
+            const dependencies=LNCONF.dependencies;
+            if(dependencies.sqlite3)conf.sqlite3=true;
+        }
+        //插件目录
+        conf.data_dir=this.getDataPathPerfix()+LNCONF.data_path
+        return conf
+    }
+    /** 
+     * 推断插件数据目录
+     */
+    getDataPathPerfix():string{
+        switch(this.getType()){
+            case LNSupportedPlatforms.NodeJS:return "";
+            case LNSupportedPlatforms.LiteLoaderBDS:return "plugins/";
         }
     }
 }
@@ -63,11 +90,22 @@ function nodejsversion2lnsdkversion(rawversion:string):LNVersion{
 let currentPlatform:LNPlatformDetector=new LNPlatformDetector();
 class LNPlatform{
     static getType():LNSupportedPlatforms{
-        return currentPlatform.getType();
+        return currentPlatform.type;
     }
     static getVersion():LNVersion{
-        return currentPlatform.getVersion();
+        return currentPlatform.version;
+    }
+    static getConfig():any{
+        return currentPlatform.config;
     }
 }
+export const LNplugin_name=LNCONF.name;
+//创建插件目录
+try{
+    fs.readdirSync(currentPlatform.config.data_dir);
+}catch(e){
+    fs.mkdirSync(currentPlatform.config.data_dir);
+}
+
 
 export {LNPlatform,LNSupportedPlatforms}

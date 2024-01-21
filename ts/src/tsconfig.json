@@ -1,0 +1,10 @@
+{
+  "files":[
+    "build.ts"
+  ],
+  "compilerOptions": {
+    "moduleResolution": "node" ,
+    "target": "ES2016",
+    "downlevelIteration": true
+  }
+}

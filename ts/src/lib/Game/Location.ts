@@ -34,19 +34,19 @@ export class LNLocation{
             default:this.rawlocation=rawlocation;
         }
     }
-    getX():number{
+    get x():number{
         switch(LNPlatform.getType()){
             default:
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.x;
         }
     }
-    getY():number{
+    get y():number{
         switch(LNPlatform.getType()){
             default:
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.y
         }
     }
-    getZ():number{
+    get z():number{
         switch(LNPlatform.getType()){
             default:
             case LNSupportedPlatforms.LiteLoaderBDS:return this.rawlocation.z
