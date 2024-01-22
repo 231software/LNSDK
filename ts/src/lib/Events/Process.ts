@@ -1,5 +1,5 @@
-import { LNPlatform, LNSupportedPlatforms } from "../../Platform";
-let ScriptDone = ():boolean|void=>{};
+import { LNPlatform, LNSupportedPlatforms } from "../Platform";
+export let ScriptDone = ():boolean|void=>{};
 export class LNInitEvent{
     constructor(){
     }
@@ -33,4 +33,3 @@ export function onInit(callback:(event:InitEvent)=>boolean|void){
             break;
     }
 }*/
-export {ScriptDone};
