@@ -3,6 +3,7 @@
     "build.ts"
   ],
   "compilerOptions": {
+    "module":"UMD",
     "moduleResolution": "node" ,
     "target": "ES2016",
     "downlevelIteration": true

@@ -6,6 +6,7 @@ ts/out
 ts/node_modules
 out
 LNSDK
+tsnamespace
 
 #以下是bdsx的依赖
 bdsx/.eslintrc.json
