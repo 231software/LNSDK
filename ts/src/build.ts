@@ -86,11 +86,13 @@ for(let platform of PlatformsList.keys()){
     }
     writeFiles(["tsconfig.json"],JSON.stringify(tsconfig,undefined,4))    
 
-    //index.js的作用：require入口文件，提供配置文件
+    //index.js的作用：require入口文件，提供配置文件，并在nodejs环境下触发
     console.log("生成index.ts")
     writeFiles(["index.ts"],`
     export const LNCONF=JSON.parse('${JSON.stringify(CONF)}');
     import "./${CONF.src_dir}/${CONF.main}";
+    import {ScriptDone} from "./lib/Events/Process";
+    ScriptDone();
     `)
     /*
     const indexfile=fs.openSync("index.ts","w+")
