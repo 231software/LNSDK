@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
+//忽略libs文件夹
+//https://deepinout.com/typescript/typescript-questions/651_typescript_how_to_ignore_some_files_when_running_type_checking_some_files_using_tsc.html#:~:text=除了使用tsconfig.json文件中的exclude和include选项进行文件忽略外，我们还可以使用js规则文件来指定要忽略的文件%E3%80%82%20我们可以在项目的根目录下创建一个名为”tsconfig.ignore.js”的js规则文件，并在其中导出一个忽略规则函数%E3%80%82,忽略规则函数接受一个参数，该参数是当前要检查的文件的绝对路径%E3%80%82%20我们可以在规则函数中返回true来指示tsc忽略该文件，返回false则表示对该文件进行类型检查%E3%80%82
 /*
 构建方式：编译此目录下build.ts并运行build.js
 build.js运行结束后，会直接删除自己
@@ -38,6 +40,8 @@ fs.readdir(SRC_DIR,(err,files)=>{
         });
     }
 })
+
+//删除目标中的LLSELib
   
 //将LNSDK文件夹所有文件压缩以创建发行版
 //自我删除

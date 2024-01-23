@@ -3,6 +3,9 @@
     "@types/node": "^20.11.5"
   },
   "dependencies": {
-    "@types/better-sqlite3": "^7.6.8"
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/js-yaml": "^4.0.9",
+    "@types/yaml": "^1.9.7",
+    "yaml": "^2.3.4"
   }
 }

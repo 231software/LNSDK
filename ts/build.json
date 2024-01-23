@@ -1,7 +1,8 @@
 {
     "dont_copy_list":[
         "index.ts",
-        ".DS_Store"
+        ".DS_Store",
+        "bdsx"
     ],
     "src_dir":"src",
     "build_dir":"../out"
