@@ -1,4 +1,5 @@
-import { LNPlatform,LNSupportedPlatforms } from "./Platform";
+import { LNPlatform,LNSupportedPlatforms } from "./Platform.js";
+import {logger} from "../../@LLSELib/index.js"
 /*
 import * as sqlite3 from 'better-sqlite3';
 let testdb=new sqlite3("aaa")
@@ -64,10 +65,11 @@ export class LNLogger{
 export class LNSQLite3{
     rawdbsession:any;
     /**
-     * **创建数据库部分暂不支持异步**
+     * **llselib暂不支持sqlite数据库**
      * @param path 数据库路径
      */
     constructor(path:string){
+        /*
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:{
                 this.rawdbsession=new DBSession('sqlite3', {
@@ -82,6 +84,7 @@ export class LNSQLite3{
                 this.rawdbsession=new (require('better-sqlite3'))(path)
             }
         }
+        */
     }
     /**
      * 同步预准备执行SQL语句  
@@ -98,6 +101,7 @@ export class LNSQLite3{
             
         }
         */
+       /*
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:{
                 let stmt=this.rawdbsession.prepare(SQLstring);
@@ -110,6 +114,7 @@ export class LNSQLite3{
                 this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).run(...params))()
             }
         }  
+        */
         /*
         else{
             switch(LNPlatform.getType()){
@@ -136,6 +141,7 @@ export class LNSQLite3{
      * @returns 执行结果
      */
     queryAllSync(SQLstring:string,...params:any[]):any[]{
+        /*
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:{
                 let stmt=this.rawdbsession.prepare(SQLstring);
@@ -158,5 +164,7 @@ export class LNSQLite3{
                 return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...params))();
             }
         }
+        */
+        return [];
     }
 }

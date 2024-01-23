@@ -1,6 +1,7 @@
-import * as fs from 'fs'
-import {LNVersion,LNVersionStatus} from "./Versions";
-import {LNCONF} from "../index"
+import {ll,File} from "../../@LLSELib/index.js"
+import {LNVersion,LNVersionStatus} from "./Versions.js";
+//不要改下面这行import
+import {LNCONF} from "../index.js"
 enum LNSupportedPlatforms{
     Unsupported=0,
     NodeJS,
@@ -37,9 +38,14 @@ class LNPlatformDetector{
     getVersion():LNVersion{
         switch (this.type){
             case LNSupportedPlatforms.LiteLoaderBDS:
-                return liteloaderversion2lnsdkversion(ll.version());
+                return fromll2version({
+                    major:ll.major,
+                    minor:ll.minor,
+                    revision:ll.revision,
+                    isBeta:false
+                });
             case LNSupportedPlatforms.NodeJS:
-                return nodejsversion2lnsdkversion(process.version);
+                return fromnodejsversion(process.version);
         }
     }
     getConfig():any{
@@ -66,7 +72,7 @@ class LNPlatformDetector{
         }
     }
 }
-function liteloaderversion2lnsdkversion(rawversion:liteloaderversion):LNVersion{
+function fromll2version(rawversion:any):LNVersion{
     let version:LNVersion=new LNVersion();
     version.major=rawversion.major;
     version.minor=rawversion.minor;
@@ -75,7 +81,7 @@ function liteloaderversion2lnsdkversion(rawversion:liteloaderversion):LNVersion{
     else version.versionStatus=LNVersionStatus.Release;
     return version;
 }
-function nodejsversion2lnsdkversion(rawversion:string):LNVersion{
+function fromnodejsversion(rawversion:string):LNVersion{
     let version:LNVersion=new LNVersion();
     rawversion=rawversion.replace("v","");
     let rawversionlist:Array<string>=rawversion.split(".");
@@ -101,10 +107,8 @@ class LNPlatform{
 }
 export const LNplugin_name=LNCONF.name;
 //创建插件目录
-try{
-    fs.readdirSync(currentPlatform.config.data_dir);
-}catch(e){
-    fs.mkdirSync(currentPlatform.config.data_dir);
+if(!File.exists(currentPlatform.config.data_dir)){
+    File.mkdir(currentPlatform.config.data_dir)
 }
 
 

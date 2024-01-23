@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 
-declare class liteloaderversion {
+declare class version {
     // 主版本号（如 **2**.1.0 里的 **2**）
     major: number
 
@@ -52,7 +52,7 @@ declare namespace ll {
      * 获取LiteLoader加载器版本
      * @returns version 加载器版本对象
      */
-    function version(): liteloaderversion
+    function version(): version
 
     /**
      * 获取LiteLoader加载器版本字符串

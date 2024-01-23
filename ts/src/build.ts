@@ -106,7 +106,10 @@ for(let platform of PlatformsList.keys()){
     /**各平台的构建配置，直接写在该文件中 */
     let platformConf:any=PlatformsList.get(platform)
     /**本次构建目标 */
-    const target_dir=CONF.build_dir+"/"+platform+"/"+CONF.build_dir
+    let target_dir:string=CONF.build_dir+"/"+platform+"/";
+    //LLSELib需要在前面加@
+    if(platform=="LLSELib")target_dir=target_dir+"@"+CONF.build_dir;
+    else target_dir=target_dir+CONF.build_dir
     console.log(`为平台${platform}生成`)
     //切换库，切换之后还要在循环最后切换回来
     //nolib为默认库，无需切换
@@ -117,27 +120,37 @@ for(let platform of PlatformsList.keys()){
 
     //开始使用库构建
     console.log("生成tsconfig.json");
-    let tsconfig={
+    let tsconfig:any={
         //忽略libs
         exclude: ["./v0/**", "./dist/**","libs"],
         compilerOptions: {
-        outDir: "./"+target_dir,
-        rootDir: ".",
-        resolveJsonModule: true,
-        downlevelIteration: true,
-        // https://www.jianshu.com/p/359c71344084
-        forceConsistentCasingInFileNames:false
+            outDir: "./"+target_dir,
+            rootDir: ".",
+            resolveJsonModule: true,
+            downlevelIteration: true,
+            // https://www.jianshu.com/p/359c71344084
+            forceConsistentCasingInFileNames:false
         }
+    }
+    //llse-lib添加以下两项
+    if(platform=="LLSELib"){
+        tsconfig.compilerOptions.moduleResolution="node";
+        tsconfig.compilerOptions.target="es2015";
     }
     writeFiles(["tsconfig.json"],JSON.stringify(tsconfig,undefined,4))    
 
     //index.js的作用：require入口文件，提供配置文件，并在nodejs环境下触发onInit事件
+    //pnx-js情况特殊，import要带后缀
+    //${platform=="LLSELib"?".js":""}
     console.log("生成index.ts")
     writeFiles(["index.ts"],`
     export const LNCONF=JSON.parse('${JSON.stringify(CONF)}');
-    import "./${CONF.src_dir}/${CONF.main}";
-    import {ScriptDone} from "./lib/Events/Process";
+    import "./${CONF.src_dir}/${CONF.main}.js";
+    import {ScriptDone} from "./lib/Events/Process.js";
     ScriptDone();
+    export function main(){
+        ScriptDone();
+    }
     `)
     console.log("编译插件（必须放前面，因为需要用这步清理构建目录）");
     let task=child_process.spawnSync("tsc")
@@ -175,7 +188,15 @@ for(let platform of PlatformsList.keys()){
     else{
         if(platform=="LLSELib"){
             console.log("生成适用于LLSELib的plugin.yml");
-
+            let llselibpluginyml:any={
+                name:CONF.name,
+                main:CONF.main+".js",
+                load:"POSTWORLD",
+                description:CONF.description,
+                //PNX后续如果API有变，需要在此处加判断
+                api: [ "1.0.14" ]
+            }
+            writeFiles([target_dir+"/plugin.yml"],yaml.stringify(llselibpluginyml))
         }
     }
     //把库切换回来
