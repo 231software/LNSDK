@@ -1,4 +1,4 @@
-import {FloatPos} from "../../../@LLSELib/index.js"
+//import {FloatPos} from "../../../@LLSELib/index.js"
 import { LNPlatform, LNSupportedPlatforms } from "../Platform.js";
 import { LNDefaultDimension, LNDimension, toll2dimid } from "./Dimension.js";
 export class LNManualConstructedLocation{
@@ -28,12 +28,15 @@ export class LNLocation{
      * @param manualConstructed 是否由用户手动生成
      */
     constructor(rawlocation:any,manualConstructed:boolean){
+        /*
         switch(LNPlatform.getType()){
             case LNSupportedPlatforms.LiteLoaderBDS:
                 if(manualConstructed)this.rawlocation=new FloatPos(rawlocation.x,rawlocation.y,rawlocation.z,toll2dimid(rawlocation.dimension))
                 else this.rawlocation=rawlocation;
             default:this.rawlocation=rawlocation;
         }
+        */
+        rawlocation={x:0,y:0,z:0}
     }
     get x():number{
         switch(LNPlatform.getType()){
@@ -62,8 +65,9 @@ export class LNLocation{
             case LNSupportedPlatforms.LiteLoaderBDS:return LNDefaultDimension.Overworld;
         }
     }
-    toll2FloatPos():FloatPos{
-        return new FloatPos(this.x,this.y,this.z,toll2dimid(this.defaultDimension));
+    /** llse-lib不支持此方法 */
+    toll2FloatPos():any{
+        //return new FloatPos(this.x,this.y,this.z,toll2dimid(this.defaultDimension));
     }
     static new(x:number,y:number,z:number,dimension:LNDimension=new LNDimension(LNDefaultDimension.Overworld)):LNLocation{
         return new LNLocation({x:x,y:y,z:z,dimension:dimension},true);

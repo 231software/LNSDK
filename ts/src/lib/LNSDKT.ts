@@ -18,7 +18,8 @@ export class LNLogger{
             switch(typeof arg){
                 case "undefined":argstr="undefined";break;
                 case "object":{
-                    if(arg===null)argstr="null";break;
+                    if(arg===null){argstr="null";break;}
+                    else argstr=JSON.stringify(arg);
                 }
                 default:
                     argstr=arg.toString();

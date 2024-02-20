@@ -142,20 +142,24 @@ for(let platform of PlatformsList.keys()){
     //index.js的作用：require入口文件，提供配置文件，并在nodejs环境下触发onInit事件
     //pnx-js情况特殊，import要带后缀
     //${platform=="LLSELib"?".js":""}
+    //ScriptDone是用于触发onInit事件的，如果有平台不支持在引入的其他模块中注册onInit事件或根本没有onInit，就需要触发ScriptDone
+    //只有nodejs环境才能去触发ScriptDone，其他环境直接触发ScriptDone可能出问题
     console.log("生成index.ts")
     writeFiles(["index.ts"],`
-    export const LNCONF=JSON.parse('${JSON.stringify(CONF)}');
     import "./${CONF.src_dir}/${CONF.main}.js";
     import {ScriptDone} from "./lib/Events/Process.js";
-    ScriptDone();
+    ${platform=="NodeJS"?"ScriptDone()":""};
     export function main(){
         ScriptDone();
     }
     `)
+    console.log("生成plugin_config.js（插件配置文件）")
+    writeFiles(["lib/plugin_config.ts"],`export const LNCONF:any=${JSON.stringify(CONF,undefined,4)}`);
     console.log("编译插件（必须放前面，因为需要用这步清理构建目录）");
     let task=child_process.spawnSync("tsc")
     console.log("编译结果：\n"+task.stdout.toString())
     //
+
     console.log("生成适用各平台必要的配置文件");
     if(platformConf.isNodeJS){
         console.log(`生成适用${platform}的package.json`);
@@ -199,14 +203,21 @@ for(let platform of PlatformsList.keys()){
             writeFiles([target_dir+"/plugin.yml"],yaml.stringify(llselibpluginyml))
         }
     }
-    //把库切换回来
+
+    console.log("清理目录");
+    delFiles([
+        "tsconfig.json",
+        "index.ts",
+        target_dir+"/build.js",//编译插件的时候会再次编译build.ts并在插件目录再次留下一个build.js
+        "build.js",
+        "lib/plugin_config.ts"//这个ts不是源码，是自动生成的插件配置文件
+    ])
+    console.log("-----------------------")
+
+    console.log("正在切换库")
     if(platformConf.lib=="nolib"){}
     else{
         switchBack(platformConf.lib);
     }
-
-    console.log("清理目录");
-    delFiles(["tsconfig.json","index.ts",target_dir+"/build.js","build.js"])
-    console.log("-----------------------")
 }
 

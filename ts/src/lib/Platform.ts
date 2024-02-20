@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import {LNVersion,LNVersionStatus} from "./Versions";
-import {LNCONF} from "../index"
+import {LNCONF} from "./plugin_config"
 enum LNSupportedPlatforms{
     Unsupported=0,
     NodeJS,
@@ -45,7 +45,8 @@ class LNPlatformDetector{
     getConfig():any{
         let conf={
             sqlite3:false,
-            data_dir:""
+            data_dir:"",
+            name:LNCONF.name
         }
         //判断是否有各已确定兼容性不好的依赖
         if(LNCONF.dependencies){

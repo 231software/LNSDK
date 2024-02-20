@@ -1,4 +1,4 @@
-/// <reference path="./lib/Types/src/GameAPI/Player.d.ts"/>
+/// <reference path="./lib/Types/src/index.d.ts"/>
 export const LNCONF=JSON.parse("${JSON.stringify(CONF)}");
 import "src/index.ts";
 /*

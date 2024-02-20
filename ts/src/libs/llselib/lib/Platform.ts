@@ -1,7 +1,7 @@
 import {ll,File} from "../../@LLSELib/index.js"
 import {LNVersion,LNVersionStatus} from "./Versions.js";
 //不要改下面这行import
-import {LNCONF} from "../index.js"
+import {LNCONF} from "./plugin_config.js"
 enum LNSupportedPlatforms{
     Unsupported=0,
     NodeJS,
@@ -51,7 +51,8 @@ class LNPlatformDetector{
     getConfig():any{
         let conf={
             sqlite3:false,
-            data_dir:""
+            data_dir:"",
+            name:LNCONF.name
         }
         //判断是否有各已确定兼容性不好的依赖
         if(LNCONF.dependencies){
