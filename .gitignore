@@ -12,4 +12,6 @@ ts/src/dist
 old/nodejs/PlayerEntranceEvent/node_modules
 out
 tsnamespace
+test
+LNSDK/libs/llse/dts
 @LLSELib
