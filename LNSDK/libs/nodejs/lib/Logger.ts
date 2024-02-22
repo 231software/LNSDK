@@ -1,4 +1,7 @@
 export class FMPLogger{
+    static debug(...args:any){
+        console.debug(...args);
+    }
     static info(...args:any){
         console.log(...args);
     }
