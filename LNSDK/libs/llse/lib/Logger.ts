@@ -12,6 +12,6 @@ export class FMPLogger{
         logger.error(...args);
     }
     static fatal(...args:any){
-        logger.error(...args)
+        logger.fatal(...args)
     }
 }

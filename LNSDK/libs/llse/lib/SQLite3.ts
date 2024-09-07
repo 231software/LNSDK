@@ -1,12 +1,16 @@
-const sqlite3 = require('better-sqlite3');
 export class FMPSQLite3{
-    rawdbsession:any;
+    rawdbsession:DBSession;
     /**
      * **创建数据库部分暂不支持异步**
      * @param path 数据库路径
      */
     constructor(path:string){
-        this.rawdbsession=new sqlite3(path)
+        this.rawdbsession=new DBSession('sqlite3',{
+            path,
+            create:true,
+            readonly:false,
+            readwrite:true
+        })
     }
     /**
      * 同步预准备执行SQL语句  
@@ -17,7 +21,9 @@ export class FMPSQLite3{
      * @param params 预准备语句要绑定的参数
      */
     runSync(SQLstring:string,...params:any[]){
-        this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).run(...params))()
+        let stmt=this.rawdbsession.prepare(SQLstring);
+        stmt.bind(params)
+        stmt.execute();
     };
     /**
      * 同步预准备执行SQL语句  
@@ -29,6 +35,19 @@ export class FMPSQLite3{
      * @returns 执行结果
      */
     queryAllSync(SQLstring:string,...params:any[]):any[]{
-        return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...params))();
+        let stmt=this.rawdbsession.prepare(SQLstring);
+        stmt.bind(params)
+        stmt.execute();
+        const rawresult:Array<Array<any>>=stmt.fetchAll();
+        let result:Array<any>=[];
+        for(let rowindex in rawresult){
+            if(Number(rowindex)==0)continue;
+            let rowresult:Object={};
+            for(let column_id in rawresult[0]){
+                rowresult[rawresult[0][Number(column_id)]]=rawresult[Number(rowindex)][Number(column_id)]
+            }
+            result.push(rowresult)
+        }
+        return result;
     }
 }

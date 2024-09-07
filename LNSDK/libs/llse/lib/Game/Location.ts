@@ -1,5 +1,6 @@
+import { FMPLogger } from "../Logger";
 import { FMPDefaultDimension, FMPDimension, toll2dimid } from "./Dimension";
-export class LNManualConstructedLocation{
+export class FMPManualConstructedLocation{
     x:number;
     y:number;
     z:number;
@@ -19,7 +20,7 @@ export class LNManualConstructedLocation{
 }
 export class FMPLocation{
     /** 原始坐标对象 */
-    rawlocation:any;
+    rawlocation:IntPos|FloatPos;
     /**
      * 
      * @param rawlocation 原始坐标对象
@@ -29,16 +30,47 @@ export class FMPLocation{
         if(manualConstructed)this.rawlocation=mc.newFloatPos(rawlocation.x,rawlocation.y,rawlocation.z,toll2dimid(rawlocation.dimension))
         else this.rawlocation=rawlocation;
     }
-    getX():number{
+    get x():number{
         return this.rawlocation.x;
     }
-    getY():number{
+    get y():number{
         return this.rawlocation.y
     }
-    getZ():number{
+    get z():number{
         return this.rawlocation.z
     }
-    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension(FMPDefaultDimension.Overworld)):FMPLocation{
-        return new FMPLocation({x:x,y:y,z:z,dimension:dimension},true);
+    get dimension():FMPDimension{
+        return new FMPDimension();
     }
+    get defaultDimension():FMPDefaultDimension{
+        return this.rawlocation.dimid;
+    }
+    toll2FloatPos():any{
+        return new FloatPos(this.x,this.y,this.z,toll2dimid(this.defaultDimension));
+    }
+    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension()):FMPLocation{
+        return new FMPLocation(new FloatPos(x,y,z,0),true);
+    }
+}
+export class FMPEulerAngles{//yaw就是alpha，pitch就是beta
+    rawangle:any;
+    constructor(rawangle:any,manualConstructed:boolean){
+        if(manualConstructed)this.rawangle=new DirectionAngle(rawangle.pitch,rawangle.yaw)
+        else this.rawangle=rawangle;
+    }
+    get alpha():number{
+        return this.rawangle.yaw;
+    }
+    get beta():number{
+        return this.rawangle.pitch;
+    }
+    get gamma():number{
+        return 0;
+    }
+    static new(alpha:number,beta:number,gamma:number):FMPEulerAngles{
+        return new FMPEulerAngles(new DirectionAngle(beta,alpha),true);
+    }
+}
+export function toll2DirectionAngle(angle:FMPEulerAngles):DirectionAngle{
+    return new DirectionAngle(angle.beta,angle.alpha);
 }

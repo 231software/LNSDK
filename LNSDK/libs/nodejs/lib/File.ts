@@ -1,7 +1,5 @@
-/// <reference path="./HelperLib/SystemAPI/File.d.ts" />
-import { FMPLogger } from "./Logger";
 import * as fs from "fs";
-
+import { FMPLogger } from "./Logger";
 export class FMPFile{
     static ls(path:string):string[]{
         try{
@@ -111,9 +109,7 @@ export class FMPFile{
 }
 export class FMPDirectory{
     folders:string[];
-    path:string;
     constructor(dir:string){
-        this.path=dir
         this.folders=dir.split(/[/|\\]/);
     }
     toString(backslash=true):string{
@@ -126,15 +122,6 @@ export class FMPDirectory{
         }
         return target;
     }
-    isWindowsAbsolutePath(){
-        return /^[a-zA-Z]:\\|^\\\\/.test(this.path);
-    }/*
-    toPluginDir():string{
-        //绝对路径的情况
-        if(this.isWindowsAbsolutePath())return this.path;
-        if(this.folders[0]=="")return this.path;
-        //如果不是绝对路径，往路径前面加上plugins/
-    }*/
 
 }
 export class JsonFile{
@@ -300,42 +287,3 @@ export class JsonFile{
         return "0.0.1";
     }
 }
-
-//export class FMPFile{
-//     static ls(path:string):string[]{
-//         return file.getFilesList(path)
-//     }
-//     static initDir(path:string){
-//         file.mkdir(path);
-//     }
-//     static initFile(path:string){
-//         if(file.readFrom(path)===null)file.writeTo(path,"")
-//     }
-//     static read(path:string):string{
-//         const content:string|null=file.readFrom(path)
-//         return content===null?"":content;
-//     }
-//     static copy(source:string,destination:string){
-//         file.copy(source,destination);
-//     }
-//     static forceWrite(path:string,content:string){
-//         file.writeTo(path,content);
-//     }
-//     /**
-//      * 重命名或移动一个文件  
-//      * 要移动文件，修改其路径即可
-//      * @param path 文件路径
-//      * @param target 重命名后的文件名（路径）
-//      */
-//     static rename(path:string,target:string){
-//         FMPLogger.info("重命名逻辑未完成！\n目前需要的工作：分割传入的路径，分辨是否是在当前目录中重命名，然后复刻nodejs移动文件命令的特性")
-
-//     }
-//     /**
-//      * 永久删除一个文件或文件夹，不放入系统回收站  
-//      * 尽量不使用此方法，文件删除后无法恢复，有数据安全隐患
-//      * @param path 文件或文件夹路径
-//      */
-//     static permanently_delete(path:string){
-//     }
-// }

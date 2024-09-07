@@ -1,3 +1,4 @@
+import {Logger} from "../index.js"
 import { FMPLogger } from "../Logger"
 import { FMPInternalPermission,toll2PermType } from "./InternalPermission";
 import { FMPPlayer } from "./Player";
@@ -224,8 +225,14 @@ export abstract class FMPCommand{
         FMPLogger.info("指令注册：设置重载")
         //overload
         for(let overload of command.overloads){
-            FMPLogger.info(overload)
             ll2cmd.overload(overload)
+        }
+        //如果重载列表是空的，证明传入参数格式错误，因为正常应该至少传一个[[]]，这种情况就给他重载一个空的防止出问题
+        if(command.overloads.length<=0){
+            ll2cmd.overload([])
+            Logger.warn("重载参数没有传入任何参数列表！将默认重载一个空的参数列表。")
+            Logger.warn("要解决这条提示，请阅读LNSDK和LLSE的开发文档，传入格式正确的参数列表。")
+            Logger.warn("或者如果您本就不想在该命令中使用任何参数，请传入“[[]]”而不是“[]”。")
         }
         FMPLogger.info("指令注册：执行注册")
         return ll2cmd.setup();

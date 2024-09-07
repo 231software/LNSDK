@@ -1,8 +1,8 @@
 export enum FMPDefaultDimension{
+    NotDefault=-1,
     Overworld=0,
     Nether,
-    TheEnd,
-    NotDefault
+    TheEnd
 }
 export function fromll2dimid(ll2dimid:number):FMPDefaultDimension{
     switch(ll2dimid){
@@ -22,8 +22,8 @@ export function toll2dimid(dim:FMPDefaultDimension):0|1|2{
     }
 }
 export class FMPDimension{
-    defaultdimension:FMPDefaultDimension;
-    constructor(defaultdimension:FMPDefaultDimension){
-        this.defaultdimension=defaultdimension;
+    dimid:number;
+    static getDefaultDimension(dimid:number):FMPDimension{
+        return new FMPDimension();
     }
 }

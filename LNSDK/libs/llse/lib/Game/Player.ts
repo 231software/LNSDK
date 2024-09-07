@@ -1,5 +1,5 @@
 import { FMPLogger } from "../Logger";
-import { FMPLocation } from "./Location";
+import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location";
 export enum FMPGameMode{
     Survival=0,
     Creative=1,
@@ -25,7 +25,7 @@ export function toll2gamemode(gamemode:FMPGameMode):number{
         case FMPGameMode.Spectator:return 6;
     }
 }
-export enum sendTestType{
+export enum sendTextType{
     raw = 0,
     chat,
     popup,
@@ -62,23 +62,27 @@ export class FMPPlayer{
         }
         */
     }
-    getName():string{
+    get name():string{
         //判断平台并读取相应属性
         return this.rawplayer.name;
     }
-    getXuid():string{
+    get xuid():string{
         return this.rawplayer.xuid;
     }    
-    getUuid():string{
+    get uuid():string{
         return this.rawplayer.uuid;
     }    
-    getGameMode():FMPGameMode{
+    get gameMode():FMPGameMode{
         return fromll2gamemode(this.rawplayer.gameMode);
     }
-    getLocation():FMPLocation{
-        return new FMPLocation(this.rawplayer.pos,false);
+    //返回的是玩家脚部坐标！
+    get location():FMPLocation{
+        return new FMPLocation(this.rawplayer.feetPos,false);
     }
-    isSneaking():boolean{
+    get direction():FMPEulerAngles{
+        return FMPEulerAngles.new(this.rawplayer.direction.yaw,this.rawplayer.direction.pitch,0);
+    }
+    get isSneaking():boolean{
         return this.rawplayer.isSneaking;
     }
     tell (msg: string, type?: sendTextType): boolean{
@@ -87,7 +91,13 @@ export class FMPPlayer{
     setGameMode(gamemode:FMPGameMode){
         return this.rawplayer.setGameMode(toll2gamemode(gamemode));
     }
+    teleport(location:FMPLocation,direction?:FMPEulerAngles):boolean{
+        if(direction===undefined){
+            return this.rawplayer.teleport(location.toll2FloatPos());
+        }
+        return this.rawplayer.teleport(location.toll2FloatPos(),toll2DirectionAngle(direction));
+    }
     toll2Player():Player{
-        return mc.getPlayer(this.getXuid())
+        return mc.getPlayer(this.xuid)
     }
 }

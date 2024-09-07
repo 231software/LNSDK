@@ -114,6 +114,7 @@ declare class DBSession{
 
 /** SQL预准备语句 */
 declare class DBStmt{
+    execute():DBStmt;
     /**
      * 绑定参数到一个SQL语句
      * @param val 要绑定的值
