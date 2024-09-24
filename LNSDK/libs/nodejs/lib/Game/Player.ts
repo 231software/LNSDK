@@ -1,3 +1,4 @@
+import { FMPLogger } from "../Logger";
 import { FMPEulerAngles, FMPLocation } from "./Location";
 
 export enum FMPGameMode{
@@ -12,6 +13,12 @@ export class FMPPlayer{
     name:string;
     location:FMPLocation
     gameMode:FMPGameMode
+    constructor(xuid:string,name:string,location:FMPLocation,gameMode:FMPGameMode){
+        this.xuid=xuid;
+        this.name=name;
+        this.location=location;
+        this.gameMode=gameMode
+    }
     /** 获取玩家在游戏世界中的朝向 */
     get direction():FMPEulerAngles{
         return FMPEulerAngles.new(0,0,0)
@@ -21,9 +28,10 @@ export class FMPPlayer{
      * @returns 是否发送成功
      */
     tell(message:string):boolean{
-        return false;
+        FMPLogger.info("[FMP插件消息]"+message)
+        return true;
     }
-    teleport(location:FMPLocation):boolean{
+    teleport(location:FMPLocation,direction?:FMPEulerAngles):boolean{
         return false;
     }
     setGameMode(gameMode:FMPGameMode):boolean{

@@ -111,17 +111,36 @@ export class FMPCommandExecutor{
 }
 export class FMPCommandResult{
     executor:FMPCommandExecutor
-    params:any
-    constructor(executor:FMPCommandExecutor,params:any){
+    params:Map<string,{param:FMPCommandParam,value:any}>
+    constructor(executor:FMPCommandExecutor,params:Map<string,{param:FMPCommandParam,value:any}>){
         this.executor=executor
         this.params=params
+    }
+}
+
+/**命令执行失败的原因 */
+export enum FMPCommandFailReason{
+    Success,
+    UnknownCommand,
+    WrongTypeOfArgument,
+    NoTargetMatchedSelector,
+    InternalServerError
+}
+export function FMPCommandFailReasonText(reason:FMPCommandFailReason):string{
+    switch(reason){
+        case FMPCommandFailReason.Success:return "成功"
+        case FMPCommandFailReason.UnknownCommand:return "未知命令"
+        case FMPCommandFailReason.WrongTypeOfArgument:return "参数输入有误"
+        case FMPCommandFailReason.NoTargetMatchedSelector:return "没有与目标选择器匹配的目标"
+        default:
+        case FMPCommandFailReason.InternalServerError:return "执行命令时插件因自身错误而无法执行"
     }
 }
 export abstract class FMPCommand{
     name:string;
     description:string|undefined;
     usageMessage:string|undefined;
-    args:Array<FMPCommandParam>;
+    args:Map<string,FMPCommandParam>=new Map();
     overloads:Array<Array<string>>;
     permission:FMPInternalPermission;
     aliases:Array<string>;
@@ -150,7 +169,7 @@ export abstract class FMPCommand{
         this.name=name;
         this.description=description;
         this.usageMessage=usageMessage;
-        this.args=args;
+        for(let param of args)this.args.set(param.name,param)
         this.overloads=overloads;
         this.permission=permission;
         this.aliases=aliases;
@@ -172,46 +191,46 @@ export abstract class FMPCommand{
         for(let alias of command.aliases)ll2cmd.setAlias(alias);
         FMPLogger.info("指令注册：添加参数")
         /** 由于llse的命令参数枚举用名字区分，此处就用一个编号转换成字符串作为名字供llse区分 */
-        for(let argid in command.args){
-            if(command.args[argid].bindEnum!==undefined){
-                ll2cmd.setEnum(argid.toString(),command.args[argid].bindEnum.values)
+        for(let arg of command.args){
+            if(arg[1].bindEnum!==undefined){
+                ll2cmd.setEnum(arg[1].bindEnum.name,arg[1].bindEnum.values)
             }
-            switch(command.args[argid].type){
+            switch(arg[1].type){
                 case FMPCommandParamType.Mandatory:
-                    command.args[argid].bindEnum===undefined?
+                    arg[1].bindEnum===undefined?
                         ll2cmd.mandatory(
-                            command.args[argid].name,
-                            toll2ParamType(command.args[argid].dataType),
+                            arg[0],
+                            toll2ParamType(arg[1].dataType),
                         )
                         :
                         ll2cmd.mandatory(
-                            command.args[argid].name,
-                            toll2ParamType(command.args[argid].dataType),
-                            argid.toString(),
-                            argid.toString(),     
-                            command.args[argid].enumOptions
+                            arg[0],
+                            toll2ParamType(arg[1].dataType),
+                            arg[1].bindEnum.name,
+                            arg[1].bindEnum.name,     
+                            arg[1].enumOptions
                         )
                     break;
                 case FMPCommandParamType.Optional:
-                    command.args[argid].bindEnum===undefined?
+                    arg[1].bindEnum===undefined?
                         ll2cmd.optional(
-                            command.args[argid].name,
-                            toll2ParamType(command.args[argid].dataType),
+                            arg[0],
+                            toll2ParamType(arg[1].dataType),
                         )
                         :
                         ll2cmd.optional(
-                            command.args[argid].name,
-                            toll2ParamType(command.args[argid].dataType),
-                            argid.toString(),
-                            argid.toString(),     
-                            command.args[argid].enumOptions
+                            arg[0],
+                            toll2ParamType(arg[1].dataType),
+                            arg[1].bindEnum.name,
+                            arg[1].bindEnum.name,     
+                            arg[1].enumOptions
                         )
                     break;
             }
         }
         FMPLogger.info("指令注册：设置回调");
         ll2cmd.setCallback((cmd,ll2origin,output,ll2results)=>{
-            let executor_type=fromll2commandExecutorType(ll2origin.type)
+            const executor_type=fromll2commandExecutorType(ll2origin.type)
             let origin:any
             switch(executor_type){
                 case FMPCommandExecutorType.Player:
@@ -219,7 +238,16 @@ export abstract class FMPCommand{
                     origin=new FMPPlayer(ll2origin.player);break;
                 case FMPCommandExecutorType.Console:origin=undefined;break;
             }
-            let result:FMPCommandResult=new FMPCommandResult(new FMPCommandExecutor(origin,executor_type),ll2results);
+            const ParamsResult:Map<string,{param:FMPCommandParam,value:any}>=new Map()
+            for(let paramString of Object.keys(ll2results)){
+                const param=command.args.get(paramString);
+                if(param==undefined)throw new Error("无法读取参数"+paramString)
+                ParamsResult.set(paramString,{
+                    param,
+                    value:ll2results[paramString]
+                })
+            }
+            const result=new FMPCommandResult(new FMPCommandExecutor(origin,executor_type),ParamsResult);
             command.callback(result)
         })
         FMPLogger.info("指令注册：设置重载")
@@ -238,3 +266,15 @@ export abstract class FMPCommand{
         return ll2cmd.setup();
     }
 }
+
+//创建命令池
+class fillerCommand extends FMPCommand{
+    constructor(){
+        super("fillerCommand");
+    }
+    callback(result: FMPCommandResult): void {
+        
+    }
+}
+export const CommandList=(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",new fillerCommand()]]))
+CommandList.delete("fillerCommand");

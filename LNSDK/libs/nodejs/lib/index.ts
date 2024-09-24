@@ -32,5 +32,12 @@ export {
 } from "./SimpleForm.js"
 export {FMPInitEvent as InitEvent} from "./Events/Process.js"
 export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
-export {FMPSQLite3 as SQLite3} from "./SQLite3.js"
+export {
+    FMPSQLite3 as SQLite3,
+    FMPSQLDataTypeEnum as SQLDataTypeEnum,
+    FMPSQLDataType as SQLDataType,
+    FMPSQLDBDataType as SQLDBDataType,
+    FMPSQLComparisonOperators as SQLComparisonOperators
+} from "./SQLite3.js"
+export {TwoWayMap} from "./Tools.js"
 export {ScriptDone} from "./Events/Process.js"

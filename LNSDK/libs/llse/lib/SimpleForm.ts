@@ -4,7 +4,7 @@ export class FMPSimpleForm{
     rawform:SimpleForm;
     defaultCallback:(player:FMPPlayer)=>void
     buttons:FMPSimpleFormButton[];
-    constructor(title=" ",content="",buttons:FMPSimpleFormButton[]=[],onClose:(player:FMPPlayer)=>void) {
+    constructor(title=" ",content="",buttons:FMPSimpleFormButton[]=[],onClose?:(player:FMPPlayer)=>void) {
         this.rawform=mc.newSimpleForm();
         this.rawform.setTitle(title);
         this.rawform.setContent(content);
@@ -12,9 +12,9 @@ export class FMPSimpleForm{
         for(let button of buttons){
             this.rawform.addButton(button.text)
         }
-        this.defaultCallback=onClose
+        this.defaultCallback=(onClose==undefined?()=>{}:onClose)
     }
-    send(player:FMPPlayer){
+    send(player:FMPPlayer,lastForm?:FMPSimpleForm){
         player.toll2Player().sendForm(this.rawform,this.buildCallback())
     }
 

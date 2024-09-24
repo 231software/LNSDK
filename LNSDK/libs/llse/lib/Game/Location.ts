@@ -1,5 +1,5 @@
 import { FMPLogger } from "../Logger";
-import { FMPDefaultDimension, FMPDimension, toll2dimid } from "./Dimension";
+import { FMPDefaultDimension, FMPDimension, fromll2dimid, toll2dimid } from "./Dimension";
 export class FMPManualConstructedLocation{
     x:number;
     y:number;
@@ -27,7 +27,9 @@ export class FMPLocation{
      * @param manualConstructed 是否由用户手动生成
      */
     constructor(rawlocation:any,manualConstructed:boolean){
-        if(manualConstructed)this.rawlocation=mc.newFloatPos(rawlocation.x,rawlocation.y,rawlocation.z,toll2dimid(rawlocation.dimension))
+        let ll2dimid=rawlocation.dimid
+        if(ll2dimid==-1)ll2dimid=0;
+        if(manualConstructed)this.rawlocation=mc.newFloatPos(rawlocation.x,rawlocation.y,rawlocation.z,ll2dimid)
         else this.rawlocation=rawlocation;
     }
     get x():number{
@@ -40,7 +42,7 @@ export class FMPLocation{
         return this.rawlocation.z
     }
     get dimension():FMPDimension{
-        return new FMPDimension();
+        return new FMPDimension(fromll2dimid(this.rawlocation.dimid));
     }
     get defaultDimension():FMPDefaultDimension{
         return this.rawlocation.dimid;
@@ -48,8 +50,8 @@ export class FMPLocation{
     toll2FloatPos():any{
         return new FloatPos(this.x,this.y,this.z,toll2dimid(this.defaultDimension));
     }
-    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension()):FMPLocation{
-        return new FMPLocation(new FloatPos(x,y,z,0),true);
+    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension(FMPDefaultDimension.Overworld)):FMPLocation{
+        return new FMPLocation(new FloatPos(x,y,z,toll2dimid(dimension.defaultDimension)),true);
     }
 }
 export class FMPEulerAngles{//yaw就是alpha，pitch就是beta

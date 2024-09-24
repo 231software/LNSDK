@@ -20,12 +20,15 @@ export class FMPManualConstructedLocation{
 export class FMPLocation{
     /** 原始坐标对象 */
     rawlocation:any;
+    manualConstructed:boolean
     /**
      * 
      * @param rawlocation 原始坐标对象
      * @param manualConstructed 是否由用户手动生成
      */
-    constructor(x:number,y:number,z:number,dimension:FMPDimension){
+    constructor(rawlocation:any,manualConstructed:boolean){
+        this.rawlocation=rawlocation
+        this.manualConstructed=manualConstructed
     }
     get x():number{
         return 0;
@@ -37,10 +40,10 @@ export class FMPLocation{
         return 0;
     }
     get dimension():FMPDimension{
-        return new FMPDimension();
+        return this.rawlocation.dimension;
     }
-    static new(x:number,y:number,z:number,dimension:FMPDimension=FMPDimension.getDefaultDimension(0)):FMPLocation{
-        return new FMPLocation(x,y,z,dimension);
+    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension(FMPDefaultDimension.Overworld)):FMPLocation{
+        return new FMPLocation({x,y,z,dimension},true);
     }
 }
 export class FMPEulerAngles{

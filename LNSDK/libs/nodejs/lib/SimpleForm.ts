@@ -1,6 +1,6 @@
 import {FMPPlayer} from "./Game/Player.js";
 export class FMPSimpleForm{
-    constructor(title=" ",content="",buttons:FMPSimpleFormButton[]=[],onClose:(player:FMPPlayer)=>void) {
+    constructor(title=" ",content="",buttons:FMPSimpleFormButton[]=[],onClose?:(player:FMPPlayer)=>void) {
         
     }
     send(player:FMPPlayer){
