@@ -278,3 +278,7 @@ class fillerCommand extends FMPCommand{
 }
 export const CommandList=(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",new fillerCommand()]]))
 CommandList.delete("fillerCommand");
+
+export function FMPruncmd(cmd:string):{success:boolean,output:string}{
+    return mc.runcmdEx(cmd)
+}

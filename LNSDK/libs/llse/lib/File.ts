@@ -22,7 +22,18 @@ export class FMPFile{
             fs.readdirSync(path);
         }
         catch(e){
-            fs.mkdirSync(path);
+            try{
+                fs.mkdirSync(path);
+            }
+            catch(e){
+                //如果创建失败，他会去掉最后一个文件夹后重新尝试创建
+                FMPLogger.warn("文件夹创建失败！原因："+e)
+                FMPLogger.info("尝试从上一层文件夹开始创建")
+                const dir=new FMPDirectory(path);
+                dir.folders.pop()//去掉最后一个文件夹
+                FMPFile.initDir(dir.toString())//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
+                FMPFile.initDir(path)
+            }
         }
     }
     /**
@@ -93,7 +104,12 @@ export class FMPFile{
         const file_stat=fs.statSync(path)
         try{
             if(file_stat.isFile()){
-                fs.unlinkSync(path);
+                try{
+                    eval(`File.delete("${path}")`)
+                }
+                catch(e){
+                    FMPLogger.info("无法删除文件，原因："+e)
+                }
             }
             else if(file_stat.isDirectory()){
                 //清空文件夹
@@ -261,6 +277,47 @@ export class JsonFile{
             else{//obj[objpath[index]]是传进去的，要被修改的部分
                 let write=obj;
                 write[objpath[index+1]]=setValue(obj[objpath[index+1]],index+1,value)
+                //log(JSON.stringify(write,0,4))
+                return write
+            }
+        } 
+        this.reload();
+        return result;
+    }
+    delete(key:string):boolean{
+        let result=true;
+        let objpath=this.objpath
+        let rootobj=this.rootobj
+        let path=this.path;
+        if(this.objpath.length==0){
+            delete rootobj[key]
+            FMPFile.forceWrite(path,JSON.stringify(rootobj,undefined,4));
+            return true;
+        }
+        else{
+            //log("输入set的："+JSON.stringify(setValue(rootobj,0,value)))
+            //log(JSON.stringify(setValue(rootobj[objpath[0]],0,value)))
+            result=setRoot(this.objpath[0],deleteValue(this.rootobj[this.objpath[0]],0));                
+        }
+        function setRoot(key:string,value:any):boolean{
+            //注意，这个函数里面没有this，所有的this的属性都要传进来才能用
+            rootobj[key]=value
+            FMPFile.forceWrite(path,JSON.stringify(rootobj,undefined,4));
+            return true;
+        }
+        function deleteValue(obj:any,index:number){
+            //注意，这个函数里面没有this，所有的this的属性都要传进来才能用
+            //log(objpath[index])
+            //log(obj)
+            if(index>=objpath.length-1){
+                let write=obj;
+                //let shell;shell[objpath[0]]=fatherGet;
+                delete write[key];
+                return write;
+            }                
+            else{//obj[objpath[index]]是传进去的，要被修改的部分
+                let write=obj;
+                write[objpath[index+1]]=deleteValue(obj[objpath[index+1]],index+1)
                 //log(JSON.stringify(write,0,4))
                 return write
             }

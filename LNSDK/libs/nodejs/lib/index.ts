@@ -26,10 +26,23 @@ export {
     FMPCommandResult as CommandResult
 } from "./Game/Command.js"
 export {FMPInternalPermission as InternalPermission} from "./Game/InternalPermission.js"
+
 export {
     FMPSimpleForm as SimpleForm,
-    FMPSimpleFormButton as SimpleFormButton
-} from "./SimpleForm.js"
+    FMPSimpleFormButton as SimpleFormButton,
+    FMPSimpleFormButtonType as SimpleFormButtonType,
+    FMPSimpleFormSession as SimpleFormSession,
+    FMPCustomForm as CustomForm,
+    FMPCustomFormDropdown as CustomFormDropdown,
+    FMPCustomFormInput as CustomFormInput,
+    FMPCustomFormLabel as CustomFormLabel,
+    FMPCustomFormSlider as CustomFormSlider,
+    FMPCustomFormStepSlider as CustomFormStepSlider,
+    FMPCustomFormSwitch as CustomFormSwitch,
+    FMPCustomFormSession as CustomFormSession,
+    FMPModalForm as ModalForm,
+    FMPModalFormSession as ModalFormSession
+} from "./Form.js"
 export {FMPInitEvent as InitEvent} from "./Events/Process.js"
 export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
 export {

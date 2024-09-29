@@ -1,4 +1,6 @@
 import { FMPLogger } from "../Logger";
+import { FMPInternalPermission } from "./InternalPermission";
+import { FMPItem } from "./Item";
 import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location";
 export enum FMPGameMode{
     Survival=0,
@@ -82,8 +84,20 @@ export class FMPPlayer{
     get direction():FMPEulerAngles{
         return FMPEulerAngles.new(this.rawplayer.direction.yaw,this.rawplayer.direction.pitch,0);
     }
+    /**玩家对于游戏内置权限的权限等级 */
+    get internalPermission():FMPInternalPermission{
+        return FMPInternalPermission.Any
+    }
     get isSneaking():boolean{
         return this.rawplayer.isSneaking;
+    }
+    /**
+     * 给予玩家一个物品
+     * @param item 要给予玩家的物品
+     * @returns 是否成功给予玩家
+     */
+    giveItem(item:FMPItem):boolean{
+        return false
     }
     tell (msg: string, type?: sendTextType): boolean{
         return this.rawplayer.tell(msg,type);

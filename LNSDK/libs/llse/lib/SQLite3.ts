@@ -191,7 +191,118 @@ export class FMPSQLite3{
                 right:string,
             },
             default?:string
-        }}[]){
+        }
+    }[]){
+        const columnsStatements:string[]=[]
+        const forign_keyStatements:string[]=[]
+        for(let column of columns){
+            if(column.forign_key==undefined){
+                let columnStatement="";
+                columnStatement=columnStatement+column.name
+                if(column.data_type!=undefined)columnStatement=columnStatement+" "+column.data_type.toStatement()
+                if(column.constraint?.not_null)columnStatement=columnStatement+" NOT NULL"
+                if(column.constraint?.unique)columnStatement=columnStatement+" UNIQUE"
+                if(column.constraint?.primary_key)columnStatement=columnStatement+" PRIMARY KEY"
+                columnsStatements.push(columnStatement+"\n")
+            }
+        }
+        this.runSync(`CREATE TABLE IF NOT EXISTS ${name} (
+            ${columnsStatements}
+        )`)
+    }
+    getColumns(tableName:string):{
+        name:string,
+        type:FMPSQLDataTypeEnum,
+        not_null:boolean,
+        primary_key:boolean,
+        default_value:any
+    }[]{
+        function toFMPSQLite3Type(type:string):FMPSQLDataTypeEnum{
+            switch(type){
+                case "INTEGER":return FMPSQLDataTypeEnum.INTEGER
+                default:throw new Error("请为getColumns方法的toFMPSQlite3Type函数完善"+type+"映射")
+            }
+        }
+        const columnsInfo:{
+            name:string,
+            type:FMPSQLDataTypeEnum,
+            not_null:boolean,
+            primary_key:boolean,
+            default_value:any
+        }[]=[]
+        for(let column of this.queryAllSync(`PRAGMA table_info(${tableName})`)){
+            columnsInfo[column.cid]={
+                name:column.name,
+                type:toFMPSQLite3Type(column.type),
+                not_null:Boolean(column.notnull),
+                default_value:column.dflt_value,
+                primary_key:Boolean(column.pk)
+            }
+        }
+        return columnsInfo
+    }
+    setRow(tableName:string,...values:{
+        columnName:string,
+        value:any
+    }[]){
+        let statement="INSERT INTO "+tableName+" VALUES ("
+        const columns=this.getColumns(tableName)
+        let primary_key_column_name=""
+        let valuesOrder:any[]=[]
+        for(let value of values){
+            let columnIndex=0
+            //找到当前值对应的列
+            for(let i in columns){
+                if(columns[i].primary_key)primary_key_column_name=columns[i].name
+                if(columns[i].name==value.columnName){
+                    columnIndex=Number(i)
+                    break;
+                }
+            }
+            valuesOrder[columnIndex]=value.value
+        }
+        for(let value of valuesOrder){
+            statement=statement+"?,"
+        }
+        //去掉最后的逗号
+        statement=statement.slice(0,-1)+") "
+        const values_to_update:any=[]
+        if(primary_key_column_name.length>0){
+            statement=statement+"ON CONFLICT ("+primary_key_column_name+") DO UPDATE SET "
+            for(let value of values){
+                //如果是主键就不更新
+                if(value.columnName==primary_key_column_name)continue
+                statement=statement+value.columnName+"=?,"
+                values_to_update.push(value.value)
+            }
+            //去掉最后的逗号
+            statement=statement.slice(0,-1)+";"            
+        }
 
+        const all_parameters=valuesOrder.concat(values_to_update)
+        //执行语句
+        this.runSync(statement,...all_parameters)
+    }
+    /**
+     * 在指定的表中根据值在主键中查找对应的数据
+     * @param tableName 要查询的数据所在的表名
+     * @param value 要查找的主键的值
+     * @returns 找到的数据的各列的值，如果是个空Map就证明找不到
+     */
+    getRowFromPrimaryKey(tableName:string,value:any):Map<string,any>{
+        let primary_key_name=""
+        for(let column of this.getColumns(tableName)){
+            if(column.primary_key)primary_key_name=column.name
+        }
+        if(primary_key_name.length==0)throw new Error("当前表中没有主键")
+        const result=new Map<string,any>()
+        const rawResult=this.queryAllSync("SELECT * from "+tableName+" WHERE "+primary_key_name+"=?",value)[0]
+        
+        //没有查询到任何结果
+        if(rawResult==undefined)return result
+        for(let columnName of Object.keys(rawResult)){
+            result.set(columnName,rawResult[columnName])
+        }
+        return result
     }
 }
