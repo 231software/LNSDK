@@ -1,6 +1,6 @@
 import {FMPPlayer} from "./Game/Player.js";
 import { FMPLogger } from "./Logger.js";
-import { FMPSQLDBDataType } from "./SQLite3.js";
+import { FMPSQLDBDataType } from "./Features/SQLite3.js";
 
 /**
  * 这个any还没搞明白为什么，等后面实际编程的时候遇到了再说
@@ -12,8 +12,7 @@ export abstract class FMPForm{
     abstract send(formSession:FMPFormSession):boolean
     constructor(
         title:string,
-        content:string,
-        onClose:(session:FMPSimpleFormSession|FMPCustomFormSession|FMPModalFormSession)=>void=()=>{}
+        content:string
     ){
         this.title=title
         this.content=content

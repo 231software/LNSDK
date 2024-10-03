@@ -1,3 +1,4 @@
+const sqlite3=require("better-sqlite3")
 /**
  * SQL数据类型枚举。  
  * 注释来自[菜鸟教程](https://www.runoob.com/sql/sql-datatypes-general.html)
@@ -29,7 +30,7 @@ export class FMPSQLDataType{
     type:FMPSQLDataTypeEnum
     params:number[]
     constructor(type:FMPSQLDataTypeEnum,...params:number[]){
-        this.type=type,
+        this.type=type
         this.params=params
     }
     toStatement():string{
@@ -40,12 +41,15 @@ export class FMPSQLDataType{
             case FMPSQLDataTypeEnum.BOOLEAN:return `BOOLEAN`
             case FMPSQLDataTypeEnum.VARBINARY:return `VARBINARY(${this.params[0]})`
 
+            case FMPSQLDataTypeEnum.INTEGER:return `INTEGER`
+
             case FMPSQLDataTypeEnum.REAL:return `REAL`
             
             case FMPSQLDataTypeEnum.TEXT:return `TEXT`
             default:throw new Error("目前还不支持当前数据类型："+this.type);
         }
     }
+
 }
 /**
  * SQL数据类型枚举。  
@@ -104,18 +108,13 @@ export enum FMPSQLComparisonOperators{
     NotLess
 }
 export class FMPSQLite3{
-    rawdbsession:DBSession;
+    rawdbsession:any;
     /**
      * **创建数据库部分暂不支持异步**
      * @param path 数据库路径
      */
     constructor(path:string){
-        this.rawdbsession=new DBSession('sqlite3',{
-            path,
-            create:true,
-            readonly:false,
-            readwrite:true
-        })
+        this.rawdbsession=new sqlite3(path)
     }
     /**
      * 同步预准备执行SQL语句  
@@ -126,9 +125,7 @@ export class FMPSQLite3{
      * @param params 预准备语句要绑定的参数
      */
     runSync(SQLstring:string,...params:any[]){
-        let stmt=this.rawdbsession.prepare(SQLstring);
-        stmt.bind(params)
-        stmt.execute();
+        this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).run(...params))()
     };
     /**
      * 同步预准备执行SQL语句  
@@ -140,20 +137,7 @@ export class FMPSQLite3{
      * @returns 执行结果
      */
     queryAllSync(SQLstring:string,...params:any[]):any[]{
-        let stmt=this.rawdbsession.prepare(SQLstring);
-        stmt.bind(params)
-        stmt.execute();
-        const rawresult:Array<Array<any>>=stmt.fetchAll();
-        let result:Array<any>=[];
-        for(let rowindex in rawresult){
-            if(Number(rowindex)==0)continue;
-            let rowresult:Object={};
-            for(let column_id in rawresult[0]){
-                rowresult[rawresult[0][Number(column_id)]]=rawresult[Number(rowindex)][Number(column_id)]
-            }
-            result.push(rowresult)
-        }
-        return result;
+        return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...params))();
     }
     close(){
         this.rawdbsession.close();
@@ -270,8 +254,6 @@ export class FMPSQLite3{
         if(primary_key_column_name.length>0){
             statement=statement+"ON CONFLICT ("+primary_key_column_name+") DO UPDATE SET "
             for(let value of values){
-                //如果是主键就不更新
-                if(value.columnName==primary_key_column_name)continue
                 statement=statement+value.columnName+"=?,"
                 values_to_update.push(value.value)
             }
@@ -282,13 +264,8 @@ export class FMPSQLite3{
         const all_parameters=valuesOrder.concat(values_to_update)
         //执行语句
         this.runSync(statement,...all_parameters)
+        
     }
-    /**
-     * 在指定的表中根据值在主键中查找对应的数据
-     * @param tableName 要查询的数据所在的表名
-     * @param value 要查找的主键的值
-     * @returns 找到的数据的各列的值，如果是个空Map就证明找不到
-     */
     getRowFromPrimaryKey(tableName:string,value:any):Map<string,any>{
         let primary_key_name=""
         for(let column of this.getColumns(tableName)){
@@ -297,7 +274,6 @@ export class FMPSQLite3{
         if(primary_key_name.length==0)throw new Error("当前表中没有主键")
         const result=new Map<string,any>()
         const rawResult=this.queryAllSync("SELECT * from "+tableName+" WHERE "+primary_key_name+"=?",value)[0]
-        
         //没有查询到任何结果
         if(rawResult==undefined)return result
         for(let columnName of Object.keys(rawResult)){

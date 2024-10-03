@@ -58,7 +58,10 @@ export {
     FMPSQLDataType as SQLDataType,
     FMPSQLDBDataType as SQLDBDataType,
     FMPSQLComparisonOperators as SQLComparisonOperators
-} from "./SQLite3.js"
+} from "./Features/SQLite3.js"
+export {
+    YMLFile
+} from "./Features/YMLFile.js"
 export {
     FMPCurrency as Currency
 } from "./Game/Economy.js"

@@ -1,4 +1,4 @@
-import {FMPLogger} from "./Logger"
+import {FMPLogger} from "../Logger"
 const sqlite3=require("better-sqlite3")
 /**
  * SQL数据类型枚举。  

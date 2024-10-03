@@ -19,6 +19,9 @@ export class FMPPlayer{
         this.location=location;
         this.gameMode=gameMode
     }
+    get uuid():string{
+        return ""
+    }
     /** 获取玩家在游戏世界中的朝向 */
     get direction():FMPEulerAngles{
         return FMPEulerAngles.new(0,0,0)

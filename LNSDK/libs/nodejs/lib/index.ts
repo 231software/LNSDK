@@ -51,6 +51,11 @@ export {
     FMPSQLDataType as SQLDataType,
     FMPSQLDBDataType as SQLDBDataType,
     FMPSQLComparisonOperators as SQLComparisonOperators
-} from "./SQLite3.js"
+} from "./Features/SQLite3.js"
 export {TwoWayMap} from "./Tools.js"
+export {
+    HTTPMethod,
+    HTTPRequest,
+    HTTPIncomingMessage
+} from "./http.js"
 export {ScriptDone} from "./Events/Process.js"
