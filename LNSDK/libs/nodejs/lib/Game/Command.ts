@@ -1,6 +1,7 @@
-import { FMP, FMPLogger } from "../Logger";
+import {FMPLogger } from "../Logger";
 import { FMPInternalPermission } from "./InternalPermission";
 import * as readline from "readline";
+export const onStopContainer={onStop:()=>{}}
 export enum FMPCommandParamType{
     Optional=1,
     Mandatory
@@ -199,7 +200,11 @@ export async function commandReactor(){
     // 处理退出命令
     function handleStopCommand(answer: string): boolean {
         if (answer === "stop") {
+            //标记停服标志，以便后续停止
             stop = true;
+            //执行关服触发
+            onStopContainer.onStop()
+            //关闭命令行的输入流
             rl.close();
             return true;  // 提前返回，避免继续处理
         }
