@@ -126,3 +126,27 @@ export class RegionRectangle{
         return false;
     }
 }
+
+export function FMPBubbleSort(listin:number[]):number[]{
+    let l=listin
+    let low=0
+    let high=l.length-1
+    while(low<high){
+        for(let i=low;i<high;i++){
+            if(l[i]>l[i+1]){
+                let tmp=l[i]
+                l[i]=l[i+1]
+                l[i+1]=tmp
+            }
+        }
+        high--
+        for(let i=high-1;i>=low;i--){
+            if(l[i]<l[i+1]){
+                let tmp=l[i]
+                l[i]=l[i+1]
+                l[i+1]=tmp
+            }
+        }
+    }
+    return l;
+}
