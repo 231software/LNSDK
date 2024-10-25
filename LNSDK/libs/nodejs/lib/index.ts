@@ -43,15 +43,29 @@ export {
     FMPModalForm as ModalForm,
     FMPModalFormSession as ModalFormSession
 } from "./Form.js"
-export {FMPInitEvent as InitEvent} from "./Events/Process.js"
+export {
+    FMPInitEvent as InitEvent,
+    FMPDisableEvent as DisableEvent
+} from "./Events/Process.js"
 export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
+
+//features
 export {
     FMPSQLite3 as SQLite3,
     FMPSQLDataTypeEnum as SQLDataTypeEnum,
     FMPSQLDataType as SQLDataType,
     FMPSQLDBDataType as SQLDBDataType,
-    FMPSQLComparisonOperators as SQLComparisonOperators
+    FMPSQLComparisonOperators as SQLComparisonOperators,
+    FMPSQLSingleArrayTable as SQLSingleArrayTable
 } from "./Features/SQLite3.js"
+export {
+    YMLFile
+} from "./Features/YMLFile.js"
+export {
+    FMPWS as WebSocket,
+    OneBot
+} from "./Features/WebSocket.js"
+
 export {TwoWayMap} from "./Tools.js"
 export {
     HTTPMethod,

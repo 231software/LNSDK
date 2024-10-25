@@ -50,7 +50,10 @@ export {
     FMPModalForm as ModalForm,
     FMPModalFormSession as ModalFormSession
 } from "./Form.js"
-export {FMPInitEvent as InitEvent} from "./Events/Process.js"
+export {
+    FMPInitEvent as InitEvent,
+    FMPDisableEvent as DisableEvent
+} from "./Events/Process.js"
 export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
 export {
     FMPSQLite3 as SQLite3,
@@ -66,4 +69,9 @@ export {
     FMPCurrency as Currency
 } from "./Game/Economy.js"
 export {TwoWayMap} from "./Tools.js"
+export {
+    HTTPMethod,
+    HTTPRequest,
+    HTTPIncomingMessage
+} from "./http.js"
 export {ScriptDone} from "./Events/Process.js"
