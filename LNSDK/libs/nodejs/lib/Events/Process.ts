@@ -5,6 +5,7 @@ import { FMPPlayerJoinEvent, playerJoinEventHandler } from "./Player"
 import { FMPGameMode, FMPPlayer } from "../Game/Player"
 import { FMPLocation } from "../Game/Location"
 import { FMPDefaultDimension, FMPDimension } from "../Game/Dimension"
+import { onStopContainer } from "../Game/Command"
 export let ScriptDone=():boolean|void=>{}
 export let status:boolean=false
 export let player:FMPPlayer;
@@ -17,10 +18,24 @@ export class FMPInitEvent{
             callback(new FMPInitEvent())
             FMPCommand.register(new PlayerCmd())
             FMPCommand.register(new SudoCmd())
-            if(CommandList.size>0)commandReactor();
+            if(CommandList.size>2)commandReactor();
         }
     }
 }
+
+
+export class FMPDisableEvent{
+    constructor(){
+
+    }
+    static on(callback:(event:FMPDisableEvent)=>boolean|void){
+        onStopContainer.onStop=()=>{
+            callback(new FMPDisableEvent())
+        }
+    }
+}
+
+
 class PlayerCmd extends FMPCommand{
     constructor(){
         super("player","","",[

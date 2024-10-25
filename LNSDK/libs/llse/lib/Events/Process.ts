@@ -9,3 +9,10 @@ export class FMPInitEvent{
         });
     }
 }
+export class FMPDisableEvent{
+    constructor(){
+
+    }
+    static on(callback:(event:FMPDisableEvent)=>boolean|void){
+    }
+}
