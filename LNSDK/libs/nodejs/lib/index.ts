@@ -7,6 +7,11 @@ export {
 export { FMPPlayer as Player,FMPGameMode as GameMode} from "./Game/Player.js";
 export { FMPEntity as Entity,FMPDamageCause as DamageCause} from "./Game/Entity.js";
 export {
+    FMPItem as Item,
+    FMPSlot as Slot,
+    FMPToolItem
+} from "./Game/Item.js"
+export {
     FMPLocation as Location,
     FMPEulerAngles as EulerAngles
 } from "./Game/Location.js";
@@ -49,24 +54,26 @@ export {
 } from "./Events/Process.js"
 export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
 
-//features
-export {
-    FMPSQLite3 as SQLite3,
-    FMPSQLDataTypeEnum as SQLDataTypeEnum,
-    FMPSQLDataType as SQLDataType,
-    FMPSQLDBDataType as SQLDBDataType,
-    FMPSQLComparisonOperators as SQLComparisonOperators,
-    FMPSQLSingleArrayTable as SQLSingleArrayTable
-} from "./Features/SQLite3.js"
-export {
-    YMLFile
-} from "./Features/YMLFile.js"
-export {
-    FMPWS as WebSocket,
+export{
+    SQLite3,
+    SQLDataTypeEnum,
+    SQLDataType,
+    SQLDBDataType,
+    SQLComparisonOperators,
+    SQLSingleArrayTable,
+    YMLFile,
+    WebSocket,
     OneBot
-} from "./Features/WebSocket.js"
+} from "./FeaturesIndex.js"
 
-export {TwoWayMap} from "./Tools.js"
+
+export {
+    FMPCurrency as Currency
+} from "./Game/Economy.js"
+export {
+    TwoWayMap,
+    newUUID4
+} from "./Tools.js"
 export {
     HTTPMethod,
     HTTPRequest,

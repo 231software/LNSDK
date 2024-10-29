@@ -1,5 +1,7 @@
 import { FMPLogger } from "../Logger";
 import { FMPEulerAngles, FMPLocation } from "./Location";
+import {FMPInternalPermission} from "../Game/InternalPermission"
+import {FMPItem} from "../Game/Item.js"
 
 export enum FMPGameMode{
     Survival=0,
@@ -25,6 +27,18 @@ export class FMPPlayer{
     /** 获取玩家在游戏世界中的朝向 */
     get direction():FMPEulerAngles{
         return FMPEulerAngles.new(0,0,0)
+    }
+    /**玩家对于游戏内置权限的权限等级 */
+    get internalPermission():FMPInternalPermission{
+        return FMPInternalPermission.Any;
+    }
+    /**
+     * 给予玩家一个物品
+     * @param item 要给予玩家的物品
+     * @returns 是否成功给予玩家
+     */
+    giveItem(item:FMPItem):boolean{
+        return false
     }
     /**
      * 在游戏内向玩家发送一条消息，没有任何前缀

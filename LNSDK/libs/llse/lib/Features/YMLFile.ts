@@ -1,6 +1,6 @@
 import {FMPFile} from "../File.js"
 import { FMPLogger } from "../Logger.js";
-import * as YML from "yaml"
+import * as YML from "js-yaml"
 
 export class XMLFile{
 
@@ -23,7 +23,7 @@ export class YMLFile{
         if(FMPFile.read(path).length==0)FMPFile.forceWrite(path,"{}");
         this.path=path;
         this.objpath=objpath
-        this.rootobj=YML.parse(FMPFile.read(path));
+        this.rootobj=YML.load(FMPFile.read(path));
         if(objpath.length!=0){
             const checkObjAvailable=(checkPath:any,index:number)=>{
                 if(index>objpath.length-1){return;}
@@ -109,7 +109,7 @@ export class YMLFile{
         function setRoot(key:string,value:any):boolean{
             //注意，这个函数里面没有this，所有的this的属性都要传进来才能用
             rootobj[key]=value
-            FMPFile.forceWrite(path,YML.stringify(rootobj));
+            FMPFile.forceWrite(path,YML.dump(rootobj));
             return true;
         }
         function setValue(obj:any,index:number,value:any){
@@ -143,7 +143,7 @@ export class YMLFile{
         let path=this.path;
         if(this.objpath.length==0){
             delete rootobj[key]
-            FMPFile.forceWrite(path,YML.stringify(rootobj));
+            FMPFile.forceWrite(path,YML.dump(rootobj));
             return true;
         }
         else{
@@ -152,7 +152,7 @@ export class YMLFile{
         function setRoot(key:string,value:any):boolean{
             //注意，这个函数里面没有this，所有的this的属性都要传进来才能用
             rootobj[key]=value
-            FMPFile.forceWrite(path,YML.stringify(rootobj));
+            FMPFile.forceWrite(path,YML.dump(rootobj));
             return true;
         }
         function deleteValue(obj:any,index:number){
@@ -176,7 +176,7 @@ export class YMLFile{
     }
     reloadroot():boolean{
         this.fileContent=FMPFile.read(this.path)
-        this.rootobj=YML.parse(this.fileContent);
+        this.rootobj=YML.load(this.fileContent);
         return true;
         //this.keys=this.getAllKeys(this.rootobj);
     }

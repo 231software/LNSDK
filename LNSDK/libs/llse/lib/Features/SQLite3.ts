@@ -1,4 +1,6 @@
-const sqlite3=require("better-sqlite3")
+import { Directory } from ".."
+import { FMPFile } from "../File"
+import { FMPLogger } from "../Logger"
 /**
  * SQL数据类型枚举。  
  * 注释来自[菜鸟教程](https://www.runoob.com/sql/sql-datatypes-general.html)
@@ -107,14 +109,61 @@ export enum FMPSQLComparisonOperators{
     /**!< */
     NotLess
 }
+
+interface FMPSQLite3Constraint{
+    /**确保列不能有 NULL 值。 */
+    not_null?:boolean,
+    /**确保列中的所有值都是唯一的。 */
+    unique?:boolean,
+    /**唯一标识表中的每一行记录。PRIMARY KEY 约束是 NOT NULL 和 UNIQUE 的结合。 */
+    primary_key?:boolean
+    /**确保列中的值满足特定的条件。 */
+    check?:{
+        left:string,
+        operator:FMPSQLComparisonOperators,
+        right:string,
+    },
+    /**为列设置默认值。 */
+    default?:string
+}
+
+interface FMPSQLite3ConstraintForignKey{
+    /**外键指向的列所在的表   */
+    table:string,
+    /**外键指向的列名 */
+    column:string
+}
+
+interface FMPSQLite3Column{
+    /**列名 */
+    name:string,
+    /**列的数据类型 */
+    data_type:FMPSQLDataType,
+    /**无需向该列赋值，该列的值会自动增加，可作为每条数据的uid */
+    auto_increment?:boolean,
+    /**外键约束 */
+    forign_key?:FMPSQLite3ConstraintForignKey,
+    /**约束，要创建外键约束请传入forign_key参数 */
+    constraint?:FMPSQLite3Constraint
+}
+
 export class FMPSQLite3{
-    rawdbsession:any;
+    rawdbsession:DBSession;
     /**
      * **创建数据库部分暂不支持异步**
      * @param path 数据库路径
      */
     constructor(path:string){
-        this.rawdbsession=new sqlite3(path)
+        //llse的数据库不会自动新建文件夹，所以这里需要手动新建
+        const dbdir=new Directory(path)
+        dbdir.folders.pop()
+        FMPFile.initDir(dbdir.toString())
+        this.rawdbsession=new DBSession("sqlite3",{
+            path,
+            create:true,
+            readonly:false,
+            readwrite:true
+        })
     }
     /**
      * 同步预准备执行SQL语句  
@@ -125,7 +174,9 @@ export class FMPSQLite3{
      * @param params 预准备语句要绑定的参数
      */
     runSync(SQLstring:string,...params:any[]){
-        this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).run(...params))()
+        const stmt=this.rawdbsession.prepare(SQLstring)
+        stmt.bind(params)
+        stmt.execute()
     };
     /**
      * 同步预准备执行SQL语句  
@@ -137,10 +188,26 @@ export class FMPSQLite3{
      * @returns 执行结果
      */
     queryAllSync(SQLstring:string,...params:any[]):any[]{
-        return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...params))();
+        const stmt=this.rawdbsession.prepare(SQLstring)
+        stmt.bind(params)
+        stmt.execute()
+        const LLSEstmtResult=stmt.fetchAll()
+        const result:any[]=[]
+        //第二行开始为值
+        for(let rowIndex=1;rowIndex<LLSEstmtResult.length;rowIndex++){
+            const currentRow:any={}
+            for(let columnIndex in LLSEstmtResult[0]){
+                //第一行为列名，作为键
+                const key=LLSEstmtResult[0][columnIndex]
+                const value=LLSEstmtResult[rowIndex][columnIndex]
+                currentRow[key]=value
+            }
+            result.push(currentRow)
+        }
+        return result
     }
     close(){
-        this.rawdbsession.close();
+        FMPLogger.info(this.rawdbsession.close());
     }
     /**
      * 
@@ -158,31 +225,13 @@ export class FMPSQLite3{
      * > - check：确保列中的值满足特定的条件。
      * > - default：为列设置默认值。
      */
-    initTable(name:string,...columns:{
-        name:string,
-        data_type?:FMPSQLDataType,
-        forign_key?:{
-            table:string,
-            column:string
-        },
-        constraint?:{
-            not_null?:boolean,
-            unique?:boolean,
-            primary_key?:boolean
-            check?:{
-                left:string,
-                operator:FMPSQLComparisonOperators,
-                right:string,
-            },
-            default?:string
-        }
-    }[]){
+    initTable(name:string,...columns:FMPSQLite3Column[]){
         const columnsStatements:string[]=[]
         const forign_keyStatements:string[]=[]
         for(let column of columns){
             if(column.forign_key==undefined){
                 let columnStatement="";
-                columnStatement=columnStatement+column.name
+                columnStatement=columnStatement+"\""+column.name+"\""
                 if(column.data_type!=undefined)columnStatement=columnStatement+" "+column.data_type.toStatement()
                 if(column.constraint?.not_null)columnStatement=columnStatement+" NOT NULL"
                 if(column.constraint?.unique)columnStatement=columnStatement+" UNIQUE"
@@ -204,7 +253,11 @@ export class FMPSQLite3{
         function toFMPSQLite3Type(type:string):FMPSQLDataTypeEnum{
             switch(type){
                 case "INTEGER":return FMPSQLDataTypeEnum.INTEGER
-                default:throw new Error("请为getColumns方法的toFMPSQlite3Type函数完善"+type+"映射")
+                case "REAL":return FMPSQLDataTypeEnum.REAL
+                case "TEXT":return FMPSQLDataTypeEnum.TEXT
+                case "BIGINT":return FMPSQLDataTypeEnum.BIGINT
+                case "DATE":return FMPSQLDataTypeEnum.DATE
+                default:throw new SyntaxError("请为getColumns方法的toFMPSQlite3Type函数完善"+type+"映射")
             }
         }
         const columnsInfo:{
@@ -280,5 +333,162 @@ export class FMPSQLite3{
             result.set(columnName,rawResult[columnName])
         }
         return result
+    }
+}
+export class FMPSQLSingleArrayTable{
+    session:FMPSQLite3
+    table:string
+    /**
+     * 初始化一个单数组表  
+     * 通过一个外键创建一个表，随后可以以数组的形式直接收集获取该表中的数据
+     * @param tableName 表名
+     * @param bindTable 绑定到的主表名
+     * @param bindColumn 绑定到的主表上的列的名
+     * @param dataColumns 该表中用于存储数据的列的配置信息
+     */
+    constructor(session:FMPSQLite3,table:string,bindTable:string,bindColumn:string,bindColumnDataType:FMPSQLDataType,...dataColumns:FMPSQLite3Column[]){
+        this.session=session
+        this.table=table
+        let bindColumnFound=false
+        session.getColumns(bindTable).forEach((currentValue)=>{
+            if(currentValue.name==bindColumn)bindColumnFound=true
+        })
+        if(!bindColumnFound)throw new SyntaxError("在"+bindTable+"中未找到需要绑定的列"+bindColumn)
+            session.initTable(table,{
+            name:"FMPSQLite3SingleArrayTableIndexColumn",
+            data_type:new FMPSQLDataType(FMPSQLDataTypeEnum.INTEGER),
+            auto_increment:true,
+            constraint:{
+                primary_key:true
+            }
+        },{
+            name:"FMPSQLite3SingleArrayTableForignKeyColumn",
+            data_type:bindColumnDataType,
+            forign_key:{
+                table:bindTable,
+                column:bindColumn
+            },
+            constraint:{
+                not_null:true
+            }
+        },{
+            name:"FMPSQLite3SingleArrayTableArrayIndexColumn",
+            data_type:new FMPSQLDataType(FMPSQLDataTypeEnum.REAL),
+            constraint:{
+                not_null:true
+            }
+        },...dataColumns)
+
+    }
+    get(bindedColumnValue:any){
+        //对原始返回的数据进行排序
+        return this.session
+            .queryAllSync(`SELECT * FROM ${this.table} WHERE FMPSQLite3SingleArrayTableForignKeyColumn=?`,bindedColumnValue)
+            .sort(
+                (a,b)=>
+                    a.FMPSQLite3SingleArrayTableArrayIndexColumn-
+                    b.FMPSQLite3SingleArrayTableArrayIndexColumn
+            )
+    }
+    push(bindedColumnValue:any,...values:{columnName:string,value:any}[][]){
+        const currentValue=this.get(bindedColumnValue)
+        if(values.length==0)return currentValue.length
+        const firstData=values.shift();
+        if(firstData==undefined)throw new SyntaxError("firstData意外地为undefined类型，请向开发者反馈")
+        this.session.setRow(this.table,{
+            columnName:"FMPSQLite3SingleArrayTableForignKeyColumn",
+            value:bindedColumnValue
+        },{
+            columnName:"FMPSQLite3SingleArrayTableArrayIndexColumn",
+            //currentValue可能为空
+            value:currentValue.length!=0?currentValue[currentValue.length-1].FMPSQLite3SingleArrayTableArrayIndexColumn+16:16
+            //数列，除以二减一后是整数，再除以二后减一后还是整数，
+            //1，3，5，7，9，11，13，15，17，19
+            //1，5，9，13，17，21，25
+            //1，9，17，25
+            //1，17
+        },...firstData)
+        return this.push(bindedColumnValue,...values)
+    }
+    shift(bindedColumnValue:any){
+        const currentValue=this.get(bindedColumnValue)
+        if(currentValue.length==0)return undefined
+        const firstIndex=currentValue[0].FMPSQLite3SingleArrayTableArrayIndexColumn
+        this.session.runSync(`DELETE FROM ${this.table} WHERE FMPSQLite3SingleArrayTableForignKeyColumn=? AND FMPSQLite3SingleArrayTableArrayIndexColumn=?`,bindedColumnValue,firstIndex)
+        return currentValue[0]
+    }
+    insert(bindedColumnValue:any,position:number,...values:{columnName:string,value:any}[][]){
+        //insert要能插入多个数据，所以values需要是一个二维数组，外层数组代表每一条数据，因为每一条数据本身都是一个数组，数组套着数组
+        if(values.length==0)return;
+        const firstData=values.shift();
+        if(firstData==undefined)throw new SyntaxError("firstData意外地为undefined类型，请向开发者反馈")
+        const currentValue=this.get(bindedColumnValue)
+        if(position==0){
+            this.unshift(bindedColumnValue,firstData)
+        }
+        else if(position>=currentValue.length){
+            this.push(bindedColumnValue,firstData)
+        }
+        //长度等于1时，如果position等于0，证明从第一位开始插入，等效unshift，而如果大于等于1证明从第二位没有东西的位置开始插入，等效push
+        else{
+            const oldIndexAtPosition=currentValue[position].FMPSQLite3SingleArrayTableArrayIndexColumn
+            const oldIndexPreviousPosition=currentValue[position-1].FMPSQLite3SingleArrayTableArrayIndexColumn
+            const newIndex=(oldIndexAtPosition+oldIndexPreviousPosition)/2
+            this.session.setRow(this.table,{
+                columnName:"FMPSQLite3SingleArrayTableForignKeyColumn",
+                value:bindedColumnValue
+            },{
+                columnName:"FMPSQLite3SingleArrayTableArrayIndexColumn",
+                value:newIndex
+            },...firstData)
+        }
+        //继续用递归插入剩余数据
+        this.insert(bindedColumnValue,position+1,...values)
+    }
+    unshift(bindedColumnValue:any,...values:{columnName:string,value:any}[][]){
+        //第一位索引虽然是无限趋近于0，但本程序的限制使第一位索引永远无法直接等于0，所以unshift只需要把0和第一位索引的平均值作为新索引即可
+        if(values.length==0)return;
+        const firstData=values.shift();
+        if(firstData==undefined)throw new SyntaxError("firstData意外地为undefined类型，请向开发者反馈")
+        const currentValue=this.get(bindedColumnValue)
+        const newIndex=currentValue.length==0?16:(0+currentValue[0].FMPSQLite3SingleArrayTableArrayIndexColumn)/2
+        this.session.setRow(this.table,{
+            columnName:"FMPSQLite3SingleArrayTableForignKeyColumn",
+            value:bindedColumnValue
+        },{
+            columnName:"FMPSQLite3SingleArrayTableArrayIndexColumn",
+            //currentValue可能为空
+            value:newIndex
+        },...firstData)
+        //递归地添加后面的值
+        this.unshift(bindedColumnValue,...values)
+    }
+    pop(bindedColumnValue:any){
+        const currentValue=this.get(bindedColumnValue)
+        if(currentValue.length==0)return undefined
+        this.session.runSync(`DELETE FROM ${this.table} WHERE FMPSQLite3SingleArrayTableForignKeyColumn=? AND FMPSQLite3SingleArrayTableArrayIndexColumn=?`,bindedColumnValue,currentValue[currentValue.length-1].FMPSQLite3SingleArrayTableArrayIndexColumn)
+        return currentValue[currentValue.length-1]
+    }
+    splice(bindedColumnValue:any,position:number,howmany?:number,...values:{columnName:string,value:any}[][]){
+        //splice需要先删除元素，再调用一次insert将新元素添加进去
+        const currentValue=this.get(bindedColumnValue)
+        //等于undefined时删除从position开始到最后的所有元素
+        if(howmany==undefined){
+            for(let indexOfDeleting=position;indexOfDeleting<position+currentValue.length;indexOfDeleting++){
+                //如果要删除的位置已经超出数组边界了，就可以不继续，直接break了
+                if(indexOfDeleting>currentValue.length-1)break;
+                this.session.runSync(`DELETE FROM ${this.table} WHERE FMPSQLite3SingleArrayTableForignKeyColumn=? AND FMPSQLite3SingleArrayTableArrayIndexColumn=?`,bindedColumnValue,currentValue[indexOfDeleting].FMPSQLite3SingleArrayTableArrayIndexColumn)
+            }
+        }
+        //等于0时证明不需要删除任何元素，跳过并什么也不做
+        else if(howmany!=0){        
+            for(let indexOfDeleting=position;indexOfDeleting<position+howmany;indexOfDeleting++){
+                //如果要删除的位置已经超出数组边界了，就可以不继续，直接break了
+                if(indexOfDeleting>currentValue.length-1)break;
+                this.session.runSync(`DELETE FROM ${this.table} WHERE FMPSQLite3SingleArrayTableForignKeyColumn=? AND FMPSQLite3SingleArrayTableArrayIndexColumn=?`,bindedColumnValue,currentValue[indexOfDeleting].FMPSQLite3SingleArrayTableArrayIndexColumn)
+            }
+        }
+        //删除完毕后，再调用insert方法添加元素
+        this.insert(bindedColumnValue,position,...values)
     }
 }

@@ -86,7 +86,7 @@ export class FMPPlayer{
     }
     /**玩家对于游戏内置权限的权限等级 */
     get internalPermission():FMPInternalPermission{
-        return FMPInternalPermission.Any
+        return this.rawplayer.isOP()?FMPInternalPermission.GameMasters:FMPInternalPermission.Admin
     }
     get isSneaking():boolean{
         return this.rawplayer.isSneaking;

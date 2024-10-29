@@ -417,7 +417,6 @@ export class FMPSQLSingleArrayTable{
         const currentValue=this.get(bindedColumnValue)
         if(position==0){
             this.unshift(bindedColumnValue,firstData)
-            FMPLogger.error("position等于0时等效于unshift，unshift未完成")
         }
         else if(position>=currentValue.length){
             this.push(bindedColumnValue,firstData)
