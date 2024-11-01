@@ -1,6 +1,6 @@
 import { callbackify } from "util";
 import {FMPPlayer} from "./Game/Player.js";
-import { SimpleFormSession } from "./index.js";
+import { Logger, SimpleFormSession } from "./index.js";
 import {FMPLogger} from "./Logger.js"
 
 /**
@@ -160,7 +160,7 @@ export enum FMPSimpleFormButtonType{
     MultiTask
 }
 export class FMPSimpleFormSession extends FMPFormSession{
-    form:FMPSimpleForm
+    declare form:FMPSimpleForm
     /**
      * 
      * @param form 当前会话对应的表单
@@ -264,23 +264,55 @@ export class FMPCustomForm extends FMPForm{
                 resultSubmitted.push(new FMPCustomFormLabel(element.name,element.title))
             }
             if(element instanceof FMPCustomFormInput){
-                rawForm.addInput(element.title,element.placeholder,element.defaultValue)                
+                //如果placeholder为undefined，就传入空字符串
+                const placeholder=element.placeholder!=undefined?element.placeholder:""
+                //LLSE不支持通过undefined识别参数重载，所以只能手动写上所有重载
+                if(element.defaultValue==undefined){
+                    rawForm.addInput(element.title,placeholder)
+                }
+                else{
+                    rawForm.addInput(element.title,placeholder,element.defaultValue)
+                }               
                 resultSubmitted.push(new FMPCustomFormInput(element.name,element.title,element.placeholder,element.defaultValue))
             }
             if(element instanceof FMPCustomFormDropdown){
-                rawForm.addDropdown(element.title,element.items,element.defaultValue)
+                if(element.defaultValue==undefined){
+                    rawForm.addDropdown(element.title,element.items)
+                }
+                else{
+                    rawForm.addDropdown(element.title,element.items,element.defaultValue)
+                }
                 resultSubmitted.push(new FMPCustomFormDropdown(element.name,element.title,element.items,element.defaultValue))
             }
             if(element instanceof FMPCustomFormSwitch){
-                rawForm.addSwitch(element.title,element.defaultValue)
+                if(element.defaultValue==undefined){
+                    rawForm.addSwitch(element.title)
+                }
+                else{
+                    rawForm.addSwitch(element.title,element.defaultValue)
+                }
+                
                 resultSubmitted.push(new FMPCustomFormSwitch(element.name,element.title,element.defaultValue))
             }
             if(element instanceof FMPCustomFormSlider){
-                rawForm.addSlider(element.title,element.min,element.max,element.step,element.defaultValue)
+                //step忘加上可以为undefined了，后面加上
+                const step=element.step!=undefined?element.step:1
+                if(element.defaultValue==undefined){
+                    rawForm.addSlider(element.title,element.min,element.max,step)
+                }else{
+                    rawForm.addSlider(element.title,element.min,element.max,step,element.defaultValue)
+                }
+                
                 resultSubmitted.push(new FMPCustomFormSlider(element.name,element.title,element.min,element.max,element.step,element.defaultValue))
             }
             if(element instanceof FMPCustomFormStepSlider){
-                rawForm.addStepSlider(element.title,element.items,element.defaultValue)
+                if(element.defaultValue==undefined){
+                    rawForm.addStepSlider(element.title,element.items)
+                }
+                else{
+                    rawForm.addStepSlider(element.title,element.items,element.defaultValue)
+                }
+                
                 resultSubmitted.push(new FMPCustomFormStepSlider(element.name,element.title,element.items,element.defaultValue))
             }
         }
@@ -317,7 +349,7 @@ export class FMPCustomForm extends FMPForm{
 }
 /**和简单表单一样，自定义表单也需要一个会话才能发送 */
 export class FMPCustomFormSession extends FMPFormSession{
-    form:FMPCustomForm
+    declare form:FMPCustomForm
     /**
      * 
      * @param form 当前表单会话绑定的对象绑定的表单
@@ -375,7 +407,7 @@ export class FMPCustomFormElements{
 export class FMPCustomFormInput extends FMPCustomFormElements{
     placeholder:string|undefined
     defaultValue:string|undefined
-    value:string
+    declare value:string
     constructor(name:string,title:string,placeholder?:string,defaultValue?:string){
         super(name,title);
         this.placeholder=placeholder
@@ -389,7 +421,7 @@ export class FMPCustomFormLabel extends FMPCustomFormElements{
 }
 export class FMPCustomFormSwitch extends FMPCustomFormElements{
     defaultValue:boolean|undefined
-    value:boolean
+    declare value:boolean
     constructor(name:string,title:string,defaultValue?:boolean){
         super(name,title)
         this.defaultValue=defaultValue
@@ -398,7 +430,7 @@ export class FMPCustomFormSwitch extends FMPCustomFormElements{
 export class FMPCustomFormDropdown extends FMPCustomFormElements{
     defaultValue:number|undefined
     items:string[]
-    value:number
+    declare value:number
     constructor(name:string,title:string,items:string[],defaultValue?:number){
         super(name,title)
         this.items=items
@@ -410,7 +442,7 @@ export class FMPCustomFormSlider extends FMPCustomFormElements{
     min:number
     max:number
     step:number
-    value:number
+    declare value:number
     constructor(name:string,title:string,min:number,max:number,step:number=1,defaultValue?:number){
         super(name,title)
         this.min=min
@@ -422,7 +454,7 @@ export class FMPCustomFormSlider extends FMPCustomFormElements{
 export class FMPCustomFormStepSlider extends FMPCustomFormElements{
     defaultValue:number|undefined
     items:string[]
-    value:number
+    declare value:number
     constructor(name:string,title:string,items:string[],defaultValue?:number){
         super(name,title)
         this.items=items
@@ -486,7 +518,7 @@ export class FMPModalForm extends FMPForm{
     onConfirm:(session:FMPModalFormSession)=>void
     backOnConfirm:boolean
     confirmButtonText:string
-    onCancel:(sessin:FMPModalFormSession)=>void
+    onCancel:(session:FMPModalFormSession)=>void
     backOnCancel:boolean
     cancelButtonText:string
     constructor(
@@ -508,11 +540,30 @@ export class FMPModalForm extends FMPForm{
         this.onCancel=onCancel
     }
     send(session:FMPModalFormSession):boolean{
-        return false
+        session.player.rawplayer.sendModalForm(
+            this.title,
+            this.content,
+            this.confirmButtonText,
+            this.cancelButtonText,
+            (player,result)=>{
+                //返回上级的逻辑在会话里已经处理过，这里只需要和原表单对接即可
+                if(result==true){
+                    this.onConfirm(session)
+                }
+                else{
+                    this.onCancel(session)
+                }
+            }
+        )
+        return true
     }
 }
+
+/**
+ * 这个表单会话写的非常乱，不能借鉴
+ */
 export class FMPModalFormSession extends FMPFormSession{
-    form:FMPModalForm
+    declare form:FMPModalForm
     constructor(form:FMPModalForm,lastSessionOrPlayer:FMPSimpleFormSession|FMPCustomFormSession|FMPModalFormSession|FMPPlayer){
         //传入了会话，证明可以进行返回上级表单
         if(FMPFormSession.isSession(lastSessionOrPlayer)){

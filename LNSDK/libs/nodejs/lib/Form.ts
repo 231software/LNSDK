@@ -147,7 +147,7 @@ export enum FMPSimpleFormButtonType{
 }
 
 export class FMPSimpleFormSession extends FMPFormSession{
-    form:FMPSimpleForm
+    declare form:FMPSimpleForm
     /**
      * 
      * @param form 当前会话对应的表单
@@ -235,7 +235,7 @@ export class FMPCustomForm extends FMPForm{
 }
 /**和简单表单一样，自定义表单也需要一个会话才能发送 */
 export class FMPCustomFormSession extends FMPFormSession{
-    form:FMPCustomForm
+    declare form:FMPCustomForm
     /**
      * 
      * @param form 当前表单会话绑定的对象绑定的表单
@@ -293,7 +293,7 @@ export class FMPCustomFormElements{
 export class FMPCustomFormInput extends FMPCustomFormElements{
     placeholder:string|undefined
     defaultValue:string|undefined
-    value:string
+    declare value:string
     constructor(name:string,title:string,placeholder?:string,defaultValue?:string){
         super(name,title);
         this.placeholder=placeholder
@@ -307,7 +307,7 @@ export class FMPCustomFormLabel extends FMPCustomFormElements{
 }
 export class FMPCustomFormSwitch extends FMPCustomFormElements{
     defaultValue:boolean|undefined
-    value:boolean
+    declare value:boolean
     constructor(name:string,title:string,defaultValue?:boolean){
         super(name,title)
         this.defaultValue=defaultValue
@@ -316,7 +316,7 @@ export class FMPCustomFormSwitch extends FMPCustomFormElements{
 export class FMPCustomFormDropdown extends FMPCustomFormElements{
     defaultValue:number|undefined
     items:string[]
-    value:number
+    declare value:number
     constructor(name:string,title:string,items:string[],defaultValue?:number){
         super(name,title)
         this.items=items
@@ -328,7 +328,7 @@ export class FMPCustomFormSlider extends FMPCustomFormElements{
     min:number
     max:number
     step:number
-    value:number
+    declare value:number
     constructor(name:string,title:string,min:number,max:number,step:number=1,defaultValue?:number){
         super(name,title)
         this.min=min
@@ -340,7 +340,7 @@ export class FMPCustomFormSlider extends FMPCustomFormElements{
 export class FMPCustomFormStepSlider extends FMPCustomFormElements{
     defaultValue:number|undefined
     items:string[]
-    value:number
+    declare value:number
     constructor(name:string,title:string,items:string[],defaultValue?:number){
         super(name,title)
         this.items=items
@@ -430,7 +430,7 @@ export class FMPModalForm extends FMPForm{
     }
 }
 export class FMPModalFormSession extends FMPFormSession{
-    form:FMPModalForm
+    declare form:FMPModalForm
     constructor(form:FMPModalForm,lastSessionOrPlayer:FMPSimpleFormSession|FMPCustomFormSession|FMPModalFormSession|FMPPlayer){
         //传入了会话，证明可以进行返回上级表单
         if(FMPFormSession.isSession(lastSessionOrPlayer)){

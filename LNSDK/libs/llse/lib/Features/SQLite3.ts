@@ -1,4 +1,4 @@
-import { Directory } from ".."
+import { Directory, Logger } from ".."
 import { FMPFile } from "../File"
 import { FMPLogger } from "../Logger"
 /**
@@ -185,14 +185,18 @@ export class FMPSQLite3{
      * @param SQLstring SQL语句
      * @param params 预准备语句要绑定的参数  
      * better-sqlite3: `SQLite3 can only bind numbers, strings, bigints, buffers, and null`
-     * @returns 执行结果
+     * @returns 执行结果，每个元素代表一行，每一行用一个对象承载其中的值，格式为 列名：值
      */
     queryAllSync(SQLstring:string,...params:any[]):any[]{
+        /**最终返回的结果 */
+        const result:any[]=[]
         const stmt=this.rawdbsession.prepare(SQLstring)
         stmt.bind(params)
         stmt.execute()
-        const LLSEstmtResult=stmt.fetchAll()
-        const result:any[]=[]
+        //LLSE的fetchAll方法在空表的时候会返回undefined，虽然aids没有写这个情况
+        const LLSEstmtResult:any[][]|undefined=stmt.fetchAll()
+        //发现fetchAll为undefined时提前将空的result返回，避免后面再访问undefined
+        if(LLSEstmtResult==undefined)return result
         //第二行开始为值
         for(let rowIndex=1;rowIndex<LLSEstmtResult.length;rowIndex++){
             const currentRow:any={}
@@ -318,6 +322,30 @@ export class FMPSQLite3{
         //执行语句
         this.runSync(statement,...all_parameters)
         
+    }
+    setRowFromPrimaryKey(tableName:string,primaryKeyValue:any,...values:{
+        columnName:string,
+        value:any
+    }[]){
+        const columns=this.getColumns(tableName)
+        let primaryKeyColumnName=""
+        let valuesOrder:any[]=[]
+        for(let value of values){
+            let columnIndex=0
+            //找到当前值对应的列
+            for(let i in columns){
+                if(columns[i].primary_key)primaryKeyColumnName=columns[i].name
+                if(columns[i].name==value.columnName){
+                    columnIndex=Number(i)
+                    break;
+                }
+            }
+            valuesOrder[columnIndex]=value.value
+        }
+        this.setRow(tableName,{
+            columnName:primaryKeyColumnName,
+            value:primaryKeyValue
+        },...values)
     }
     getRowFromPrimaryKey(tableName:string,value:any):Map<string,any>{
         let primary_key_name=""

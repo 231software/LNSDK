@@ -114,4 +114,74 @@ export class FMPPlayer{
     toll2Player():Player{
         return mc.getPlayer(this.xuid)
     }
+    /**
+     * 调用加载器或插件内数据库通过玩家名查询其UUID
+     * @param name 玩家游戏名
+     * @returns 玩家UUID
+     */
+    static name2uuid(name:string):string|undefined{
+        const rawResult=data.name2uuid(name)
+        if(rawResult==null)return undefined
+        else return rawResult
+    }
+    /**
+     * 调用加载器或插件内数据库通过玩家XUID查询其UUID
+     * @param xuid 玩家XUID
+     * @returns 玩家UUID
+     */
+    static xuid2uuid(xuid:string):string|undefined{
+        const rawResult=data.xuid2uuid(xuid)
+        if(rawResult==null)return undefined
+        else return rawResult
+    }
+    /**
+     * 调用加载器或插件内数据库通过玩家UUID查询玩家名
+     * @param uuid 玩家UUID
+     * @returns 玩家名
+     */
+    static uuid2name(uuid:string):string|undefined{
+        //data.uuid2name()
+        /*
+        const rawResult=mc.getP(xuid)
+        if(rawResult==null)return undefined
+        else return rawResult
+        */
+       for(let playerInfo of data.getAllPlayerInfo()){
+            if(playerInfo.uuid==uuid)return playerInfo.name
+       }
+       return undefined
+    }
+    /**
+     * 调用加载器或插件内数据库通过玩家UUID查询玩家XUID
+     * @param uuid 玩家UUID
+     * @returns 玩家XUID
+     */
+    static uuid2xuid(uuid:string):string|undefined{
+        for(let playerInfo of data.getAllPlayerInfo()){
+            if(playerInfo.uuid==uuid)return playerInfo.xuid
+        }
+        return undefined
+    }
+    /**
+     * 通过玩家对应的字段获取玩家
+     * @param prividedID 玩家的游戏名/UUID/XUID
+     * @returns 玩家在线时返回该玩家对象，不在线或不存在的返回undefined
+     */
+    static getOnlinePlayer(providedID:string):FMPPlayer|undefined{
+        //如果用原生接口能直接获取，就不用搜索
+        const originalAPIReuslt=mc.getPlayer(providedID) as Player|null
+        if(originalAPIReuslt!=null)return new FMPPlayer(originalAPIReuslt)
+        //原生接口无法获取，开始使用uuid暴力搜索在线玩家
+        const uuidSearchResult=(()=>{
+            for(let player of mc.getOnlinePlayers()){
+                if(player.uuid==providedID){
+                    return new FMPPlayer(player)
+                }
+            }
+            //uuid也搜索不到，证明没有任何线索，返回undefined
+            return undefined
+        })()
+        return uuidSearchResult
+        
+    }
 }

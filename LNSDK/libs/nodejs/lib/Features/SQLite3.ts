@@ -310,6 +310,30 @@ export class FMPSQLite3{
         this.runSync(statement,...all_parameters)
         
     }
+    setRowFromPrimaryKey(tableName:string,primaryKeyValue:any,...values:{
+        columnName:string,
+        value:any
+    }[]){
+        const columns=this.getColumns(tableName)
+        let primaryKeyColumnName=""
+        let valuesOrder:any[]=[]
+        for(let value of values){
+            let columnIndex=0
+            //找到当前值对应的列
+            for(let i in columns){
+                if(columns[i].primary_key)primaryKeyColumnName=columns[i].name
+                if(columns[i].name==value.columnName){
+                    columnIndex=Number(i)
+                    break;
+                }
+            }
+            valuesOrder[columnIndex]=value.value
+        }
+        this.setRow(tableName,{
+            columnName:primaryKeyColumnName,
+            value:primaryKeyValue
+        },...values)
+    }
     getRowFromPrimaryKey(tableName:string,value:any):Map<string,any>{
         let primary_key_name=""
         for(let column of this.getColumns(tableName)){

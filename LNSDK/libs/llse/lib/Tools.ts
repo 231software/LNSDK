@@ -1,5 +1,6 @@
 import { FMPDimension } from "./Game/Dimension";
 import { FMPLocation } from "./Game/Location";
+import { randomBytes } from 'crypto';
 
 export class TwoWayMap<L,R>{
     leftTable:Map<L,R>;
@@ -127,9 +128,9 @@ export class RegionRectangle{
     }
 }
 
-export function newUUID4(){
+export function newUUID4() {
     return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => {
-        const random = crypto.getRandomValues(new Uint8Array(1))[0];
+        const random = randomBytes(1)[0]; // 使用 randomBytes 生成一个随机字节
         return (parseInt(c) ^ (random & 15 >> (parseInt(c) / 4))).toString(16);
     });
 }
