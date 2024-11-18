@@ -16,6 +16,10 @@ export {
 //ws>>
 export {
     FMPWS as WebSocket,
-    OneBot
+    OneBot,
+    OneBotConnectionMode,
+    OneBotGroupRole,
+    OneBotMessageOriginType,
+    OneBotMessageType
 } from "./Features/WebSocket.js";
 //ws<<

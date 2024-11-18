@@ -65,7 +65,11 @@ export{
     SQLSingleArrayTable,
     YMLFile,
     WebSocket,
-    OneBot
+    OneBot,
+    OneBotConnectionMode,
+    OneBotGroupRole,
+    OneBotMessageOriginType,
+    OneBotMessageType
 } from "./FeaturesIndex.js"
 
 export {
