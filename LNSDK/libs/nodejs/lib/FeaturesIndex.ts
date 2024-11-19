@@ -20,6 +20,18 @@ export {
     OneBotConnectionMode,
     OneBotGroupRole,
     OneBotMessageOriginType,
-    OneBotMessageType
+    OneBotMessageType,
+    OneBotMessageAtContent,
+    OneBotMessageData,
+    OneBotMessageFaceContent,
+    OneBotMessageFileContent,
+    OneBotMessageImageContent,
+    OneBotMessageJSONContent,
+    OneBotMessageMFaceContent,
+    OneBotMessageMarkdownContent,
+    OneBotMessageRecordContent,
+    OneBotMessageReplyContent,
+    OneBotMessageTextContent,
+    OneBotMessageVideoContent
 } from "./Features/WebSocket.js";
 //ws<<
