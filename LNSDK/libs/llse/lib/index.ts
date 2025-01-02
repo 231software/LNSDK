@@ -81,7 +81,8 @@ export{
     OneBotMessageRecordContent,
     OneBotMessageReplyContent,
     OneBotMessageTextContent,
-    OneBotMessageVideoContent
+    OneBotMessageVideoContent,
+    OneBotMessageForwardContent
 } from "./FeaturesIndex.js"
 
 export {

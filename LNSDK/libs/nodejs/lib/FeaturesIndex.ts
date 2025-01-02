@@ -32,6 +32,7 @@ export {
     OneBotMessageRecordContent,
     OneBotMessageReplyContent,
     OneBotMessageTextContent,
-    OneBotMessageVideoContent
+    OneBotMessageVideoContent,
+    OneBotMessageForwardContent
 } from "./Features/WebSocket.js";
 //ws<<

@@ -18,6 +18,7 @@ export class FMPWS{
     heartbeat:any
     sendQueue:string[]=[]
     options:FMPWSOptions
+    closed:boolean=false
     onMessageCallback:(data:Buffer)=>void|undefined
     onOpenCallback:()=>void|undefined
     onCloseCallback:()=>void|undefined
@@ -54,6 +55,10 @@ export class FMPWS{
         this.connection.on('error', this.onErrorCallback); 
     }
     send(data:string){
+        if(this.closed){
+            FMPLogger.error("与"+this.generateURL()+"的连接已被关闭，消息无法被发送！")
+            return;
+        }
         if(this.options.enableMessageQueue==false){
             //如果消息队列功能被手动关闭，则直接发送消息，不对消息队列进行任何操作
             //这种情况下，符合发送消息条件时再发送消息，不符合条件则直接丢弃
@@ -130,6 +135,7 @@ export class FMPWS{
     startHeartbeat(){
         //创建心跳包循环发送定时器
         return setInterval(() => {
+            if(this.closed)return;
             //let wsconnected:WebSocket|undefined = ws;
             //发现断开后开始重连
             /*
@@ -166,6 +172,17 @@ export class FMPWS{
 
             
         },1500);
+    }
+    /**
+     * 关闭连接
+     */
+    close(){
+        //将客户端连接标记为关闭
+        this.closed=true
+        //停止心跳
+        clearInterval(this.heartbeat)
+        //关闭原始对象的连接
+        this.connection.close()
     }
 }
 
@@ -204,7 +221,8 @@ export enum OneBotMessageType{
     JSON,
     FACE,
     MFACE,
-    VIDEO
+    VIDEO,
+    FORWARD
 }
 export function toOneBotMessageType(type:string):OneBotMessageType{
     switch(type){
@@ -219,6 +237,7 @@ export function toOneBotMessageType(type:string):OneBotMessageType{
         case "face":return OneBotMessageType.FACE
         case "mface":return OneBotMessageType.MFACE
         case "video":return OneBotMessageType.VIDEO
+        case "forward":return OneBotMessageType.FORWARD
         default:throw new Error(type+"无法被转换为onebot消息类型")
     }
 }
@@ -243,7 +262,8 @@ export interface OneBotMessage{
         |OneBotMessageFaceContent
         |OneBotMessageMFaceContent
         |OneBotMessageFileContent
-        |OneBotMessageVideoContent,
+        |OneBotMessageVideoContent
+        |OneBotMessageForwardContent,
     type:OneBotMessageType
 }
 
@@ -331,6 +351,12 @@ export interface OneBotMessageVideoContent{
     file_id:string
     file_size:string,
     url:string
+
+}
+/**合并转发 */
+export interface OneBotMessageForwardContent{
+    /**合并转发消息的ID */
+    id:number
 
 }
 
