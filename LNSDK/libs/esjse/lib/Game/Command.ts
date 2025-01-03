@@ -43,7 +43,7 @@ export function toESJSEParamStr(type:FMPCommandParamDataType):string{
         // case FMPCommandParamDataType.Item:return ParamType.Item
         case FMPCommandParamDataType.Block:return "block"
         // case FMPCommandParamDataType.Effect:return ParamType.Effect
-        // case FMPCommandParamDataType.Enum:return ParamType.Enum
+        case FMPCommandParamDataType.Enum:return "EnumType"
         // case FMPCommandParamDataType.SoftEnum:return ParamType.SoftEnum
         // case FMPCommandParamDataType.ActorType:return ParamType.ActorType
         // case FMPCommandParamDataType.Command:return ParamType.Command
