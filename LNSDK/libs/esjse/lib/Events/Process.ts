@@ -60,6 +60,7 @@ export let ScriptDone=():boolean|void=>{
         commands[command[0]]=command[1].esCmdData
     }
     console.log(commands)
+    //插件的所有命令都必须在其主线程中注册，不得在任何事件监听中注册，至于其他有些要求在开服后才能注册命令的平台，fmp会保留命令的全部信息，等待对应监听器触发后再注册
     //esjse的所有加载、卸载、命令注册都统一在JSE.registerPlugin中执行，lnsdk的实现会收集脚本中出现的所有此类事件，并在脚本主线程执行完成时统一执行相应代码
     //无需担心插件在服务器正常运行时还在注册事件，截至目前满月平台已经规定了开关服事件必须在脚本主线程中注册，至于主线程，运行完之前服务器都会等待该线程，其他插件的加载都不会进行，核心也不会继续运行
     JSE.registerPlugin({

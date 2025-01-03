@@ -3,6 +3,11 @@ export  {FMPLogger as Logger} from "./Logger.js";
 export {FMPInitEvent as InitEvent,FMPDisableEvent as DisableEvent} from "./Events/Process.js"
 
 export {
+    FMPFile as File,
+    FMPDirectory as Directory,
+    JsonFile
+} from "./File.js"
+export {
     FMPCommand as Command,
     FMPCommandEnum as CommandEnum,
     FMPCommandEnumOptions as CommandEnumOptions,
