@@ -3,6 +3,8 @@ import {Logger} from "../index.js"
 import {commandList} from "../Game/Command.js"
 let initCallback=(event:FMPInitEvent)=>{}
 let disableCallback=(event:FMPDisableEvent)=>{}
+/** 插件注册完成后，将不再能注册命令 */
+export let pluginRegistrationCompleted=false
 export class FMPInitEvent{
     constructor(){
 
@@ -84,4 +86,5 @@ export let ScriptDone=():boolean|void=>{
             return true;
         },
     });
+    pluginRegistrationCompleted=true;
 }

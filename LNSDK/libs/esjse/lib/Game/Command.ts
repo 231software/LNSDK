@@ -3,6 +3,7 @@ import { FMPLogger } from "../Logger"
 import { FMPInternalPermission} from "./InternalPermission";
 //import { FMPPlayer } from "./Player";
 import {INFO} from "../plugin_info.js"
+import {pluginRegistrationCompleted} from "../Events/Process.js"
 export enum FMPCommandParamType{
     Optional=1,
     Mandatory
@@ -322,6 +323,12 @@ export abstract class FMPCommand{
     }
     abstract callback(result:FMPCommandResult):void
     static register<T extends FMPCommand>(command:T):boolean{
+        if(pluginRegistrationCompleted){
+            Logger.error("本插件已经注册完毕，可是仍然在尝试注册命令",command.name,"！")
+            Logger.error("该做法不符合满月平台的标准，尤其是在Endstone上将无法成功注册命令！")
+            Logger.error("请不要在任何事件监听中尝试注册命令，因为在部分平台上，事件被触发前，注册命令的时机就已经过去了。")
+            Logger.error("请将该命令对应的注册代码部分（用于调用Command.register(<该命令对象的变量名>)的部分）在事件监听函数之外执行。")
+        }
         /**权限节点，由于满月平台尚未支持，所以此处直接常量 */
         const permissionRoot=INFO.permissionRoot;
         FMPLogger.info("指令注册：开始注册")
