@@ -29,24 +29,25 @@ export enum FMPCommandParamDataType{
 }
 export function toESJSEParamStr(type:FMPCommandParamDataType):string{
     switch(type){
-        // case FMPCommandParamDataType.Boolean:return ParamType.Bool
+        case FMPCommandParamDataType.Boolean:return "bool"
         case FMPCommandParamDataType.Int:return "int"
-        // case FMPCommandParamDataType.Float:return ParamType.Float
-        case FMPCommandParamDataType.String:return "string"
-        // case FMPCommandParamDataType.Actor:return ParamType.Actor
-        // case FMPCommandParamDataType.Player:return ParamType.Player
-        // case FMPCommandParamDataType.IntLocation:return ParamType.BlockPos
-        // case FMPCommandParamDataType.FloatLocation:return ParamType.Vec3
-        // case FMPCommandParamDataType.RawText:return ParamType.RawText
+        case FMPCommandParamDataType.Float:return "float"
+        case FMPCommandParamDataType.String:return "str"
+        case FMPCommandParamDataType.Actor:return "target"
+        case FMPCommandParamDataType.Player:return "player"
+        case FMPCommandParamDataType.IntLocation:return "block_pos"
+        case FMPCommandParamDataType.FloatLocation:return "pos"
+        // case FMPCommandParamDataType.RawText:return "json"
         case FMPCommandParamDataType.Message:return "message"
-        // case FMPCommandParamDataType.JsonVale:return ParamType.JsonValue
+        case FMPCommandParamDataType.JsonVale:return "json"
         // case FMPCommandParamDataType.Item:return ParamType.Item
-        // case FMPCommandParamDataType.Block:return ParamType.Block
+        case FMPCommandParamDataType.Block:return "block"
         // case FMPCommandParamDataType.Effect:return ParamType.Effect
         // case FMPCommandParamDataType.Enum:return ParamType.Enum
         // case FMPCommandParamDataType.SoftEnum:return ParamType.SoftEnum
         // case FMPCommandParamDataType.ActorType:return ParamType.ActorType
         // case FMPCommandParamDataType.Command:return ParamType.Command
+        // case ? :return "block_status"
         default:throw new Error("不支持的参数类型!")
     }
 }
