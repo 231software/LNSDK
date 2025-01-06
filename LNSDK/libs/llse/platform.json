@@ -1,0 +1,15 @@
+{
+    "isNodeJS":true,
+    "unsupported_packages":[
+        "sqlite3",
+        "yaml"
+    ],
+    "lib":"nolib",
+    "features":{
+        "yml":["js-yaml","^4.1.0"],
+        "xml":["xml","^1.0.1"],
+        "ws":["ws","8.18.0"],
+        "sqlite3":["internal",""]
+    },
+    "data_path":"plugins/<data_path>"
+}     

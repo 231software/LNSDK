@@ -1,0 +1,11 @@
+{
+    "isNodeJS":true,
+    "lib":"nolib",
+    "features":{
+        "yml":["yaml","^2.5.1"],
+        "xml":["xml","^1.0.1"],
+        "ws":["ws","8.18.0"],
+        "sqlite3":["better-sqlite3","^11.3.0"]
+    },
+    "data_path":"<data_path>"
+}

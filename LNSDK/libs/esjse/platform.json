@@ -1,0 +1,6 @@
+{
+    "isNodeJS":true,
+    "unsupported_packages":[],
+    "lib":"nolib",
+    "data_path":"plugins/<data_path>"
+}
