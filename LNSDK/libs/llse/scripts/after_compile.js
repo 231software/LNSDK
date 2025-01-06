@@ -1,6 +1,6 @@
 const fs=require("fs")
 const plugin_info=JSON.parse(Buffer.from((process.argv[2]),"base64").toString("utf-8"))
-process.chdir(plugin_info.plugin_conf.build_dir+"/llse/"+plugin_info.plugin_conf.plugin_dir_name)
+process.chdir("temp/build/llse/js")
 const manifestFile=fs.openSync("manifest.json","w+")
 const llmanifest={
     //levilamina要求插件名必须与插件目录相同，此处只好取插件目录名

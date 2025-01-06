@@ -96,7 +96,15 @@ export class FMPFile{
         }
         catch(e){
             //FMPLogger.error(e);
-            throw new Error("移动文件时出现异常！\nnodejs报错：\n"+e)
+            const errorToBeThrown=new Error("移动文件时出现异常！\nnodejs报错：\n"+e)
+            // 复制原始错误的所有属性到自定义错误对象上 
+            for (let key in e) { 
+                if (e.hasOwnProperty(key)) { 
+                    errorToBeThrown[key] = e[key]; 
+                } 
+            } 
+            // 抛出自定义错误对象 
+            throw errorToBeThrown;
         }
     }
     /**
