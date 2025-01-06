@@ -2,5 +2,6 @@
     "isNodeJS":true,
     "unsupported_packages":[],
     "lib":"nolib",
-    "data_path":"plugins/<data_path>"
+    "data_path":"plugins/<data_path>",
+    "require_ScriptDone":true
 }

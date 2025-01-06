@@ -7,5 +7,6 @@
         "ws":["ws","8.18.0"],
         "sqlite3":["better-sqlite3","^11.3.0"]
     },
-    "data_path":"<data_path>"
+    "data_path":"<data_path>",
+    "require_ScriptDone":true
 }
