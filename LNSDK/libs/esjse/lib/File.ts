@@ -65,12 +65,75 @@ export class FMPFile{
             throw new Error("读取文件时发生错误！错误消息为：\n"+e);
         }
     }
-    static copy(source:string,destination:string){
+    static copy(source:string,destination:string,options:any={}){      
+        let errorText="Error(s) occured while copying files!"
         try{
-            fs.cpSync(source,destination,{recursive:true});
+            //检查是否已存在同名文件
+            //解析出目标文件夹的上级目录
+            const targetDir=new FMPDirectory(destination)
+            const targetFileName=targetDir.folders.pop()
+            if(targetFileName==undefined)throw new Error("multiple errors occured:\nFile can't be copied: operation not permitted\nFailed to obtain the last file or folder's name while checking for reasons.")
+            targetDir.folders.push(targetFileName,"..")
+            //文件已存在
+            if(FMPFile.ls(targetDir.toString()).includes(targetFileName)){
+                if(FMPFile.isFile(source)){
+                    
+                    //设置了跳过同名文件
+                    if(options.skipSameNameFiles||options.skipSameName==true)return;
+                    //设置了替换同名文件
+                    if(options.replaceFiles==true){
+                        fs.cpSync(source,destination)
+                        //任务完成，结束
+                        return
+                    }
+                    //什么都没有设置，根本无从得知用户在文件冲突时要如何操作，直接报错（相当于取消移动）
+                    throw new Error("A File with the same name already exists in the target directory, this file can't be copied.\nYou can solve this error by setting skipSameNameFiles (skip when this happens) or replaceFiles (discard the file in the target directory by replacing) to 'true'")
+                }
+                if(FMPFile.isFolder(source)){
+                    //如果是文件夹，进入下面的复制文件夹环节
+                    //设置了存在同名文件则跳过，因为此处已经是同名文件的情况了，就直接跳过
+                    if(options.skipSameName==true)return
+                    //设置了合并文件夹
+                    if(options.merge==true){
+                        //遍历原目录中已有的文件，递归地移动每个文件
+                        for(let file of FMPFile.ls(source)){
+                            const dir=new FMPDirectory(source)
+                            dir.folders.push(file)
+                            const targetDir=new FMPDirectory(destination)
+                            targetDir.folders.push(file)
+                            FMPFile.copy(dir.toString(),targetDir.toString(),options)
+                        }
+                        return
+                    }
+                    //设置了替换文件夹
+                    else if(options.replaceFolder==true){
+                        //删除目标已存在的文件
+                        FMPFile.permanently_delete(destination)
+                        //再重新移动一遍
+                        FMPFile.copy(source,destination,options)
+                        return
+                    }
+
+                    
+                    //能够处理的异常会被上面的流程控制全部跳过，无法跳过的才会到这里，并加入下面的异常
+                    errorText=errorText+"\nSome files already exist in the target directory, these conflicts prevented copying."
+                }
+            }
+            //文件不存在的话，会正常地执行下面的移动
+            fs.cpSync(source,destination,{recursive:true})
         }
         catch(e){
-            FMPLogger.error(e)
+            
+            //其他无法处理的错误，会直接报错，抛出错误
+            const errorToBeThrown=new Error(errorText+"\nnodejs error logs：\n"+e)
+            // 复制原始错误的所有属性到自定义错误对象上 
+            for (let key in e) { 
+                if (e.hasOwnProperty(key)) { 
+                    errorToBeThrown[key] = e[key]; 
+                } 
+            } 
+            // 抛出自定义错误对象 
+            throw errorToBeThrown;
         }
     }
     /**
