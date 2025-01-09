@@ -1,50 +1,69 @@
-import {earlyInitedScoreboards} from "../Events/Process.js"
 import { serverStarted } from "../Events/Process.js"
+import { FMPLogger } from "../Logger.js"
+import { FMPPlayer } from "./Player.js"
 export class FMPScoreboard{
-    rawScoreboard:Objective
+    //rawScoreboard:Objective
     userSetName:string
     userSetDisplayeName:string|undefined
     constructor(name:string,displayName?:string){
         this.userSetDisplayeName=displayName
         this.userSetName=name
-        //如果服务器仍未开启，就把计分板初始化放到队列里，等开服之后再注册
-        if(!serverStarted){
-            earlyInitedScoreboards.push()
-            return;
-        }
-        this.init()
-    }
-    init(){
         let objective=mc.getScoreObjective(this.userSetName)
         if(objective==null){
             FMPScoreboard.createObjective(this.userSetName,this.userSetDisplayeName)
             objective=mc.getScoreObjective(this.userSetName)
         }
-        if(objective==undefined)throw new Error("在初始化计分板时，无法创建这个计分板")
-        this.rawScoreboard=objective
+        if(objective==null)throw new Error("在初始化计分板时，无法创建这个计分板")
+        //this.rawScoreboard=objective
     }
     get name():string{
-        return this.rawScoreboard.name
+        //return this.rawScoreboard.name
+        return this.userSetName
     }
     get displayName():string{
-        return this.rawScoreboard.displayName
+        FMPLogger.error("由于不知道LLSE或LSE获取无displayName的计分板此属性的行为，计分板的displayName暂时只能获得空字符串。请向LNSDK开发者寻求帮助。")
+        return ""
     }
     get(playerName:string):number{
-        return this.rawScoreboard.getScore(playerName)
+        const rawPlayer:Player|null=mc.getPlayer(playerName)
+        if(rawPlayer==null){
+            FMPLogger.error("找不到玩家"+playerName+"。LNSDK目前不支持在LLSE上操作离线玩家的计分板或虚拟计分板。请向LNSDK开发者寻求帮助。")
+            return 0;
+        }
+        return rawPlayer.getScore(this.userSetName)
     }
     set(playerName:string,value:number):boolean{
-        return Boolean(this.rawScoreboard.setScore(playerName,value))
+        const rawPlayer:Player|null=mc.getPlayer(playerName)
+        if(rawPlayer==null){
+            FMPLogger.error("找不到玩家"+playerName+"。LNSDK目前不支持在LLSE上操作离线玩家的计分板或虚拟计分板。请向LNSDK开发者寻求帮助。")
+            return false
+        }
+        return rawPlayer.setScore(this.userSetName,value)
     }
     add(playerName:string,value:number):boolean{
-        return Boolean(this.rawScoreboard.addScore(playerName,value))
+        const rawPlayer:Player|null=mc.getPlayer(playerName)
+        if(rawPlayer==null){
+            FMPLogger.error("找不到玩家"+playerName+"。LNSDK目前不支持在LLSE上操作离线玩家的计分板或虚拟计分板。请向LNSDK开发者寻求帮助。")
+            return false
+        }
+        return rawPlayer.setScore(this.userSetName,value)
     }
     reduce(playerName:string,value:number):boolean{
-        return Boolean(this.rawScoreboard.reduceScore(playerName,value));
+        const rawPlayer:Player|null=mc.getPlayer(playerName)
+        if(rawPlayer==null){
+            FMPLogger.error("找不到玩家"+playerName+"。LNSDK目前不支持在LLSE上操作离线玩家的计分板或虚拟计分板。请向LNSDK开发者寻求帮助。")
+            return false
+        }
+        return rawPlayer.reduceScore(this.userSetName,value)
     }
     delete(playerName:string):boolean{
-        return this.rawScoreboard.deleteScore(playerName)
+        const object=mc.getScoreObjective(this.userSetName)
+        if(object==undefined)throw new Error("插件运行过程中计分板"+this.name+"意外消失，插件无法继续工作。")
+        return object.deleteScore(playerName)
     }
     setDisplay(position:ScoreboardDisplayPosition,sortByDescending:boolean=false){
+        const object=mc.getScoreObjective(this.userSetName)
+        if(object==undefined)throw new Error("插件运行过程中计分板"+this.name+"意外消失，插件无法继续工作。")
         let llseDisplayPositionTypeString:"belowname"|"list"|"sidebar"="sidebar";
         switch(position){
             case ScoreboardDisplayPosition.BelowName:{
@@ -60,7 +79,7 @@ export class FMPScoreboard{
                 break;
             }
         }
-        this.rawScoreboard.setDisplay(llseDisplayPositionTypeString)
+        object.setDisplay(llseDisplayPositionTypeString)
     }
 
     static getObjective(name:string):FMPScoreboard|undefined{
