@@ -43,7 +43,7 @@ export class FMPSQLDataType{
             case FMPSQLDataTypeEnum.BOOLEAN:return `BOOLEAN`
             case FMPSQLDataTypeEnum.VARBINARY:return `VARBINARY(${this.params[0]})`
 
-            case FMPSQLDataTypeEnum.INTEGER:return `INTEGER`
+            case FMPSQLDataTypeEnum.INTEGER:return `INT`
 
             case FMPSQLDataTypeEnum.REAL:return `REAL`
             
@@ -175,6 +175,7 @@ export class FMPSQLite3{
      */
     runSync(SQLstring:string,...params:any[]){
         const stmt=this.rawdbsession.prepare(SQLstring)
+        for(let i in params)if(typeof params[i]=="boolean")params[i]=Number(params[i])
         stmt.bind(params)
         stmt.execute()
     };
@@ -256,11 +257,13 @@ export class FMPSQLite3{
     }[]{
         function toFMPSQLite3Type(type:string):FMPSQLDataTypeEnum{
             switch(type){
+                case "INT":
                 case "INTEGER":return FMPSQLDataTypeEnum.INTEGER
                 case "REAL":return FMPSQLDataTypeEnum.REAL
                 case "TEXT":return FMPSQLDataTypeEnum.TEXT
                 case "BIGINT":return FMPSQLDataTypeEnum.BIGINT
                 case "DATE":return FMPSQLDataTypeEnum.DATE
+                case "BOOLEAN":return FMPSQLDataTypeEnum.BOOLEAN
                 default:throw new SyntaxError("请为getColumns方法的toFMPSQlite3Type函数完善"+type+"映射")
             }
         }
@@ -317,7 +320,6 @@ export class FMPSQLite3{
             //去掉最后的逗号
             statement=statement.slice(0,-1)+";"            
         }
-
         const all_parameters=valuesOrder.concat(values_to_update)
         //执行语句
         this.runSync(statement,...all_parameters)
@@ -357,7 +359,9 @@ export class FMPSQLite3{
         const rawResult=this.queryAllSync("SELECT * from "+tableName+" WHERE "+primary_key_name+"=?",value)[0]
         //没有查询到任何结果
         if(rawResult==undefined)return result
-        for(let columnName of Object.keys(rawResult)){
+        const columnNames=Object.keys(rawResult)
+        for(let columnName of columnNames){
+            if(this.getColumns(tableName)[columnNames.indexOf(columnName)].type==FMPSQLDataTypeEnum.BOOLEAN)rawResult[columnName]=Boolean(rawResult[columnName])
             result.set(columnName,rawResult[columnName])
         }
         return result

@@ -248,6 +248,7 @@ export class FMPSQLite3{
                 case "TEXT":return FMPSQLDataTypeEnum.TEXT
                 case "BIGINT":return FMPSQLDataTypeEnum.BIGINT
                 case "DATE":return FMPSQLDataTypeEnum.DATE
+                case "BOOLEAN":return FMPSQLDataTypeEnum.BOOLEAN
                 default:throw new SyntaxError("请为getColumns方法的toFMPSQlite3Type函数完善"+type+"映射")
             }
         }
