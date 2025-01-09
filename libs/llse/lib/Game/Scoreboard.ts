@@ -1,11 +1,24 @@
-
+import {earlyInitedScoreboards} from "../Events/Process.js"
+import { serverStarted } from "../Events/Process.js"
 export class FMPScoreboard{
     rawScoreboard:Objective
+    userSetName:string
+    userSetDisplayeName:string|undefined
     constructor(name:string,displayName?:string){
-        let objective=mc.getScoreObjective(name)
+        this.userSetDisplayeName=displayName
+        this.userSetName=name
+        //如果服务器仍未开启，就把计分板初始化放到队列里，等开服之后再注册
+        if(!serverStarted){
+            earlyInitedScoreboards.push()
+            return;
+        }
+        this.init()
+    }
+    init(){
+        let objective=mc.getScoreObjective(this.userSetName)
         if(objective==null){
-            FMPScoreboard.createObjective(name,displayName)
-            objective=mc.getScoreObjective(name)
+            FMPScoreboard.createObjective(this.userSetName,this.userSetDisplayeName)
+            objective=mc.getScoreObjective(this.userSetName)
         }
         if(objective==undefined)throw new Error("在初始化计分板时，无法创建这个计分板")
         this.rawScoreboard=objective

@@ -2,7 +2,7 @@ import {Logger} from "../index.js"
 import { FMPLogger } from "../Logger"
 import { FMPInternalPermission,toll2PermType } from "./InternalPermission";
 import { FMPPlayer } from "./Player";
-import { earlyRegisteredCommands,pluginInited } from "../Events/Process.js";
+import { earlyRegisteredCommands,serverStarted } from "../Events/Process.js";
 export enum FMPCommandParamType{
     Optional=1,
     Mandatory
@@ -180,7 +180,7 @@ export abstract class FMPCommand{
     static register<T extends FMPCommand>(command:T):boolean{
         //先前lse出现过必须在开服后注册命令的情况，此处假设此特性仍然存在，将所有指令注册放在开服后统一注册，以验证满月平台在其他不修改该特性的平台上的可行性
         //具体方案：如果InitEvent前(pluginInited==false)注册，就把指令放入指令列表，在触发InitEvent之后立即挨个注册这些指令
-        if(!pluginInited){
+        if(!serverStarted){
             //将指令放入队列
             earlyRegisteredCommands.push(command);
             //不知道该指令会不会注册成功，那就先返回true吧，怕插件那边检测到false之后自己寄了
