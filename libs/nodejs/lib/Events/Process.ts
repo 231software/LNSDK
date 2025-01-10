@@ -9,6 +9,14 @@ import { onStopContainer } from "../Game/Command"
 export let ScriptDone=():boolean|void=>{}
 export let status:boolean=false
 export let player:FMPPlayer;
+let processOnStart=()=>{
+    //FMPCommand.register(new PlayerCmd())
+    //FMPCommand.register(new SudoCmd())
+    if(CommandList.size>2)commandReactor();
+}
+ScriptDone=()=>{
+    processOnStart()
+}
 export class FMPInitEvent{
     constructor(){
 
@@ -16,9 +24,7 @@ export class FMPInitEvent{
     static on(callback:(event:FMPInitEvent)=>boolean|void){
         ScriptDone=()=>{
             callback(new FMPInitEvent())
-            FMPCommand.register(new PlayerCmd())
-            FMPCommand.register(new SudoCmd())
-            if(CommandList.size>2)commandReactor();
+            processOnStart()
         }
     }
 }
@@ -36,13 +42,9 @@ export class FMPDisableEvent{
 }
 
 
-class PlayerCmd extends FMPCommand{
-    constructor(){
-        super("player","","",[
-            //new FMPCommandParam(FMPCommandParamType.Mandatory,"switch",FMPCommandParamDataType.String)
-        ],[[]],FMPInternalPermission.Any);
-    }
-    callback(result: FMPCommandResult): void {
+const PlayerCmd = new FMPCommand("player",[
+        //new FMPCommandParam(FMPCommandParamType.Mandatory,"switch",FMPCommandParamDataType.String)
+    ],[[]],result=>{
         if(result.params.size==0){
             status=!status
             FMPLogger.info("玩家模拟模式已设置为"+(status?"开":"关"))
@@ -52,14 +54,11 @@ class PlayerCmd extends FMPCommand{
                 playerJoinEventHandler(new FMPPlayerJoinEvent(player))
             }
         }
-    }
-}
-class SudoCmd extends FMPCommand{
-    constructor(){
-        super("sudo","","",[
-            //new FMPCommandParam(FMPCommandParamType.Mandatory,"switch",FMPCommandParamDataType.String)
-        ],[[]],FMPInternalPermission.Any);
-    }
-    callback(result: FMPCommandResult): void {
-    }
-}
+    },FMPInternalPermission.Any
+);
+const SudoCmd = new FMPCommand("sudo",[
+        //new FMPCommandParam(FMPCommandParamType.Mandatory,"switch",FMPCommandParamDataType.String)
+    ],[[]],
+    result=>{},
+    FMPInternalPermission.Any
+);

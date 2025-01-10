@@ -102,7 +102,7 @@ export function FMPCommandFailReasonText(reason:FMPCommandFailReason):string{
         case FMPCommandFailReason.InternalServerError:return "执行命令时插件因自身错误而无法执行"
     }
 }
-export abstract class FMPCommand{
+export class FMPCommand{
     
     name:string;
     description:string|undefined;
@@ -112,6 +112,7 @@ export abstract class FMPCommand{
     permission:FMPInternalPermission;
     aliases:Array<string>;
     flag:any;
+    callback:(result:FMPCommandResult)=>void
     /**
      * 
      * @param name 命令名称，是要在控制台输入的那个，比如tp，say
@@ -125,12 +126,13 @@ export abstract class FMPCommand{
      */
     constructor(
         name:string,
-        description:string|undefined=undefined,
-        usageMessage:string|undefined=undefined,
-        args:Array<FMPCommandParam>=[],
-        overloads:Array<Array<string>>=[[]],
+        args:Array<FMPCommandParam>,
+        overloads:Array<Array<string>>,
+        callback:(result:FMPCommandResult)=>void,
         permission:FMPInternalPermission=FMPInternalPermission.GameMasters,
         aliases:Array<string>=[],
+        description:string|undefined=undefined,
+        usageMessage:string|undefined=undefined,
         flag:any=undefined
     ){
         this.name=name;
@@ -141,26 +143,20 @@ export abstract class FMPCommand{
         this.permission=permission;
         this.aliases=aliases;
         this.flag=flag;
+        this.callback=callback
+        CommandList.set(name,this);
     }
-    abstract callback(result:FMPCommandResult):void
-    /**
-     * 注册命令
-     * @param command 要注册的命令对象，建议现场new一个传进去
-     * @returns 命令是否注册成功
-     */
     static register<T extends FMPCommand>(command:T):boolean{
-        CommandList.set(command.name,command);
         return true;
     }
 }
 
 //创建命令池
 let stop=false;
-class fillerCommand extends FMPCommand{
-    constructor(){super("fillerCommand")}
-    callback(result: FMPCommandResult): void {}
-}
-export const CommandList=(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",new fillerCommand()]]))
+export const CommandList:Map<string,FMPCommand>=new Map();
+const fillerCommand = new FMPCommand("fillerCommand",[],[[]],result=>{})
+//(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",fillerCommand]]))
+
 CommandList.delete("fillerCommand");
 
 /**
@@ -258,9 +254,17 @@ export async function commandReactor(){
             /**当前参数在用户输入中的类型 */
             const actualType = paramTypeAnalyzer(paramsString[i]);
             //判断类型是否互相兼容，由于vmce的行为十分抽象，所以很多原版游戏中不同的参数类型在这里都可以勉强兼容
-            if (!isCompatibleType(expectedType, actualType)) {
-                return false;
+            if (!isCompatibleType(expectedType, actualType)) return false;
+            //上文已经判断过是否兼容，此处已经是兼容的，所以直接取用重载中的类型——expectedType
+            //处理枚举
+            if(expectedType==FMPCommandParamDataType.Enum){   
+                //检查是否是当前枚举参数中可选的值        
+                if(!command.args.get(overload[i])?.bindEnum?.values?.includes(paramsString[i])){
+                    //不是的话证明不符合当前重载
+                    return false
+                }
             }
+
         }
         //如果找到了类型不匹配的参数，上文的for将返回false跳过此处，如果来到此处，证明通过了所有检验参数类型的考验，证明完全符合重载
         return true;

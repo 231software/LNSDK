@@ -137,12 +137,13 @@ export function FMPCommandFailReasonText(reason:FMPCommandFailReason):string{
         case FMPCommandFailReason.InternalServerError:return "执行命令时插件因自身错误而无法执行"
     }
 }
-export abstract class FMPCommand{
+export class FMPCommand{
     name:string;
     description:string|undefined;
     usageMessage:string|undefined;
     args:Map<string,FMPCommandParam>=new Map();
     overloads:Array<Array<string>>;
+    callback:(result:FMPCommandResult)=>void;
     permission:FMPInternalPermission;
     aliases:Array<string>;
     flag:any;
@@ -159,12 +160,13 @@ export abstract class FMPCommand{
      */
     constructor(
         name:string,
-        description:string|undefined=undefined,
-        usageMessage:string|undefined=undefined,
         args:Array<FMPCommandParam>=[],
         overloads:Array<Array<string>>=[[]],
+        callback:(result:FMPCommandResult)=>void,
         permission:FMPInternalPermission=FMPInternalPermission.GameMasters,
         aliases:Array<string>=[],
+        description:string|undefined=undefined,
+        usageMessage:string|undefined=undefined,
         flag:any=undefined
     ){
         this.name=name;
@@ -175,9 +177,10 @@ export abstract class FMPCommand{
         this.permission=permission;
         this.aliases=aliases;
         this.flag=flag;
+        this.callback=callback
+        FMPCommand.register(this)
     }
-    abstract callback(result:FMPCommandResult):void
-    static register<T extends FMPCommand>(command:T):boolean{
+    static register(command:FMPCommand):boolean{
         //先前lse出现过必须在开服后注册命令的情况，此处假设此特性仍然存在，将所有指令注册放在开服后统一注册，以验证满月平台在其他不修改该特性的平台上的可行性
         //具体方案：如果InitEvent前(pluginInited==false)注册，就把指令放入指令列表，在触发InitEvent之后立即挨个注册这些指令
         if(!serverStarted){
@@ -278,6 +281,7 @@ export abstract class FMPCommand{
 }
 
 //创建命令池
+/*
 class fillerCommand extends FMPCommand{
     constructor(){
         super("fillerCommand");
@@ -286,8 +290,10 @@ class fillerCommand extends FMPCommand{
         
     }
 }
-export const CommandList=(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",new fillerCommand()]]))
-CommandList.delete("fillerCommand");
+    */
+export const CommandList:Map<string,FMPCommand>=new Map()
+//(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",new fillerCommand()]]))
+//CommandList.delete("fillerCommand");
 
 export function FMPruncmd(cmd:string):{success:boolean,output:string}{
     return mc.runcmdEx(cmd)
