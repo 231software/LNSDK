@@ -1,3 +1,5 @@
+import { esInited } from "./Events/Process";
+import { INFO } from "./plugin_info";
 /**
  * 在控制台中打印日志  
  * 由于并不是所有平台都拥有日志，所以此API可能执行后没有任何效果
@@ -16,7 +18,8 @@ export class FMPLogger{
      * @param args 所有需要打印的信息，使用any类型是因为对应平台可能会将不是字符串类型的数据转换成字符串并根据其值和平台自身特性进行格式化
      */
     static info(...args:any){
-        JSE.getPlugin().getLogger().info(...args);
+        if(!esInited)console.log("["+INFO.name+"][正在初始化][INFO]",...args)
+        else JSE.getPlugin().getLogger().info(...args);
     }
     /**
      * 以warn等级打印日志  

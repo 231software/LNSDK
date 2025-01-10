@@ -1,8 +1,10 @@
 import {INFO} from "../plugin_info.js"
 import {Logger} from "../index.js"
 import {commandList} from "../Game/Command.js"
+import { FMPLogger } from "../Logger.js"
 let initCallback=(event:FMPInitEvent)=>{}
 let disableCallback=(event:FMPDisableEvent)=>{}
+export let esInited=false
 /** 插件注册完成后，将不再能注册命令 */
 export let pluginRegistrationCompleted=false
 export class FMPInitEvent{
@@ -72,6 +74,7 @@ export let ScriptDone=():boolean|void=>{
         commands,
         onLoad: () => {
             //满月平台不需要也暂不支持形如onLoad的事件
+            esInited=true
         },
         onEnable: () => {
             initCallback(new FMPInitEvent())
