@@ -211,8 +211,8 @@ export class FMPSQLite3{
         }
         return result
     }
-    close(){
-        FMPLogger.info(this.rawdbsession.close());
+    close():boolean{
+        return this.rawdbsession.close();
     }
     /**
      * 

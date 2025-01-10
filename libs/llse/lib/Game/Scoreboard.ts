@@ -1,4 +1,4 @@
-import { serverStarted } from "../Events/Process.js"
+import { earlyInitedScoreboards, serverStarted } from "../Events/Process.js"
 import { FMPLogger } from "../Logger.js"
 import { FMPPlayer } from "./Player.js"
 export class FMPScoreboard{
@@ -8,13 +8,16 @@ export class FMPScoreboard{
     constructor(name:string,displayName?:string){
         this.userSetDisplayeName=displayName
         this.userSetName=name
+        if(serverStarted)this.init()
+        else earlyInitedScoreboards.push(this)
+    }
+    init (){
         let objective=mc.getScoreObjective(this.userSetName)
         if(objective==null){
             FMPScoreboard.createObjective(this.userSetName,this.userSetDisplayeName)
             objective=mc.getScoreObjective(this.userSetName)
         }
         if(objective==null)throw new Error("在初始化计分板时，无法创建这个计分板")
-        //this.rawScoreboard=objective
     }
     get name():string{
         //return this.rawScoreboard.name

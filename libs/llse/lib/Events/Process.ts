@@ -1,9 +1,13 @@
 import { FMPCommand } from "../Game/Command";
+import { FMPScoreboard } from "../Game/Scoreboard";
 export let ScriptDone=():boolean|void=>{}
 export let serverStarted=false;
 export const earlyRegisteredCommands:FMPCommand[]=[]
+export const earlyInitedScoreboards:FMPScoreboard[]=[]
 function processOnServerStart(){
     serverStarted=true;
+    //初始化所有计分板
+    for(let objective of earlyInitedScoreboards)objective.init()
     //注册那些先注册的命令
     for(let command of earlyRegisteredCommands){
         FMPCommand.register(command);

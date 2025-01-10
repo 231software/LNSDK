@@ -182,7 +182,7 @@ export class FMPSQLite3{
         return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...params))();
     }
     close(){
-        this.rawdbsession.close();
+        return this.rawdbsession.close();
     }
     /**
      * 
