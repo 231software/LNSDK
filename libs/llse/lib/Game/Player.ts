@@ -97,7 +97,7 @@ export class FMPPlayer{
      * @returns 玩家是否在线
      */
     isOnline():boolean{
-        return this.rawplayer.uuid==undefined
+        return !(this.rawplayer.uuid==undefined)
     }
     isSimulated():boolean{
         return this.rawplayer.isSimulatedPlayer()
