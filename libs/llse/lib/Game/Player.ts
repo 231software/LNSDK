@@ -122,6 +122,9 @@ export class FMPPlayer{
         }
         return this.rawplayer.teleport(location.toll2FloatPos(),toll2DirectionAngle(direction));
     }
+    runCmd(cmd:string):boolean{
+        return this.rawplayer.runcmd(cmd)
+    }
     toll2Player():Player{
         return mc.getPlayer(this.xuid)
     }

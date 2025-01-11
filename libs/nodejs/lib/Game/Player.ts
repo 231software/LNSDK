@@ -65,6 +65,9 @@ export class FMPPlayer{
     setGameMode(gameMode:FMPGameMode):boolean{
         return false;
     }
+    runCmd(cmd:string){
+        return false
+    }
     /**
      * 调用加载器或插件内数据库通过玩家名查询其UUID
      * @param name 玩家游戏名
