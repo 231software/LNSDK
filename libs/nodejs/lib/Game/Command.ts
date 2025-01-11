@@ -423,7 +423,7 @@ export async function commandReactor(){
         }
     }
 }
-export function runcmd(cmd:string){
+export function FMPruncmd(cmd:string){
     return {
         success:false,
         output:"nodejs平台暂不支持执行特定命令"

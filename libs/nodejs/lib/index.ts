@@ -28,7 +28,8 @@ export {
     FMPCommandParam as CommandParam,
     FMPCommandParamDataType as CommandParamDataType,
     FMPCommandParamType as CommandParamType,
-    FMPCommandResult as CommandResult
+    FMPCommandResult as CommandResult,
+    FMPruncmd as runcmd
 } from "./Game/Command.js"
 export {FMPInternalPermission as InternalPermission} from "./Game/InternalPermission.js"
 
