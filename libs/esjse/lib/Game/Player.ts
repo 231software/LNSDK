@@ -1,7 +1,7 @@
 import { FMPLogger } from "../Logger";
 import { FMPInternalPermission } from "./InternalPermission";
 import { FMPItem } from "./Item";
-import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location";
+import { FMPEulerAngles, FMPLocation } from "./Location";
 export enum FMPGameMode{
     Survival=0,
     Creative=1,
@@ -9,22 +9,22 @@ export enum FMPGameMode{
     Spectator=3,
     Unknown
 }
-export function fromll2gamemode(ll2gamemode:number):FMPGameMode{
-    switch(ll2gamemode){
-        case 0:return FMPGameMode.Survival;
-        case 1:return FMPGameMode.Creative;
-        case 2:return FMPGameMode.Adventure;
-        case 3:return FMPGameMode.Spectator;
+export function fromesGamemode(esGamemode:Enums.GameMode):FMPGameMode{
+    switch(esGamemode){
+        case Enums.GameMode.Survival:return FMPGameMode.Survival;
+        case Enums.GameMode.Creative:return FMPGameMode.Creative;
+        case Enums.GameMode.Adventure:return FMPGameMode.Adventure;
+        case Enums.GameMode.Spectator:return FMPGameMode.Spectator;
         default:return FMPGameMode.Unknown;
     }
 }
-export function toll2gamemode(gamemode:FMPGameMode):number{
+export function toesGamemode(gamemode:FMPGameMode):number{
     switch(gamemode){
-        case FMPGameMode.Survival:return 0;
-        case FMPGameMode.Creative:return 1;
-        case FMPGameMode.Adventure:return 2;
-        default:FMPLogger.warn("尝试向LLSE转换其不支持的游戏模式！已自动将玩家转换为观察者模式。");
-        case FMPGameMode.Spectator:return 6;
+        case FMPGameMode.Survival:return Enums.GameMode.Spectator;
+        case FMPGameMode.Creative:return Enums.GameMode.Creative;
+        case FMPGameMode.Adventure:return Enums.GameMode.Adventure;
+        default:FMPLogger.warn("尝试向Endstone转换其不支持的游戏模式！已自动将玩家转换为观察者模式。");
+        case FMPGameMode.Spectator:return Enums.GameMode.Spectator;
     }
 }
 export enum sendTextType{
@@ -45,74 +45,64 @@ export class FMPPlayer{
     */
     
     constructor(rawplayer:Player){
-        //用于执行方法
         this.rawplayer=rawplayer;
-        /*
-        //判断平台并转换属性
-        switch(Platform.getType()){
-            case SupportedPlatforms.NodeJS:return;
-            case SupportedPlatforms.LiteLoaderBDS:
-                this.name=rawplayer.name;
-                this.xuid=rawplayer.xuid;
-                this.uuid=rawplayer.uuid;
-                this.gamemode=rawplayer.gameMode;
-                this.isSneaking=rawplayer.isSneaking;
-                break;
-            case SupportedPlatforms.LeviLamina:
-                this.name=rawplayer.name;
-                break;
-        }
-        */
     }
     get name():string{
         //判断平台并读取相应属性
-        return this.rawplayer.name;
+        return this.rawplayer.getName();
     }
     get xuid():string{
-        return this.rawplayer.xuid;
+        return this.rawplayer.getXuid();
     }    
     get uuid():string{
-        return this.rawplayer.uuid;
+        return this.rawplayer.getUniqueId();
     }    
     get gameMode():FMPGameMode{
-        return fromll2gamemode(this.rawplayer.gameMode);
+        return fromesGamemode(this.rawplayer.getGameMode());
     }
     //返回的是玩家脚部坐标！
-    get location():FMPLocation{
+    /*get location():FMPLocation{
         return new FMPLocation(this.rawplayer.feetPos,false);
-    }
-    get direction():FMPEulerAngles{
-        return FMPEulerAngles.new(this.rawplayer.direction.yaw,this.rawplayer.direction.pitch,0);
-    }
+    }*/
+    /*get direction():FMPEulerAngles{
+        return FMPEulerAngles.new(this.rawplayer.getRotation().x,this.rawplayer.getRotation().y,0);
+    }*/
     /**玩家对于游戏内置权限的权限等级 */
     get internalPermission():FMPInternalPermission{
         return this.rawplayer.isOP()?FMPInternalPermission.GameMasters:FMPInternalPermission.Admin
     }
+    /*
     get isSneaking():boolean{
-        return this.rawplayer.isSneaking;
-    }
+        //return this.rawplayer.isSneaking;
+    }*/
     /**
      * 给予玩家一个物品
      * @param item 要给予玩家的物品
      * @returns 是否成功给予玩家
      */
-    giveItem(item:FMPItem):boolean{
-        return false
-    }
+    /*giveItem(item:FMPItem):boolean{
+        return this.rawplayer.giveItem()
+    }*/
     tell (msg: string, type?: sendTextType): boolean{
-        return this.rawplayer.tell(msg,type);
+        try{
+            this.rawplayer.sendMessage(msg,type);
+            return true;
+        }
+        catch{
+            return false;
+        }
     }
     setGameMode(gamemode:FMPGameMode){
-        return this.rawplayer.setGameMode(toll2gamemode(gamemode));
+        return this.rawplayer.setGameMode(toesGamemode(gamemode));
     }
-    teleport(location:FMPLocation,direction?:FMPEulerAngles):boolean{
+    /*teleport(location:FMPLocation,direction?:FMPEulerAngles):boolean{
         if(direction===undefined){
-            return this.rawplayer.teleport(location.toll2FloatPos());
+            return this.rawplayer.teleport(location.toesLocation());
         }
-        return this.rawplayer.teleport(location.toll2FloatPos(),toll2DirectionAngle(direction));
-    }
-    toll2Player():Player{
-        return mc.getPlayer(this.xuid)
+        return this.rawplayer.teleport(location.toesLocation(),toll2DirectionAngle(direction));
+    }*/
+    toesPlayer():Player{
+        return JSE.getPlugin().getServer().getPlayer(this.uuid)
     }
     /**
      * 调用加载器或插件内数据库通过玩家名查询其UUID
@@ -120,9 +110,10 @@ export class FMPPlayer{
      * @returns 玩家UUID
      */
     static name2uuid(name:string):string|undefined{
-        const rawResult=data.name2uuid(name)
-        if(rawResult==null)return undefined
-        else return rawResult
+        throw new Error("LNSDK尚不支持在es上查询玩家名/uuid/xuid")
+        // const rawResult=data.name2uuid(name)
+        // if(rawResult==null)return undefined
+        // else return rawResult
     }
     /**
      * 调用加载器或插件内数据库通过玩家XUID查询其UUID
@@ -130,9 +121,10 @@ export class FMPPlayer{
      * @returns 玩家UUID
      */
     static xuid2uuid(xuid:string):string|undefined{
-        const rawResult=data.xuid2uuid(xuid)
-        if(rawResult==null)return undefined
-        else return rawResult
+        throw new Error("LNSDK尚不支持在es上查询玩家名/uuid/xuid")
+        // const rawResult=data.xuid2uuid(xuid)
+        // if(rawResult==null)return undefined
+        // else return rawResult
     }
     /**
      * 调用加载器或插件内数据库通过玩家UUID查询玩家名
@@ -140,16 +132,11 @@ export class FMPPlayer{
      * @returns 玩家名
      */
     static uuid2name(uuid:string):string|undefined{
-        //data.uuid2name()
-        /*
-        const rawResult=mc.getP(xuid)
-        if(rawResult==null)return undefined
-        else return rawResult
-        */
-       for(let playerInfo of data.getAllPlayerInfo()){
-            if(playerInfo.uuid==uuid)return playerInfo.name
-       }
-       return undefined
+        throw new Error("LNSDK尚不支持在es上查询玩家名/uuid/xuid")
+    //    for(let playerInfo of data.getAllPlayerInfo()){
+    //         if(playerInfo.uuid==uuid)return playerInfo.name
+    //    }
+    //    return undefined
     }
     /**
      * 调用加载器或插件内数据库通过玩家UUID查询玩家XUID
@@ -157,10 +144,11 @@ export class FMPPlayer{
      * @returns 玩家XUID
      */
     static uuid2xuid(uuid:string):string|undefined{
-        for(let playerInfo of data.getAllPlayerInfo()){
-            if(playerInfo.uuid==uuid)return playerInfo.xuid
-        }
-        return undefined
+        throw new Error("LNSDK尚不支持在es上查询玩家名/uuid/xuid")
+        // for(let playerInfo of data.getAllPlayerInfo()){
+        //     if(playerInfo.uuid==uuid)return playerInfo.xuid
+        // }
+        // return undefined
     }
     /**
      * 通过玩家对应的字段获取玩家
@@ -169,11 +157,11 @@ export class FMPPlayer{
      */
     static getOnlinePlayer(providedID:string):FMPPlayer|undefined{
         //如果用原生接口能直接获取，就不用搜索
-        const originalAPIReuslt=mc.getPlayer(providedID) as Player|null
+        const originalAPIReuslt=JSE.getPlugin().getServer().getPlayer(providedID) as Player|null
         if(originalAPIReuslt!=null)return new FMPPlayer(originalAPIReuslt)
         //原生接口无法获取，开始使用uuid暴力搜索在线玩家
         const uuidSearchResult=(()=>{
-            for(let player of mc.getOnlinePlayers()){
+            for(let player of JSE.getPlugin().getServer().getOnlinePlayers()){
                 if(player.uuid==providedID){
                     return new FMPPlayer(player)
                 }

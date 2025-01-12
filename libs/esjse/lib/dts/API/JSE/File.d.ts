@@ -1,6 +1,6 @@
-/// <reference path="../index.d.ts"/>
+/// <reference path="../../index.d.ts"/>
 
-declare class File_Disabled {
+declare class FileAPI {
     private constructor();
 
     /** 读取文件 */

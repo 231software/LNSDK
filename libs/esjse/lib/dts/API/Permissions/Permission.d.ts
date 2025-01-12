@@ -1,4 +1,5 @@
-/// <reference path="../index.d.ts"/>
+/// <reference path="../../index.d.ts"/>
+
 declare class Permission {
   toString(): "<Permission>";
 
