@@ -19,6 +19,36 @@ export {
     FMPCommandResult as CommandResult,
     FMPruncmd as runcmd
 } from "./Game/Command.js"
+
+export{
+    SQLite3,
+    SQLDataTypeEnum,
+    SQLDataType,
+    SQLDBDataType,
+    SQLComparisonOperators,
+    SQLSingleArrayTable,
+    YMLFile,
+    WebSocket,
+    OneBot,
+    OneBotConnectionMode,
+    OneBotGroupRole,
+    OneBotMessageOriginType,
+    OneBotMessageType,
+    OneBotMessageAtContent,
+    OneBotMessageData,
+    OneBotMessageFaceContent,
+    OneBotMessageFileContent,
+    OneBotMessageImageContent,
+    OneBotMessageJSONContent,
+    OneBotMessageMFaceContent,
+    OneBotMessageMarkdownContent,
+    OneBotMessageRecordContent,
+    OneBotMessageReplyContent,
+    OneBotMessageTextContent,
+    OneBotMessageVideoContent,
+    OneBotMessageForwardContent
+} from "./FeaturesIndex.js"
+
 export {
     FMPInternalPermission as InternalPermission
 } from "./Game/InternalPermission.js"
