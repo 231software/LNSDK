@@ -5,7 +5,10 @@ export {
     FMPSQLDataType as SQLDataType,
     FMPSQLDBDataType as SQLDBDataType,
     FMPSQLComparisonOperators as SQLComparisonOperators,
-    FMPSQLSingleArrayTable as SQLSingleArrayTable
+    FMPSQLSingleArrayTable as SQLSingleArrayTable,
+    FMPSQLite3Column as SQLite3Column,
+    FMPSQLite3Constraint as SQLite3Constraint,
+    FMPSQLite3ConstraintForignKey as SQLite3ConstraintForignKey
 } from "./Features/SQLite3.js"
 //sqlite3<<
 //yml>>

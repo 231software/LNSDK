@@ -112,7 +112,7 @@ export enum FMPSQLComparisonOperators{
 }
 
 
-interface FMPSQLite3Constraint{
+export interface FMPSQLite3Constraint{
     /**确保列不能有 NULL 值。 */
     not_null?:boolean,
     /**确保列中的所有值都是唯一的。 */
@@ -129,14 +129,14 @@ interface FMPSQLite3Constraint{
     default?:string
 }
 
-interface FMPSQLite3ConstraintForignKey{
+export interface FMPSQLite3ConstraintForignKey{
     /**外键指向的列所在的表   */
     table:string,
     /**外键指向的列名 */
     column:string
 }
 
-interface FMPSQLite3Column{
+export interface FMPSQLite3Column{
     /**列名 */
     name:string,
     /**列的数据类型 */
@@ -349,6 +349,9 @@ export class FMPSQLite3{
             result.set(columnName,rawResult[columnName])
         }
         return result
+    }
+    newColumn(tableName:string,column:FMPSQLite3Column):void{
+        this.runSync(`ALTER  TABLE ${tableName} ADD COLUMN ${column.name} ${column.data_type.toStatement()} `)
     }
 }
 
