@@ -350,6 +350,10 @@ export class FMPSQLite3{
         }
         return result
     }
+    newColumn(tableName:string,newColumn:FMPSQLite3Column):void{
+        for(let column of this.getColumns(tableName))if(column.name==newColumn.name)return 
+        this.runSync(`ALTER  TABLE ${tableName} ADD COLUMN ${newColumn.name} ${newColumn.data_type.toStatement()} `)
+    }
 }
 
 export class FMPSQLSingleArrayTable{
