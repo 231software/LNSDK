@@ -56,3 +56,4 @@ export {
     FMPInternalPermission as InternalPermission
 } from "./Game/InternalPermission.js"
 export {ScriptDone} from "./Events/Process.js"
+export {FMPTickEvent as TickEvent} from "./Events/Server.js"

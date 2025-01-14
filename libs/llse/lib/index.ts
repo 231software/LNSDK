@@ -55,6 +55,7 @@ export {
     FMPDisableEvent as DisableEvent
 } from "./Events/Process.js"
 export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
+export {FMPTickEvent as TickEvent} from "./Events/Server.js"
 
 export{
     SQLite3,
