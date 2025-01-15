@@ -57,6 +57,9 @@ export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent a
 export {
     FMPTickEvent as TickEvent
 } from "./Events/Server.js"
+export {
+    FMPsetMotd as setMotd
+} from "./Game/Server.js"
 
 export{
     SQLite3,
