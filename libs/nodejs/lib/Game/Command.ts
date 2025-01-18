@@ -1,3 +1,4 @@
+import { tickSimulatorLoop } from "../Events/Server";
 import {FMPLogger } from "../Logger";
 import { FMPInternalPermission } from "./InternalPermission";
 import * as readline from "readline";
@@ -200,9 +201,12 @@ export async function commandReactor(){
             stop = true;
             //执行关服触发
             onStopContainer.onStop()
+            //停止游戏刻模拟循环
+            clearInterval(tickSimulatorLoop)
             //关闭命令行的输入流
             rl.close();
-            return true;  // 提前返回，避免继续处理
+            //告知后续代码，用户关闭了软件
+            return true; 
         }
         return false;
     }

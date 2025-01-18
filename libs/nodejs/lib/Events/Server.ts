@@ -1,7 +1,8 @@
 export let tickSimulator=(event:FMPTickEvent)=>{
 
 }
-const tickSimulatorLoop=setInterval(()=>{
+//将其导出来让DisableEvent停止它
+export const tickSimulatorLoop=setInterval(()=>{
     tickSimulator(new FMPTickEvent())
 },50)
 export class FMPTickEvent{
