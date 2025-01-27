@@ -108,7 +108,7 @@ export class FMPPlayer{
      * @returns 是否成功给予玩家
      */
     giveItem(item:FMPItem):boolean{
-        return false
+        return this.rawplayer.giveItem(item.rawItem)
     }
     tell (msg: string, type?: sendTextType): boolean{
         return this.rawplayer.tell(msg,type);
