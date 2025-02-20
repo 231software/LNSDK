@@ -38,7 +38,7 @@ export class FMPContainer{
             return true;
         }
         else{
-            if(!this.hasSpaceFor(item))throw new Error("由于当前容器已满，无法向其中放入物品"+item.type)
+            if(!this.hasSpaceFor(item))return false
             let countLeft=item.count
             //寻找同类槽位或空位
             //第一圈：寻找同类槽位
