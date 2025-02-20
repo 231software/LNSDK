@@ -189,3 +189,11 @@ function getMaxStack(container:Container,slot:number,player?:Player):number{
         return result
     }
 }
+
+export class FMPInventory extends FMPContainer{
+    owner:FMPPlayer
+    constructor(rawContainer:Container,owner:FMPPlayer){
+        super(rawContainer)
+        this.owner=owner
+    }
+}

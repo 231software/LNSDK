@@ -13,6 +13,7 @@ export {
 } from "./Game/Item.js"
 export {
     FMPContainer as Container,
+    FMPInventory as Inventory
 } from "./Game/Container.js"
 export {
     FMPNBTCompound as NBTCompound,

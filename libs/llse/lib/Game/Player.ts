@@ -1,4 +1,5 @@
 import { FMPLogger } from "../Logger";
+import { FMPInventory } from "./Container";
 import { FMPInternalPermission } from "./InternalPermission";
 import { FMPItem } from "./Item";
 import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location";
@@ -129,7 +130,7 @@ export class FMPPlayer{
         return this.rawplayer.runcmd(cmd)
     }
     getInventory(){
-        return this.rawplayer.getInventory()
+        return new FMPInventory(this.rawplayer.getInventory(),this)
     }
     toll2Player():Player{
         return mc.getPlayer(this.xuid)
