@@ -9,9 +9,28 @@ export { FMPPlayer as Player,FMPGameMode as GameMode} from "./Game/Player.js";
 export { FMPEntity as Entity,FMPDamageCause as DamageCause} from "./Game/Entity.js"; 
 export {
     FMPItem as Item,
-    FMPSlot as Slot,
     FMPToolItem
 } from "./Game/Item.js"
+export {
+    FMPContainer as Container,
+} from "./Game/Container.js"
+export {
+    FMPNBTCompound as NBTCompound,
+    FMPNBTBasicType as NBTBasicType,
+    FMPNBTBoolean as NBTBoolean,
+    FMPNBTByte as NBTByte,
+    FMPNBTByteArray as NBTByteArray,
+    FMPNBTDouble as NBTDouble,
+    FMPNBTEnd as NBTEnd,
+    FMPNBTFloat as NBTFloat,
+    FMPNBTInt as NBTInt,
+    FMPNBTList as NBTList,
+    FMPNBTLong as NBTLong,
+    FMPNBTObjectLike as NBTObjectLike,
+    FMPNBTShort as NBTShort,
+    FMPNBTString as NBTString,
+    FMPNBTType as NBTType
+} from "./Game/NBT.js"
 export {
     FMPLocation as Location,
     FMPEulerAngles as EulerAngles
