@@ -6,7 +6,6 @@ export enum FMPContainerType{
     INVENTORY
 }
 export class FMPContainer{
-    size:number;
     rawContainer:Container
     static itemMaxStackCache=new Map<string,number>()
     constructor(rawContainer:Container){
@@ -17,6 +16,9 @@ export class FMPContainer{
             case "INVENTORY":return FMPContainerType.INVENTORY;
             default:throw new Error("不支持的容器类型："+this.rawContainer.type)
         }
+    }
+    get size():number{
+        return this.rawContainer.size
     }
     put(item:FMPItem,slot?:number):boolean{
         //如果传入了槽位，代表要放入指定位置，那么搜索物品栏确认是否能够放入
