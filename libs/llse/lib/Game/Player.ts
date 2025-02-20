@@ -128,6 +128,9 @@ export class FMPPlayer{
     runCmd(cmd:string):boolean{
         return this.rawplayer.runcmd(cmd)
     }
+    getInventory(){
+        return this.rawplayer.getInventory()
+    }
     toll2Player():Player{
         return mc.getPlayer(this.xuid)
     }
