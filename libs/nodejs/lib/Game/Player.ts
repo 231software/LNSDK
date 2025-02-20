@@ -15,11 +15,13 @@ export class FMPPlayer{
     name:string;
     location:FMPLocation
     gameMode:FMPGameMode
+    inAir:boolean
     constructor(xuid:string,name:string,location:FMPLocation,gameMode:FMPGameMode){
         this.xuid=xuid;
         this.name=name;
         this.location=location;
         this.gameMode=gameMode
+        this.inAir=false
     }
     get uuid():string{
         return ""
