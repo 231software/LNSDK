@@ -83,11 +83,14 @@ export class FMPContainer{
         if(rawItem.isNull())return undefined
         //生成fmp物品
         const item=new FMPItem(rawItem.type,rawItem.count)//通过nbt读取物品自定义名称
+        this.checkAndCalculateItemMaxStack(item,slot)
+        return item
+    }
+    checkAndCalculateItemMaxStack(item:FMPItem,slot:number){
         //获取当前物品时，会顺便检查这个物品的最大堆叠数量是否已经计算
         if(FMPContainer.itemMaxStackCache.get(item.type)==undefined){
             FMPContainer.itemMaxStackCache.set(item.type,getMaxStack(this.rawContainer,slot))
         }
-        return item
     }
     replaceItem(slot:number,item:FMPItem):boolean{
         return this.rawContainer.setItem(slot,item.rawItem)
@@ -166,7 +169,7 @@ function getMaxStack(container:Container,slot:number,player?:Player):number{
         //移除物品后，可能需要刷新一次玩家物品栏
         if(container.type=="INVENTORY"){
             if(player)player.refreshItems()
-            else logger.error("检测物品最大数量时，操作在玩家物品栏进行，然而却没有传入该玩家。")
+            else throw new Error("检测物品最大数量时，操作在玩家物品栏进行，然而却没有传入该玩家。")
         }
         //由于改变物品后可能导致物品空指针，此处重新获取了物品
         testItem=container.getItem(slot)
@@ -197,5 +200,12 @@ export class FMPInventory extends FMPContainer{
     constructor(rawContainer:Container,owner:FMPPlayer){
         super(rawContainer)
         this.owner=owner
+    }
+    //对于物品栏则是重载该方法，让getMaxStack传入的参数带玩家
+    checkAndCalculateItemMaxStack(item:FMPItem,slot:number){
+        //获取当前物品时，会顺便检查这个物品的最大堆叠数量是否已经计算
+        if(FMPContainer.itemMaxStackCache.get(item.type)==undefined){
+            FMPContainer.itemMaxStackCache.set(item.type,getMaxStack(this.rawContainer,slot,this.owner.rawplayer))
+        }
     }
 }
