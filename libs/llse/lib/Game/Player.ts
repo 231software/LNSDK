@@ -14,7 +14,7 @@ export function fromll2gamemode(ll2gamemode:number):FMPGameMode{
         case 0:return FMPGameMode.Survival;
         case 1:return FMPGameMode.Creative;
         case 2:return FMPGameMode.Adventure;
-        case 3:return FMPGameMode.Spectator;
+        case 6:return FMPGameMode.Spectator;
         default:return FMPGameMode.Unknown;
     }
 }
