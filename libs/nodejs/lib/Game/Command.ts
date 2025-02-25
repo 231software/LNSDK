@@ -160,18 +160,28 @@ const fillerCommand = new FMPCommand("fillerCommand",[],[[]],result=>{})
 
 CommandList.delete("fillerCommand");
 
+let globalReadline:readline.Interface|undefined
+
+export function commandReactorStarted(){
+    return Boolean(globalReadline)
+}
+
+export function startCommandReactor(){
+    if(!commandReactorStarted())commandReactor()
+}
+
 /**
  * 负责模拟所有从控制台接收到的命令的行为
  */
 export async function commandReactor(){
     // 创建接口实例
-    const rl = readline.createInterface({
+    globalReadline = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
     function readlineCycle() {
         // 提示用户输入
-        rl.question('', (answer) => {
+        globalReadline?.question('', (answer) => {
             // 判断是否为退出命令，退出命令优先级高于一切，所以直接放到最外面单独处理
             if (handleStopCommand(answer)) return;
     
@@ -204,7 +214,7 @@ export async function commandReactor(){
             //停止游戏刻模拟循环
             clearInterval(tickSimulatorLoop)
             //关闭命令行的输入流
-            rl.close();
+            globalReadline?.close();
             //告知后续代码，用户关闭了软件
             return true; 
         }
