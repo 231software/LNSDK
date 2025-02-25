@@ -190,8 +190,8 @@ export class FMPCommand{
             return true;
         }
         //正常注册指令的部分，如果InitEvent尚未被触发会被跳过
-        FMPLogger.info("指令注册：开始注册")
-        FMPLogger.info("指令注册：使用llse API")
+        FMPLogger.debug("指令注册：开始注册")
+        FMPLogger.debug("指令注册：使用llse API")
         //转换flag的值
         let flag:any=command.flag;
         if(command.flag===undefined)flag=0x80;
@@ -200,9 +200,9 @@ export class FMPCommand{
         if(description===undefined)description=" ";
         //console.log(command.name,description,toll2PermType(command.permission),flag)
         let ll2cmd=mc.newCommand(command.name,description,toll2PermType(command.permission),flag);
-        FMPLogger.info("指令注册：注册别名")
+        FMPLogger.debug("指令注册：注册别名")
         for(let alias of command.aliases)ll2cmd.setAlias(alias);
-        FMPLogger.info("指令注册：添加参数")
+        FMPLogger.debug("指令注册：添加参数")
         /** 由于llse的命令参数枚举用名字区分，此处就用一个编号转换成字符串作为名字供llse区分 */
         for(let arg of command.args){
             if(arg[1].bindEnum!==undefined){
@@ -241,7 +241,7 @@ export class FMPCommand{
                     break;
             }
         }
-        FMPLogger.info("指令注册：设置回调");
+        FMPLogger.debug("指令注册：设置回调");
         ll2cmd.setCallback((cmd,ll2origin,output,ll2results)=>{
             const executor_type=fromll2commandExecutorType(ll2origin.type)
             let origin:any
@@ -263,7 +263,7 @@ export class FMPCommand{
             const result=new FMPCommandResult(new FMPCommandExecutor(origin,executor_type),ParamsResult);
             command.callback(result)
         })
-        FMPLogger.info("指令注册：设置重载")
+        FMPLogger.debug("指令注册：设置重载")
         //overload
         for(let overload of command.overloads){
             ll2cmd.overload(overload)
@@ -275,7 +275,7 @@ export class FMPCommand{
             Logger.warn("要解决这条提示，请阅读LNSDK和LLSE的开发文档，传入格式正确的参数列表。")
             Logger.warn("或者如果您本就不想在该命令中使用任何参数，请传入“[[]]”而不是“[]”。")
         }
-        FMPLogger.info("指令注册：执行注册")
+        FMPLogger.debug("指令注册：执行注册")
         return ll2cmd.setup();
     }
 }
