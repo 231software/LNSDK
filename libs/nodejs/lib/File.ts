@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { FMPLogger } from "./Logger";
+const onWindows=process.platform === 'win32'
 export class FMPFile{
     static ls(path:string):string[]{
         try{
@@ -29,7 +30,7 @@ export class FMPFile{
                 FMPLogger.info("尝试从上一层文件夹开始创建")
                 const dir=new FMPDirectory(path);
                 dir.folders.pop()//去掉最后一个文件夹
-                FMPFile.initDir(dir.toString())//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
+                FMPFile.initDir(dir.toString(onWindows))//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
                 FMPFile.initDir(path)
             }
         }
@@ -65,11 +66,12 @@ export class FMPFile{
             //检查是否已存在同名文件
             //解析出目标文件夹的上级目录
             const targetDir=new FMPDirectory(destination)
+            if(targetDir.folders.length==0)throw new Error("目前LNSDK的nodejs还不支持拷贝到当前目录，请联系LNSDK开发者寻求帮助")
             const targetFileName=targetDir.folders.pop()
             if(targetFileName==undefined)throw new Error("multiple errors occured:\nFile can't be copied: operation not permitted\nFailed to obtain the last file or folder's name while checking for reasons.")
-            targetDir.folders.push(targetFileName,"..")
+            //targetDir.folders.push(targetFileName,"..")//这行代码不知道有什么用，但他会在macOS上造成错误
             //文件已存在
-            if(FMPFile.ls(targetDir.toString()).includes(targetFileName)){
+            if(FMPFile.ls(targetDir.toString(onWindows)).includes(targetFileName)){
                 if(FMPFile.isFile(source)){
                     
                     //设置了跳过同名文件
@@ -90,12 +92,17 @@ export class FMPFile{
                     //设置了合并文件夹
                     if(options.merge==true){
                         //遍历原目录中已有的文件，递归地移动每个文件
-                        for(let file of FMPFile.ls(source)){
-                            const dir=new FMPDirectory(source)
-                            dir.folders.push(file)
-                            const targetDir=new FMPDirectory(destination)
-                            targetDir.folders.push(file)
-                            FMPFile.copy(dir.toString(),targetDir.toString(),options)
+                        try{
+                            for(let file of FMPFile.ls(source)){
+                                const dir=new FMPDirectory(source)
+                                dir.folders.push(file)
+                                const targetDir=new FMPDirectory(destination)
+                                targetDir.folders.push(file)
+                                FMPFile.copy(dir.toString(onWindows),targetDir.toString(onWindows),options)
+                            }                            
+                        }
+                        catch(e){
+                            throw new Error("Can't merge folders: "+e)
                         }
                         return
                     }
@@ -157,8 +164,9 @@ export class FMPFile{
                 const targetFileName=targetDir.folders.pop()
                 if(targetFileName==undefined)throw new Error("multiple errors occured:\nFile can't be renamed: operation not permitted\nFailed to obtain the last file or folder's name while checking for reasons.")
                 targetDir.folders.push(targetFileName,"..")
+                
                 //文件已存在
-                if(FMPFile.ls(targetDir.toString()).includes(targetFileName)){
+                if(FMPFile.ls(targetDir.toString(onWindows)).includes(targetFileName)){
                     //设置了跳过同名文件
                     if(options.skipSameNameFiles||options.skipSameName==true)return;
                     //设置了替换同名文件
@@ -180,10 +188,10 @@ export class FMPFile{
                 //解析出目标文件夹的上级目录
                 const targetDir=new FMPDirectory(target)
                 const targetFileName=targetDir.folders.pop()
-                if(targetFileName==undefined)throw new Error("multiple errors occured:\nFile can't be renamed: operation not permitted\nFailed to obtain the last file or folder's name while checking for reasons.")
-                targetDir.folders.push(targetFileName,"..")
+                if(targetFileName==undefined)throw new Error("multiple errors occured:\nFile can't be renamed: operation not permitted\nFailed to obtain the last file or folder's name while checking for reasons.")    
+                //targetDir.folders.push(targetFileName,"..")
                 //文件已存在
-                if(FMPFile.ls(targetDir.toString()).includes(targetFileName)){
+                if(FMPFile.ls(targetDir.toString(onWindows)).includes(targetFileName)){
                     //设置了存在同名文件则跳过，因为此处已经是同名文件的情况了，就直接跳过
                     if(options.skipSameName==true)return
                     //设置了合并文件夹
@@ -194,7 +202,7 @@ export class FMPFile{
                             dir.folders.push(file)
                             const targetDir=new FMPDirectory(target)
                             targetDir.folders.push(file)
-                            FMPFile.rename(dir.toString(),targetDir.toString(),options)
+                            FMPFile.rename(dir.toString(onWindows),targetDir.toString(onWindows),options)
                         }
                         return
                     }
@@ -271,8 +279,17 @@ export class FMPDirectory{
     folders:string[];
     constructor(dir:string){
         this.folders=dir.split(/[/|\\]/);
+        if(this.folders.includes("..")&&this.folders.length>1)throw new Error("路径中包含..时，必须仅包含这一个目录。目前LNSDK还无法修复该问题。")
     }
-    toString(backslash=true):string{
+    /**
+     * 向上一级
+     */
+    up(){
+        //对于位于目录中的位置，直接去掉位于最后的目录
+        if(this.folders.length>0)this.folders.pop()
+        else this.folders.push("..")
+    }
+    toString(backslash=false):string{
         let target:string="";
         for(let i in this.folders){
             target=target+this.folders[i];
@@ -282,7 +299,6 @@ export class FMPDirectory{
         }
         return target;
     }
-
 }
 export class JsonFile{
     fileContent:string;

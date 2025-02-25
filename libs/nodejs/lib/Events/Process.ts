@@ -1,5 +1,5 @@
 import { FMPLogger } from "../Logger"
-import { FMPCommand,CommandList,commandReactor, FMPCommandResult, FMPCommandParam, FMPCommandParamType, FMPCommandParamDataType } from "../Game/Command"
+import { FMPCommand,CommandList,commandReactor, FMPCommandResult, FMPCommandParam, FMPCommandParamType, FMPCommandParamDataType, startCommandReactor } from "../Game/Command"
 import { FMPInternalPermission } from "../Game/InternalPermission"
 import { FMPPlayerJoinEvent, playerJoinEventHandler } from "./Player"
 import { FMPGameMode, FMPPlayer } from "../Game/Player"
@@ -12,7 +12,9 @@ export let player:FMPPlayer;
 let processOnStart=()=>{
     //FMPCommand.register(new PlayerCmd())
     //FMPCommand.register(new SudoCmd())
-    if(CommandList.size>2)commandReactor();
+    //当服务器中不止有player和sudo命令时启动命令输入功能
+    //当服务器中游戏刻被监听时启动命令输入功能
+    if(CommandList.size>2)startCommandReactor();
 }
 ScriptDone=()=>{
     processOnStart()
