@@ -307,8 +307,8 @@ export class FMPInventory extends FMPContainer{
         this.owner.rawplayer.refreshItems()
         return result
     }
-    countItem(type:string):number{
-        const result=super.countItem(type)
+    consumeItem(type:string,number:number,slot?:number):boolean{
+        const result=super.consumeItem(type,number,slot)
         this.owner.rawplayer.refreshItems()
         return result
     }
