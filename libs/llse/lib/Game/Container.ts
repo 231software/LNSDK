@@ -142,6 +142,38 @@ export class FMPContainer{
     removeItem(slot:number,number:number):boolean{
         return this.rawContainer.removeItem(slot,number);
     }
+    consumeItem(type:string,number:number,slot?:number):boolean{
+        //剩余物品不足这么多则直接返回false
+        if(this.countItem(type)<number)return false
+        for(let currentSlot=0;currentSlot<this.size;currentSlot++){
+            const currentItem=this.getItem(currentSlot)
+            if(!currentItem)continue;
+            if(currentItem.type!=type)continue;
+            //剩余数量为0视为扣除完毕
+            if(number==0)break;
+            //如果剩余要消耗数量小于等于当前格子堆叠数，则消耗数量直接计为本次消耗量，格子堆叠数直接减掉消耗数量，然后剩余数量减掉消耗数量
+            if(number<=currentItem.count){
+                currentItem.count-=number
+                number-=number
+            }
+            //否则（消耗数量大于堆叠数），消耗数量为堆叠数，当前格子清空，剩余消耗数量为消耗数量减堆叠数
+            else{
+                number-=currentItem.count
+                this.clearSlot(currentSlot)
+            }
+        }
+        return true;
+    }
+    countItem(type:string):number{
+        let count=0
+        for(let currentSlot=0;currentSlot<this.size;currentSlot++){
+            const currentItem=this.getItem(currentSlot)
+            if(!currentItem)continue;
+            if(currentItem.type!=type)continue;
+            count+=currentItem.count
+        }
+        return count
+    }
     clear(slot:number):boolean{
         return false;
     }
@@ -272,6 +304,11 @@ export class FMPInventory extends FMPContainer{
     }
     clearSlot(slot:number):boolean{
         const result=super.clearSlot(slot)
+        this.owner.rawplayer.refreshItems()
+        return result
+    }
+    countItem(type:string):number{
+        const result=super.countItem(type)
         this.owner.rawplayer.refreshItems()
         return result
     }
