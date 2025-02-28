@@ -109,7 +109,12 @@ export{
     OneBotMessageReplyContent,
     OneBotMessageTextContent,
     OneBotMessageVideoContent,
-    OneBotMessageForwardContent
+    OneBotMessageForwardContent,
+    PluginEvent,
+    PluginEventHandler,
+    PluginEventError,
+    regPluginFunc,
+    getPluginFunc
 } from "./FeaturesIndex.js"
 
 export {

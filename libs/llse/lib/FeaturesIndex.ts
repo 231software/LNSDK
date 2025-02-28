@@ -39,3 +39,12 @@ export {
     OneBotMessageForwardContent
 } from "./Features/WebSocket.js";
 //ws<<
+//pluginevent>>
+export {
+    FMPPluginEvent as PluginEvent,
+    FMPPluginEventHandler as PluginEventHandler,
+    FMPPluginEventError as PluginEventError,
+    regPluginFunc,
+    getPluginFunc,
+} from "./Features/PluginEvent.js"
+//pluginevent<<
