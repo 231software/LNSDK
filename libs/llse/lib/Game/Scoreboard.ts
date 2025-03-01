@@ -49,7 +49,7 @@ export class FMPScoreboard{
             FMPLogger.error("找不到玩家"+playerName+"。LNSDK目前不支持在LLSE上操作离线玩家的计分板或虚拟计分板。请向LNSDK开发者寻求帮助。")
             return false
         }
-        return rawPlayer.setScore(this.userSetName,value)
+        return rawPlayer.addScore(this.userSetName,value)
     }
     reduce(playerName:string,value:number):boolean{
         const rawPlayer:Player|null=mc.getPlayer(playerName)
