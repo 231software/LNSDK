@@ -45,6 +45,6 @@ export {
     FMPPluginEventHandler as PluginEventHandler,
     FMPPluginEventError as PluginEventError,
     regPluginFunc,
-    getPluginFunc,
-} from "./Features/PluginEvent.js"
+    getPluginFunc
+} from "./Features/PluginEvent.js";
 //pluginevent<<
