@@ -53,7 +53,11 @@ export {
     FMPInitEvent as InitEvent,
     FMPDisableEvent as DisableEvent
 } from "./Events/Process.js"
-export {FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,FMPPlayerJoinEvent as PlayerJoinEvent} from "./Events/Player.js"
+export {
+    FMPPlayerToggleSneakEvent as PlayerToggleSneakEvent,
+    FMPPlayerJoinEvent as PlayerJoinEvent,
+    FMPPlayerChatEvent as PlayerChatEvent
+} from "./Events/Player.js"
 export {
     FMPTickEvent as TickEvent
 } from "./Events/Server.js"

@@ -23,3 +23,16 @@ export class FMPPlayerToggleSneakEvent{
         });
     }
 }
+export class FMPPlayerChatEvent{
+    player:FMPPlayer
+    msg:string
+    constructor(player:FMPPlayer,msg:string){
+        this.player=player,
+        this.msg=msg
+    }
+    static on(callback:(event:FMPPlayerChatEvent)=>boolean|void){
+        mc.listen("onChat",(player,msg)=>{
+            callback(new FMPPlayerChatEvent(new FMPPlayer(player),msg))
+        })
+    }
+}

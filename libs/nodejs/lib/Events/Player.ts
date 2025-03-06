@@ -19,3 +19,13 @@ export class FMPPlayerToggleSneakEvent{
     static on(callback:(event:FMPPlayerToggleSneakEvent)=>boolean|void){
     }
 }
+export class FMPPlayerChatEvent{
+    player:FMPPlayer
+    msg:string
+    constructor(player:FMPPlayer,msg:string){
+        this.player=player,
+        this.msg=msg
+    }
+    static on(callback:(event:FMPPlayerChatEvent)=>boolean|void){
+    }
+}
