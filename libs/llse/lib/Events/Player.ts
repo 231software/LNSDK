@@ -32,7 +32,7 @@ export class FMPPlayerChatEvent{
     }
     static on(callback:(event:FMPPlayerChatEvent)=>boolean|void){
         mc.listen("onChat",(player,msg)=>{
-            callback(new FMPPlayerChatEvent(new FMPPlayer(player),msg))
+            return callback(new FMPPlayerChatEvent(new FMPPlayer(player),msg))!==false
         })
     }
 }
