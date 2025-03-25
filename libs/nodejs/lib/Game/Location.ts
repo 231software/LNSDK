@@ -1,4 +1,4 @@
-import { FMPDefaultDimension, FMPDimension} from "./Dimension";
+import {FMPDimension} from "./Dimension";
 export class FMPManualConstructedLocation{
     x:number;
     y:number;
@@ -42,7 +42,7 @@ export class FMPLocation{
     get dimension():FMPDimension{
         return this.rawlocation.dimension;
     }
-    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension(FMPDefaultDimension.Overworld)):FMPLocation{
+    static new(x:number,y:number,z:number,dimension:FMPDimension=FMPDimension.getDimension("overworld")):FMPLocation{
         return new FMPLocation({x,y,z,dimension},true);
     }
 }

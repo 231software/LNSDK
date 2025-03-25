@@ -1,4 +1,4 @@
-import { FMPDefaultDimension, FMPDimension } from "./Dimension";
+import {FMPDimension } from "./Dimension";
 import { FMPEulerAngles, FMPLocation } from "./Location";
 import {FMPGameMode, FMPPlayer} from "./Player"
 export class FMPEntity{
@@ -9,7 +9,7 @@ export class FMPEntity{
         return false;
     }
     toPlayer():FMPPlayer{
-        return new FMPPlayer("0","实体转换玩家目前尚未开发完毕",FMPLocation.new(0,0,0,new FMPDimension(FMPDefaultDimension.Overworld)),FMPGameMode.Survival);
+        return new FMPPlayer("0","实体转换玩家目前尚未开发完毕",FMPLocation.new(0,0,0,FMPDimension.getDimension("overworld")),FMPGameMode.Survival);
     }
 }
 export enum FMPDamageCause {

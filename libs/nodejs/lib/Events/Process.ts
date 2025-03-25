@@ -4,7 +4,7 @@ import { FMPInternalPermission } from "../Game/InternalPermission"
 import { FMPPlayerJoinEvent, playerJoinEventHandler } from "./Player"
 import { FMPGameMode, FMPPlayer } from "../Game/Player"
 import { FMPLocation } from "../Game/Location"
-import { FMPDefaultDimension, FMPDimension } from "../Game/Dimension"
+import { FMPDimension } from "../Game/Dimension"
 import { onStopContainer } from "../Game/Command"
 export let ScriptDone=():boolean|void=>{}
 export let status:boolean=false
@@ -52,7 +52,7 @@ const PlayerCmd = new FMPCommand("player",[
             FMPLogger.info("玩家模拟模式已设置为"+(status?"开":"关"))
             
             if(status){
-                player=new FMPPlayer("0000000000000000","demo",FMPLocation.new(0,0,0,new FMPDimension(FMPDefaultDimension.Overworld)),FMPGameMode.Survival)
+                player=new FMPPlayer("0000000000000000","demo",FMPLocation.new(0,0,0,FMPDimension.getDimension("overworld")),FMPGameMode.Survival)
                 playerJoinEventHandler(new FMPPlayerJoinEvent(player))
             }
         }

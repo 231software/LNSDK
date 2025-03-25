@@ -1,5 +1,5 @@
 import { FMPLogger } from "../Logger";
-import { FMPDefaultDimension, FMPDimension, fromll2dimid, toll2dimid } from "./Dimension";
+import { FMPDimension, fromll2dimid, toll2dimid } from "./Dimension";
 export class FMPManualConstructedLocation{
     x:number;
     y:number;
@@ -42,16 +42,13 @@ export class FMPLocation{
         return this.rawlocation.z
     }
     get dimension():FMPDimension{
-        return new FMPDimension(fromll2dimid(this.rawlocation.dimid));
-    }
-    get defaultDimension():FMPDefaultDimension{
-        return this.rawlocation.dimid;
+        return fromll2dimid(this.rawlocation.dimid);
     }
     toll2FloatPos():any{
-        return new FloatPos(this.x,this.y,this.z,toll2dimid(this.defaultDimension));
+        return new FloatPos(this.x,this.y,this.z,toll2dimid(this.dimension));
     }
-    static new(x:number,y:number,z:number,dimension:FMPDimension=new FMPDimension(FMPDefaultDimension.Overworld)):FMPLocation{
-        return new FMPLocation(new FloatPos(x,y,z,toll2dimid(dimension.defaultDimension)),true);
+    static new(x:number,y:number,z:number,dimension:FMPDimension=FMPDimension.getDimension("overworld")):FMPLocation{
+        return new FMPLocation(new FloatPos(x,y,z,toll2dimid(dimension)),true);
     }
 }
 export class FMPEulerAngles{//yaw就是alpha，pitch就是beta
