@@ -16,8 +16,7 @@ export {
     FMPEulerAngles as EulerAngles
 } from "./Game/Location.js";
 export {
-    FMPDimension as Dimension,
-    FMPDefaultDimension as DefaultDimension
+    FMPDimension as Dimension
 } from "./Game/Dimension.js"
 export {
     FMPCommand as Command,
