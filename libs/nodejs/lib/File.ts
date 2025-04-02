@@ -161,9 +161,10 @@ export class FMPFile{
                 //检查是否已存在同名文件
                 //解析出目标文件夹的上级目录
                 const targetDir=new FMPDirectory(target)
+                if(targetDir.folders.length==0)throw new Error("目前LNSDK的nodejs还不支持移动到当前目录，请联系LNSDK开发者寻求帮助")
                 const targetFileName=targetDir.folders.pop()
                 if(targetFileName==undefined)throw new Error("multiple errors occured:\nFile can't be renamed: operation not permitted\nFailed to obtain the last file or folder's name while checking for reasons.")
-                targetDir.folders.push(targetFileName,"..")
+                //targetDir.folders.push(targetFileName,"..")//这行代码不知道有什么用，但他会在macOS上造成错误
                 
                 //文件已存在
                 if(FMPFile.ls(targetDir.toString(onWindows)).includes(targetFileName)){
@@ -176,7 +177,7 @@ export class FMPFile{
                         return
                     }
                     //什么都没有设置，根本无从得知用户在文件冲突时要如何操作，直接报错（相当于取消移动）
-                    throw new Error("A File with the same name already exists in the target directory, this ile can't be moved.\nYou can solve this error by setting skipSameNameFiles (skip when this happens) or replaceFiles (discard the file in the target directory by replacing) to 'true'")
+                    throw new Error("A File with the same name already exists in the target directory, this file can't be moved.\nYou can solve this error by setting skipSameNameFiles (skip when this happens) or replaceFiles (discard the file in the target directory by replacing) to 'true'")
                 }
                 //文件不存在的话，会正常地执行下面的移动
             }
