@@ -51,7 +51,6 @@ export {
     FMPCommandResult as CommandResult,
     FMPruncmd as runcmd
 } from "./Game/Command.js"
-export {FMPInternalPermission as InternalPermission} from "./Game/InternalPermission.js"
 
 export {
     FMPSimpleForm as SimpleForm,
@@ -125,7 +124,8 @@ export {
 } from "./Game/Economy.js"
 export {
     TwoWayMap,
-    newUUID4
+    newUUID4,
+    FMPRegionRectangle as RegionRectangle
 } from "./Tools.js"
 export {
     HTTPMethod,

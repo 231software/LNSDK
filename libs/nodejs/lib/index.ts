@@ -102,7 +102,8 @@ export {
 } from "./Game/Economy.js"
 export {
     TwoWayMap,
-    newUUID4
+    newUUID4,
+    FMPRegionRectangle as RegionRectangle
 } from "./Tools.js"
 export {
     HTTPMethod,
