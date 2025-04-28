@@ -56,11 +56,11 @@ const PlayerCmd = new FMPCommand("player",[
                 playerJoinEventHandler(new FMPPlayerJoinEvent(player))
             }
         }
-    },FMPInternalPermission.Any
+    },{console:true,internal:true}
 );
 const SudoCmd = new FMPCommand("sudo",[
         //new FMPCommandParam(FMPCommandParamType.Mandatory,"switch",FMPCommandParamDataType.String)
     ],[[]],
     result=>{},
-    FMPInternalPermission.Any
+    {console:true,internal:true}
 );

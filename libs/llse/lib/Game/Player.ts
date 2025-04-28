@@ -1,6 +1,7 @@
 import { FMPLogger } from "../Logger";
-import { FMPInventory } from "./Container";
-import { FMPInternalPermission } from "./InternalPermission";
+import { FMPActor } from "./Actor";
+import { FMPCommandExecutorType } from "./Command";
+import { FMPInventory, FMPPlayerInventory } from "./Container";
 import { FMPItem } from "./Item";
 import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location";
 export enum FMPGameMode{
@@ -35,8 +36,8 @@ export enum sendTextType{
     tip,
     json,
 }
-export class FMPPlayer{
-    rawplayer:Player;
+export class FMPPlayer extends FMPActor{
+    declare rawObject: Player
     /*
     name:string;
     xuid:string;
@@ -46,8 +47,7 @@ export class FMPPlayer{
     */
     
     constructor(rawplayer:Player){
-        //用于执行方法
-        this.rawplayer=rawplayer;
+        super(rawplayer,FMPCommandExecutorType.Player)
         /*
         //判断平台并转换属性
         switch(Platform.getType()){
@@ -67,33 +67,29 @@ export class FMPPlayer{
     }
     get name():string{
         //判断平台并读取相应属性
-        return this.rawplayer.name;
+        return this.rawObject.name;
     }
     get xuid():string{
-        return this.rawplayer.xuid;
+        return this.rawObject.xuid;
     }    
     get uuid():string{
-        return this.rawplayer.uuid;
+        return this.rawObject.uuid;
     }    
     get gameMode():FMPGameMode{
-        return fromll2gamemode(this.rawplayer.gameMode);
+        return fromll2gamemode(this.rawObject.gameMode);
     }
     //返回的是玩家脚部坐标！
     get location():FMPLocation{
-        return new FMPLocation(this.rawplayer.feetPos,false);
+        return new FMPLocation(this.rawObject.feetPos,false);
     }
     get direction():FMPEulerAngles{
-        return FMPEulerAngles.new(this.rawplayer.direction.yaw,this.rawplayer.direction.pitch,0);
-    }
-    /**玩家对于游戏内置权限的权限等级 */
-    get internalPermission():FMPInternalPermission{
-        return this.rawplayer.isOP()?FMPInternalPermission.GameMasters:FMPInternalPermission.Admin
+        return FMPEulerAngles.new(this.rawObject.direction.yaw,this.rawObject.direction.pitch,0);
     }
     get isSneaking():boolean{
-        return this.rawplayer.isSneaking;
+        return this.rawObject.isSneaking;
     }
     get inAir():boolean{
-        return this.rawplayer.inAir
+        return this.rawObject.inAir
     }
     /**
      * 判断当前玩家是否在线。  
@@ -101,10 +97,10 @@ export class FMPPlayer{
      * @returns 玩家是否在线
      */
     isOnline():boolean{
-        return !(this.rawplayer.uuid==undefined)
+        return !(this.rawObject.uuid==undefined)
     }
     isSimulated():boolean{
-        return this.rawplayer.isSimulatedPlayer()
+        return this.rawObject.isSimulatedPlayer()
     }
     /**
      * 给予玩家一个物品
@@ -112,25 +108,26 @@ export class FMPPlayer{
      * @returns 是否成功给予玩家
      */
     giveItem(item:FMPItem):boolean{
-        return this.rawplayer.giveItem(item.rawItem)
+        return this.rawObject.giveItem(item.rawItem)
     }
     tell (msg: string, type?: sendTextType): boolean{
-        return this.rawplayer.tell(msg,type);
+        return this.rawObject.tell(msg,type);
     }
     setGameMode(gamemode:FMPGameMode){
-        return this.rawplayer.setGameMode(toll2gamemode(gamemode));
+        return this.rawObject.setGameMode(toll2gamemode(gamemode));
     }
     teleport(location:FMPLocation,direction?:FMPEulerAngles):boolean{
         if(direction===undefined){
-            return this.rawplayer.teleport(location.toll2FloatPos());
+            return this.rawObject.teleport(location.toll2FloatPos());
         }
-        return this.rawplayer.teleport(location.toll2FloatPos(),toll2DirectionAngle(direction));
+        return this.rawObject.teleport(location.toll2FloatPos(),toll2DirectionAngle(direction));
     }
     runCmd(cmd:string):boolean{
-        return this.rawplayer.runcmd(cmd)
+        return this.rawObject.runcmd(cmd)
     }
+    /**获取实体的物品栏 */
     getInventory(){
-        return new FMPInventory(this.rawplayer.getInventory(),this)
+        return new FMPPlayerInventory(this.object.getInventory(),this)
     }
     toll2Player():Player{
         return mc.getPlayer(this.xuid)

@@ -316,7 +316,7 @@ export class FMPCustomForm extends FMPForm{
                 resultSubmitted.push(new FMPCustomFormStepSlider(element.name,element.title,element.items,element.defaultValue))
             }
         }
-        return Boolean(formSession.player.rawplayer.sendForm(rawForm,(player,data)=>{
+        return Boolean(formSession.player.rawObject.sendForm(rawForm,(player,data)=>{
             if(data==null){
                 form.onClose(formSession)
                 return
@@ -540,7 +540,7 @@ export class FMPModalForm extends FMPForm{
         this.onCancel=onCancel
     }
     send(session:FMPModalFormSession):boolean{
-        session.player.rawplayer.sendModalForm(
+        session.player.rawObject.sendModalForm(
             this.title,
             this.content,
             this.confirmButtonText,

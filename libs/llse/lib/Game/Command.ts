@@ -1,8 +1,22 @@
 import {Logger} from "../index.js"
 import { FMPLogger } from "../Logger"
-import { FMPInternalPermission,toll2PermType } from "./InternalPermission";
 import { FMPPlayer } from "./Player";
 import { earlyRegisteredCommands,serverStarted } from "../Events/Process.js";
+import { FMPEntity } from "./Entity.js";
+
+export interface FMPCommandRegisterPositions{
+    console?:boolean
+    internal?:boolean
+    operator?:boolean
+    anyPlayer?:boolean
+}
+export function toll2PermType(perm:FMPCommandRegisterPositions):PermType{
+    if(perm.anyPlayer)return PermType.Any
+    if(perm.operator)return PermType.GameMasters
+    if(perm.console)return PermType.Console
+    if(perm.internal)return PermType.Internal
+    return PermType.GameMasters
+}
 export enum FMPCommandParamType{
     Optional=1,
     Mandatory
@@ -104,10 +118,35 @@ export function fromll2commandExecutorType(type:number):FMPCommandExecutorType{
 export class FMPCommandExecutor{
     /** 命令执行者原始对象，undefined代表未知 */
     object:any
-    type:FMPCommandExecutorType
-    constructor(object,type:FMPCommandExecutorType){
+    rawObject:any
+    commandExecutorType:FMPCommandExecutorType
+    constructor(object:any,type:FMPCommandExecutorType,rawObject?:any){
         this.object=object;
-        this.type=type;
+        this.commandExecutorType=type;
+        this.rawObject=rawObject
+    }
+    /**强制获取玩家，如果执行者不为玩家或玩家已离线则返回undefined */
+    asPlayer():FMPPlayer|undefined{
+        if(
+            this.commandExecutorType==FMPCommandExecutorType.Player
+            &&this.object instanceof FMPPlayer
+            &&typeof this.rawObject!=="undefined"
+        )if(
+            this.object.isOnline()
+        ){
+            return this.rawObject
+        }
+        return undefined
+    }
+    asEntity():FMPEntity|undefined{
+        if(
+            this.commandExecutorType==FMPCommandExecutorType.Entity
+            &&this.object instanceof FMPEntity
+            &&typeof this.rawObject!=="undefined"
+        ){
+            return this.rawObject
+        }
+        return undefined
     }
 }
 export class FMPCommandResult{
@@ -144,7 +183,7 @@ export class FMPCommand{
     args:Map<string,FMPCommandParam>=new Map();
     overloads:Array<Array<string>>;
     callback:(result:FMPCommandResult)=>void;
-    permission:FMPInternalPermission;
+    registerPositions:FMPCommandRegisterPositions;
     aliases:Array<string>;
     flag:any;
     /**
@@ -163,7 +202,7 @@ export class FMPCommand{
         args:Array<FMPCommandParam>=[],
         overloads:Array<Array<string>>=[[]],
         callback:(result:FMPCommandResult)=>void,
-        permission:FMPInternalPermission=FMPInternalPermission.GameMasters,
+        registerPositions:FMPCommandRegisterPositions,
         aliases:Array<string>=[],
         description:string|undefined=undefined,
         usageMessage:string|undefined=undefined,
@@ -174,7 +213,7 @@ export class FMPCommand{
         this.usageMessage=usageMessage;
         for(let param of args)this.args.set(param.name,param)
         this.overloads=overloads;
-        this.permission=permission;
+        this.registerPositions=registerPositions;
         this.aliases=aliases;
         this.flag=flag;
         this.callback=callback
@@ -199,7 +238,7 @@ export class FMPCommand{
         let description=command.description;
         if(description===undefined)description=" ";
         //console.log(command.name,description,toll2PermType(command.permission),flag)
-        let ll2cmd=mc.newCommand(command.name,description,toll2PermType(command.permission),flag);
+        let ll2cmd=mc.newCommand(command.name,description,toll2PermType(command.registerPositions),flag);
         FMPLogger.debug("指令注册：注册别名")
         for(let alias of command.aliases)ll2cmd.setAlias(alias);
         FMPLogger.debug("指令注册：添加参数")
@@ -244,11 +283,14 @@ export class FMPCommand{
         FMPLogger.debug("指令注册：设置回调");
         ll2cmd.setCallback((cmd,ll2origin,output,ll2results)=>{
             const executor_type=fromll2commandExecutorType(ll2origin.type)
-            let origin:any
+            let origin:any=undefined
             switch(executor_type){
                 case FMPCommandExecutorType.Player:
-                    if(ll2origin.player===undefined)break;
+                    if(typeof ll2origin.player==="undefined")break;
                     origin=new FMPPlayer(ll2origin.player);break;
+                case FMPCommandExecutorType.Entity:
+                    if(typeof ll2origin.entity==="undefined")break;
+                    origin=new FMPEntity(ll2origin.entity);break;
                 case FMPCommandExecutorType.Console:origin=undefined;break;
             }
             const ParamsResult:Map<string,{param:FMPCommandParam,value:any}>=new Map()
@@ -260,7 +302,7 @@ export class FMPCommand{
                     value:ll2results[paramString]
                 })
             }
-            const result=new FMPCommandResult(new FMPCommandExecutor(origin,executor_type),ParamsResult);
+            const result=new FMPCommandResult(new FMPCommandExecutor(origin,executor_type,ll2origin),ParamsResult);
             command.callback(result)
         })
         FMPLogger.debug("指令注册：设置重载")

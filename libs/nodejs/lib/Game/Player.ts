@@ -2,6 +2,8 @@ import { FMPLogger } from "../Logger";
 import { FMPEulerAngles, FMPLocation } from "./Location";
 import {FMPInternalPermission} from "../Game/InternalPermission"
 import {FMPItem} from "../Game/Item.js"
+import { FMPActor } from "./Actor.js";
+import { FMPCommandExecutorType } from "./Command.js";
 
 export enum FMPGameMode{
     Survival=0,
@@ -10,13 +12,14 @@ export enum FMPGameMode{
     Spectator,
     Unknown
 }
-export class FMPPlayer{
+export class FMPPlayer extends FMPActor{
     xuid:string;
     name:string;
     location:FMPLocation
     gameMode:FMPGameMode
     inAir:boolean
     constructor(xuid:string,name:string,location:FMPLocation,gameMode:FMPGameMode){
+        super(FMPCommandExecutorType.Player)
         this.xuid=xuid;
         this.name=name;
         this.location=location;

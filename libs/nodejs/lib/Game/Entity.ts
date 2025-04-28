@@ -1,9 +1,11 @@
+import { FMPActor } from "./Actor";
+import { FMPCommandExecutorType } from "./Command";
 import {FMPDimension } from "./Dimension";
 import { FMPEulerAngles, FMPLocation } from "./Location";
 import {FMPGameMode, FMPPlayer} from "./Player"
-export class FMPEntity{
+export class FMPEntity extends FMPActor{
     constructor(){
-
+        super(FMPCommandExecutorType.Entity)
     }
     isPlayer():boolean{
         return false;

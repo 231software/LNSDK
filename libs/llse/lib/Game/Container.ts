@@ -1,4 +1,5 @@
 import { FMPLogger } from "../Logger";
+import { FMPActor } from "./Actor";
 import { FMPItem } from "./Item";
 import { FMPPlayer } from "./Player";
 
@@ -278,6 +279,12 @@ function getMaxStack<T extends FMPContainer>(container:T,slot:number,itemType:st
 }
 
 export class FMPInventory extends FMPContainer{
+}
+
+
+//玩家物品栏是一个有盔甲栏和副手栏的特殊窗口
+export class FMPPlayerInventory extends FMPInventory{
+
     owner:FMPPlayer
     constructor(rawContainer:Container,owner:FMPPlayer){
         super(rawContainer)
@@ -286,7 +293,7 @@ export class FMPInventory extends FMPContainer{
     //修改玩家物品栏后要给玩家刷新物品栏显示
     put(item:FMPItem,slot?:number):boolean{
         const result=super.put(item,slot)
-        if(!this.owner.rawplayer.refreshItems()){
+        if(!this.owner.rawObject.refreshItems()){
             FMPLogger.error("刷新玩家物品栏失败！")
             return false
         }
@@ -294,29 +301,33 @@ export class FMPInventory extends FMPContainer{
     }
     replaceItem(slot:number,item:FMPItem):boolean{
         const result=super.replaceItem(slot,item)
-        this.owner.rawplayer.refreshItems()
+        this.owner.rawObject.refreshItems()
         return result
     }
     removeItem(slot:number,number:number):boolean{
         const result=super.removeItem(slot,number)
-        this.owner.rawplayer.refreshItems()
+        this.owner.rawObject.refreshItems()
         return result
     }
     clearSlot(slot:number):boolean{
         const result=super.clearSlot(slot)
-        this.owner.rawplayer.refreshItems()
+        this.owner.rawObject.refreshItems()
         return result
     }
     consumeItem(type:string,number:number,slot?:number):boolean{
         const result=super.consumeItem(type,number,slot)
-        this.owner.rawplayer.refreshItems()
+        this.owner.rawObject.refreshItems()
         return result
     }
     //对于物品栏则是重载该方法，让getMaxStack传入的参数带玩家
     checkAndCalculateItemMaxStack(item:FMPItem,slot:number){
         //获取当前物品时，会顺便检查这个物品的最大堆叠数量是否已经计算
         if(FMPContainer.itemMaxStackCache.get(item.type)==undefined){
-            FMPContainer.itemMaxStackCache.set(item.type,getMaxStack(this,slot,item.type,this.owner.rawplayer))
+            FMPContainer.itemMaxStackCache.set(item.type,getMaxStack(this,slot,item.type,this.owner.rawObject))
         }
     }
+}
+
+export class FMPMobInventory extends FMPInventory{
+
 }

@@ -1,8 +1,16 @@
 import { tickSimulatorLoop } from "../Events/Server";
 import {FMPLogger } from "../Logger";
+import {FMPPlayer} from "./Player"
 import { FMPInternalPermission } from "./InternalPermission";
 import * as readline from "readline";
 export const onStopContainer={onStop:()=>{}}
+
+export interface FMPCommandRegisterPositions{
+    console?:boolean
+    internal?:boolean
+    operator?:boolean
+    anyPlayer?:boolean
+}
 export enum FMPCommandParamType{
     Optional=1,
     Mandatory
@@ -68,12 +76,17 @@ export enum FMPCommandExecutorType{
     Unknown
 }
 export class FMPCommandExecutor{
-    /** 命令执行者原始对象 */
-    object:any
-    type:FMPCommandExecutorType
-    constructor(object,type:FMPCommandExecutorType){
-        this.object=object;
-        this.type=type;
+    name:string
+    rawobj:any
+    commandExecutorType:FMPCommandExecutorType
+    constructor(type:FMPCommandExecutorType){
+        this.commandExecutorType=type
+    }
+    asPlayer():FMPPlayer|undefined{
+        if(this.commandExecutorType==FMPCommandExecutorType.Player){
+            return this.rawobj
+        }
+        else return undefined
     }
 }
 export class FMPCommandResult{
@@ -110,7 +123,7 @@ export class FMPCommand{
     usageMessage:string|undefined;
     args:Map<string,FMPCommandParam>=new Map();
     overloads:Array<Array<string>>;
-    permission:FMPInternalPermission;
+    registerPosition:FMPCommandRegisterPositions;
     aliases:Array<string>;
     flag:any;
     callback:(result:FMPCommandResult)=>void
@@ -130,7 +143,7 @@ export class FMPCommand{
         args:Array<FMPCommandParam>,
         overloads:Array<Array<string>>,
         callback:(result:FMPCommandResult)=>void,
-        permission:FMPInternalPermission=FMPInternalPermission.GameMasters,
+        registerPosition:FMPCommandRegisterPositions={operator:true,console:true,internal:true},
         aliases:Array<string>=[],
         description:string|undefined=undefined,
         usageMessage:string|undefined=undefined,
@@ -141,21 +154,18 @@ export class FMPCommand{
         this.usageMessage=usageMessage;
         for(let param of args)this.args.set(param.name,param)
         this.overloads=overloads;
-        this.permission=permission;
+        this.registerPosition=registerPosition
         this.aliases=aliases;
         this.flag=flag;
         this.callback=callback
         CommandList.set(name,this);
-    }
-    static register<T extends FMPCommand>(command:T):boolean{
-        return true;
     }
 }
 
 //创建命令池
 let stop=false;
 export const CommandList:Map<string,FMPCommand>=new Map();
-const fillerCommand = new FMPCommand("fillerCommand",[],[[]],result=>{})
+const fillerCommand = new FMPCommand("fillerCommand",[],[[]],result=>{},{internal:true})
 //(<T extends FMPCommand>(typeLimiter:Map<string,T>):Map<string,T>=>{return typeLimiter})(new Map([["fillerCommand",fillerCommand]]))
 
 CommandList.delete("fillerCommand");
@@ -250,7 +260,7 @@ export async function commandReactor(){
             if (isMatchingOverload(overload, paramsString, command)) {
                 // 构建参数并执行回调
                 buildParams(overload, paramsString, command, params);
-                command.callback(new FMPCommandResult(new FMPCommandExecutor(undefined, FMPCommandExecutorType.Console), params));
+                command.callback(new FMPCommandResult(new FMPCommandExecutor(FMPCommandExecutorType.Console), params));
                 return FMPCommandFailReason.Success;
             }
         }
