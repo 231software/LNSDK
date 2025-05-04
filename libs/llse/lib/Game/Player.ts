@@ -47,7 +47,7 @@ export class FMPPlayer extends FMPActor{
     */
     
     constructor(rawplayer:Player){
-        super(rawplayer,FMPCommandExecutorType.Player)
+        super(rawplayer,FMPCommandExecutorType.Player,rawplayer)
         /*
         //判断平台并转换属性
         switch(Platform.getType()){
