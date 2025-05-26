@@ -134,7 +134,7 @@ export class FMPCommandExecutor{
         )if(
             this.object.isOnline()
         ){
-            return this.rawObject
+            return this.object
         }
         return undefined
     }

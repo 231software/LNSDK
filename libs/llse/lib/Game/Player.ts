@@ -103,6 +103,13 @@ export class FMPPlayer extends FMPActor{
         return this.rawObject.isSimulatedPlayer()
     }
     /**
+     * 玩家是否是服务器中的管理员
+     * 主要用于判断玩家能否执行命令等管理员操作，无法判断玩家是房主还是普通管理员
+     */
+    isOp():boolean{
+        return this.rawObject.isOP()
+    }
+    /**
      * 给予玩家一个物品
      * @param item 要给予玩家的物品
      * @returns 是否成功给予玩家
