@@ -17,7 +17,7 @@ export function toll2dimid(dim:FMPDimension):-1|0|1|2{
     }
 }
 export class FMPDimension{
-    name:string
+    _name:string
     displayName:string
     ll2dimid:number
     static createDimension(name:string){
@@ -25,7 +25,7 @@ export class FMPDimension{
     }
     constructor(name:string){
         if(!["overworld","nether","the_end"].includes(name))throw new Error("LNSDK目前未对More Dimensions进行适配")
-        this.name=name
+        this._name=name
         switch(name){
             case "overworld":this.displayName="主世界";break;
             case "nether":this.displayName="下界";break;
@@ -33,6 +33,9 @@ export class FMPDimension{
             default:this.displayName="不支持的维度"
         }
         this.ll2dimid=toll2dimid(this)
+    }
+    get name(){
+        return this._name
     }
     static getDimension(name:string):FMPDimension{
         return new FMPDimension(name);

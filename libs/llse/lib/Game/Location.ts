@@ -1,5 +1,7 @@
 import { FMPLogger } from "../Logger";
 import { FMPDimension, fromll2dimid, toll2dimid } from "./Dimension";
+import {LNSDKInternalError} from "../LNSDKInternalError"
+
 export class FMPManualConstructedLocation{
     x:number;
     y:number;
@@ -20,17 +22,21 @@ export class FMPManualConstructedLocation{
 }
 export class FMPLocation{
     /** 原始坐标对象 */
-    rawlocation:IntPos|FloatPos;
+    rawlocation:FloatPos|IntPos;
+    constructor(x:number,y:number,z:number,dimension:FMPDimension)
     /**
      * 
      * @param rawlocation 原始坐标对象
-     * @param manualConstructed 是否由用户手动生成
      */
-    constructor(rawlocation:any,manualConstructed:boolean){
-        let ll2dimid=rawlocation.dimid
-        if(ll2dimid==-1)ll2dimid=0;
-        if(manualConstructed)this.rawlocation=mc.newFloatPos(rawlocation.x,rawlocation.y,rawlocation.z,ll2dimid)
-        else this.rawlocation=rawlocation;
+    constructor(rawlocation:FloatPos|IntPos)
+    constructor(x_rawlocation:number|FloatPos|IntPos,y?:number,z?:number,dimension?:FMPDimension){
+        if(typeof x_rawlocation==="number"){
+            if(typeof y==="undefined"||typeof z==="undefined"||typeof dimension==="undefined")throw new LNSDKInternalError("Args for Location constructor must be provided with either x, y, z, dimension, or a raw location.")
+            this.rawlocation=new FloatPos(x_rawlocation,y,z,dimension.ll2dimid)
+        }
+        else{
+            this.rawlocation=x_rawlocation
+        }
     }
     get x():number{
         return this.rawlocation.x;
@@ -47,9 +53,9 @@ export class FMPLocation{
     toll2FloatPos():any{
         return new FloatPos(this.x,this.y,this.z,toll2dimid(this.dimension));
     }
-    static new(x:number,y:number,z:number,dimension:FMPDimension=FMPDimension.getDimension("overworld")):FMPLocation{
-        return new FMPLocation(new FloatPos(x,y,z,toll2dimid(dimension)),true);
-    }
+    // static new(x:number,y:number,z:number,dimension:FMPDimension=FMPDimension.getDimension("overworld")):FMPLocation{
+    //     return new FMPLocation(new FloatPos(x,y,z,toll2dimid(dimension)),true);
+    // }
 }
 export class FMPEulerAngles{//yaw就是alpha，pitch就是beta
     rawangle:any;
