@@ -80,7 +80,7 @@ export class FMPPlayer extends FMPActor{
     }
     //返回的是玩家脚部坐标！
     get location():FMPLocation{
-        return new FMPLocation(this.rawObject.feetPos,false);
+        return new FMPLocation(this.rawObject.feetPos);
     }
     get direction():FMPEulerAngles{
         return FMPEulerAngles.new(this.rawObject.direction.yaw,this.rawObject.direction.pitch,0);

@@ -102,8 +102,8 @@ export class FMPRegionRectangle{
         }
     
         return {
-            large:FMPLocation.new(x.large,y.large,z.large,pos1.dimension),
-            small:FMPLocation.new(x.small,y.small,z.small,pos2.dimension)
+            large:new FMPLocation(x.large,y.large,z.large,pos1.dimension),
+            small:new FMPLocation(x.small,y.small,z.small,pos2.dimension)
         };
     }
 

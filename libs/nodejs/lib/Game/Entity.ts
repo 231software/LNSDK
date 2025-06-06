@@ -11,7 +11,7 @@ export class FMPEntity extends FMPActor{
         return false;
     }
     toPlayer():FMPPlayer{
-        return new FMPPlayer("0","实体转换玩家目前尚未开发完毕",FMPLocation.new(0,0,0,FMPDimension.getDimension("overworld")),FMPGameMode.Survival);
+        return new FMPPlayer("0","实体转换玩家目前尚未开发完毕",new FMPLocation(0,0,0,FMPDimension.getDimension("overworld")),FMPGameMode.Survival);
     }
 }
 export enum FMPDamageCause {

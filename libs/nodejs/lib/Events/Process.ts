@@ -52,7 +52,7 @@ const PlayerCmd = new FMPCommand("player",[
             FMPLogger.info("玩家模拟模式已设置为"+(status?"开":"关"))
             
             if(status){
-                player=new FMPPlayer("0000000000000000","demo",FMPLocation.new(0,0,0,FMPDimension.getDimension("overworld")),FMPGameMode.Survival)
+                player=new FMPPlayer("0000000000000000","demo",new FMPLocation(0,0,0,FMPDimension.getDimension("overworld")),FMPGameMode.Survival)
                 playerJoinEventHandler(new FMPPlayerJoinEvent(player))
             }
         }
