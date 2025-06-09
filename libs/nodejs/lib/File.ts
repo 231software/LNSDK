@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { FMPLogger } from "./Logger";
+import { execSync } from "child_process";
 const onWindows=process.platform === 'win32'
 export class FMPFile{
     static ls(path:string):string[]{
@@ -47,7 +48,7 @@ export class FMPFile{
         catch(e){
             fs.openSync(path,"a"/*(e: NodeJS.ErrnoException | null, fd: number):void=>{
                 FMPLogger.info(fd)
-                fs.close(fd,()=>{})
+                fs.closeSync(fd,()=>{})
                 if(e)FMPLogger.info("新建文件的过程中，无法关闭文件，错误消息为：\n"+e)
             }*/)
         }
@@ -146,7 +147,7 @@ export class FMPFile{
     static forceWrite(path:string,content:string){
         const target=fs.openSync(path,"w+");
         fs.writeFileSync(path,content);
-        fs.close(target);
+        fs.closeSync(target);
     }
     /**
      * 重命名或移动一个文件  
@@ -172,6 +173,12 @@ export class FMPFile{
                     if(options.skipSameNameFiles||options.skipSameName==true)return;
                     //设置了替换同名文件
                     if(options.replaceFiles==true){
+                        //windows上不能这么移动，会被windows系统阻止，但类unix系统（macos和linux）是可以的
+                        //所以需要先判断是不是Windows系统，如果是的话就需要先删除原文件再放入新文件
+                        if(onWindows){
+                            //windows系统下直接删除文件也不能马上删除，所以这里调用了cmd来删除，并通过execSync别死主线程强行等待文件删除
+                            execSync("del /F "+new FMPDirectory(target).toString(true))
+                        }
                         fs.renameSync(path,target)
                         //任务完成，结束
                         return
@@ -242,7 +249,8 @@ export class FMPFile{
         const file_stat=fs.statSync(path)
         try{
             if(file_stat.isFile()){
-                fs.unlinkSync(path);
+                if(onWindows)execSync("del /F "+new FMPDirectory(path).toString(true))//windows系统要同步删除文件只能调命令行
+                else fs.unlinkSync(path);
             }
             else if(file_stat.isDirectory()){
                 //清空文件夹
@@ -250,7 +258,8 @@ export class FMPFile{
                     this.permanently_delete(path+"/"+filename);
                 }
                 //删除文件夹
-                fs.rmdirSync(path);
+                if(onWindows)execSync("rd /Q "+new FMPDirectory(path).toString(true))//windows系统要同步删除文件只能调命令行
+                else fs.rmdirSync(path);
             }
         }
         catch(e){

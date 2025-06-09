@@ -1,6 +1,8 @@
 /// <reference path="./HelperLib/SystemAPI/File.d.ts" />
+import { execSync } from "child_process";
 import { FMPLogger } from "./Logger";
 import * as fs from "fs";
+const onWindows=process.platform === 'win32'
 
 export class FMPFile{
     static ls(path:string):string[]{
@@ -141,7 +143,7 @@ export class FMPFile{
     static forceWrite(path:string,content:string){
         const target=fs.openSync(path,"w+");
         fs.writeFileSync(path,content);
-        fs.close(target);
+        fs.closeSync(target);
     }
     /**
      * 重命名或移动一个文件  
@@ -165,6 +167,9 @@ export class FMPFile{
                     if(options.skipSameNameFiles||options.skipSameName==true)return;
                     //设置了替换同名文件
                     if(options.replaceFiles==true){
+                        //windows上不能这么移动，会被windows系统阻止，但类unix系统（macos和linux）是可以的
+                        //所以此处调用了llse自带的文件api，一方面防止文件冲突，一方面确保文件完全删除
+                        FMPFile.permanently_delete(target)
                         fs.renameSync(path,target)
                         //任务完成，结束
                         return
