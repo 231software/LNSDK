@@ -130,6 +130,9 @@ export {
 export {
     HTTPMethod,
     HTTPRequest,
-    HTTPIncomingMessage
+    HTTPIncomingMessage,
+    HTTPOptions,
+    HTTPRespond,
+    HTTPServer
 } from "./http.js"
 export {ScriptDone} from "./Events/Process.js"
