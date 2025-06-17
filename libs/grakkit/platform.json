@@ -1,0 +1,12 @@
+{
+    "isNodeJS":true,
+    "lib":"nolib",
+    "features":{
+        "yml":["internal",""],
+        "xml":["internal",""],
+        "ws":["ws","8.18.0"],
+        "sqlite3":["better-sqlite3","^11.3.0"],
+        "pluginevent":["internal",""]
+    },
+    "data_path":"plugins/<data_path>"
+}
