@@ -70,6 +70,7 @@ export class FMPEulerAngles{//yaw就是alpha，pitch就是beta
         return this.rawangle.pitch;
     }
     get gamma():number{
+        //由于mc中不存在gamma角的概念，那么根据所有实体的旋转状态，可以得出这个值在mc中永远是0
         return 0;
     }
     static new(alpha:number,beta:number,gamma:number):FMPEulerAngles{

@@ -154,6 +154,11 @@ export class HTTPIncomingMessage{
     private _body=""
     private downloadFinished:boolean
     private bodyResolve:((body:string)=>void)[]
+    /**
+     * 
+     * @param rawIncomingMessage 原始传入消息对象
+     * @param incomingData 消息上传完成时将这个promise resolve
+     */
     constructor(rawIncomingMessage:http.IncomingMessage,incomingData:Promise<string>){
         this.rawIncomingMessage=rawIncomingMessage
         this.bodyResolve=[]
