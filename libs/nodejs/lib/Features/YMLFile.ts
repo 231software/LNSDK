@@ -11,19 +11,25 @@ export class YMLFile{
     path:string;
     objpath:string[];
     rootobj:any;
+    constructor(fileContent:string,path:string,objpath:string[],rootobj:any){
+        this.fileContent=fileContent,
+        this.path=path,
+        this.objpath=objpath,
+        this.rootobj=rootobj
+    }
     /**
      * 
      * @param {string} path 文件路径
      * @param {Array<string>} objpath 在YML文件内部的路径
      */
-    constructor(path:string,objpath:string[]=[]){
+    static async create(path:string,objpath:string[]=[]){
         //先把文件建出来
-        FMPFile.initFile(path);
+        await FMPFile.initFile(path);
         //如果文件中事先没有内容，先在文件中写上一个大括号来保证后续顺利读取
-        if(FMPFile.read(path).length==0)FMPFile.forceWrite(path,"{}");
-        this.path=path;
-        this.objpath=objpath
-        this.rootobj=YML.parse(FMPFile.read(path));
+        if((await FMPFile.read(path)).length==0)FMPFile.forceWrite(path,"{}");
+        const fileContent=await FMPFile.read(path)
+        //如果yml内容是空的，那么rootobj就为"{}"
+        const rootobj=fileContent==""?{}:YML.parse(fileContent);
         if(objpath.length!=0){
             const checkObjAvailable=(checkPath:any,index:number)=>{
                 if(index>objpath.length-1){return;}
@@ -39,17 +45,18 @@ export class YMLFile{
                 }
                 checkObjAvailable(checkPath[objpath[index]],index+1);
             }          
-            checkObjAvailable(this.rootobj,0);//这里的递归只是起到一个检查的作用
+            checkObjAvailable(rootobj,0);//这里的递归只是起到一个检查的作用
         }
+        return new YMLFile(fileContent,path,objpath,rootobj)
     }
     /**
      * 初始化配置项，要求可以对嵌套着的对象初始化
      * @param key 键名
      * @param value 键值
      */
-    init(key:string,value:any){//重写只能放构造里面，放别的地方不行，我也不知道为啥
+    async init(key:string,value:any){//重写只能放构造里面，放别的地方不行，我也不知道为啥
         if(this.get(key)===undefined){
-            this.set(key,value);
+            await this.set(key,value);
         }
         /*
         if(this.objpath.length==0){
@@ -81,7 +88,7 @@ export class YMLFile{
          * @param index 
          * @returns ？？这里好像写的有问题，但是竟然能运行  草，果然有问题，刚才就发现了
          */
-        function getValue(obj:Object,index:number){
+        function getValue(obj:any,index:number){
             if(index>=objpath.length-1){//length-1是最后一个元素的索引，如果到达这个索引，就证明应该读取这一级目录中的值了
                 return obj[objpath[index]][key]
             }else{
@@ -95,21 +102,21 @@ export class YMLFile{
      * @param key 键名
      * @param value 键值
      */
-    set(key:string,value:any){//set之后要把rootobj重新生成一下
+    async set(key:string,value:any){//set之后要把rootobj重新生成一下
         let result=true;
         let objpath=this.objpath
         let rootobj=this.rootobj
         let path=this.path;
         //在根目录的情况下直接设置
-        if(this.objpath.length==0)setRoot(key,value)
+        if(this.objpath.length==0)await setRoot(key,value)
         //否则通过嵌套的方式设置
         else{
-            result=setRoot(this.objpath[0],setValue(this.rootobj[this.objpath[0]],0,value));                
+            result=await setRoot(this.objpath[0],setValue(this.rootobj[this.objpath[0]],0,value));                
         }
-        function setRoot(key:string,value:any):boolean{
+        async function setRoot(key:string,value:any):Promise<boolean>{
             //注意，这个函数里面没有this，所有的this的属性都要传进来才能用
             rootobj[key]=value
-            FMPFile.forceWrite(path,YML.stringify(rootobj));
+            await FMPFile.forceWrite(path,YML.stringify(rootobj));
             return true;
         }
         function setValue(obj:any,index:number,value:any){
@@ -128,7 +135,7 @@ export class YMLFile{
                 return write
             }
         } 
-        this.reload();
+        await this.reload();
         return result;
     }
     /**
@@ -136,23 +143,23 @@ export class YMLFile{
      * @param key 要被删除的键
      * @returns 是否成功删除
      */
-    delete(key:string):boolean{
+    async delete(key:string):Promise<boolean>{
         let result=true;
         let objpath=this.objpath
         let rootobj=this.rootobj
         let path=this.path;
         if(this.objpath.length==0){
             delete rootobj[key]
-            FMPFile.forceWrite(path,YML.stringify(rootobj));
+            await FMPFile.forceWrite(path,YML.stringify(rootobj));
             return true;
         }
         else{
-            result=setRoot(this.objpath[0],deleteValue(this.rootobj[this.objpath[0]],0));                
+            result=await setRoot(this.objpath[0],deleteValue(this.rootobj[this.objpath[0]],0));                
         }
-        function setRoot(key:string,value:any):boolean{
+        async function setRoot(key:string,value:any):Promise<boolean>{
             //注意，这个函数里面没有this，所有的this的属性都要传进来才能用
             rootobj[key]=value
-            FMPFile.forceWrite(path,YML.stringify(rootobj));
+            await FMPFile.forceWrite(path,YML.stringify(rootobj));
             return true;
         }
         function deleteValue(obj:any,index:number){
@@ -171,11 +178,11 @@ export class YMLFile{
                 return write
             }
         } 
-        this.reload();
+        await this.reload();
         return result;
     }
-    reloadroot():boolean{
-        this.fileContent=FMPFile.read(this.path)
+    async reloadroot():Promise<boolean>{
+        this.fileContent=await FMPFile.read(this.path)
         this.rootobj=YML.parse(this.fileContent);
         return true;
         //this.keys=this.getAllKeys(this.rootobj);
@@ -185,10 +192,10 @@ export class YMLFile{
      * YMLFile不会锁定文件或跟踪文件修改，因此如果用户或其他软件修改了文件，需要通过某种方式使当前插件调用这个reload刷新文件内容
      * @returns 是否重载成功
      */
-    reload():boolean{
+    async reload():Promise<boolean>{
         return this.reloadroot();
     }
-    getAllKeys(obj:any,index=0){
+    async getAllKeys(obj:any,index=0):Promise<string[]>{
         if(this.objpath.length==0){
             return Object.keys(this.rootobj)
         }
@@ -202,7 +209,7 @@ export class YMLFile{
     /**
      * 获取所有的键名 
      */
-    keys():string[]{
+    async keys():Promise<string[]>{
         return this.getAllKeys(this.rootobj);//Object.keys(rootobj);
     }
     /*
