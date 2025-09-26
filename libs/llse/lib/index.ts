@@ -3,7 +3,7 @@ export  {FMPLogger as Logger} from "./Logger.js";
 export {
     FMPFile as File,
     FMPDirectory as Directory,
-    JsonFile
+    JSONFile
 } from "./File.js"
 export { FMPPlayer as Player,FMPGameMode as GameMode} from "./Game/Player.js";
 export { FMPEntity as Entity,FMPDamageCause as DamageCause} from "./Game/Entity.js"; 
@@ -133,6 +133,7 @@ export {
     HTTPIncomingMessage,
     HTTPOptions,
     HTTPRespond,
-    HTTPServer
+    HTTPServer,
+    HTTPContentType
 } from "./http.js"
 export {ScriptDone} from "./Events/Process.js"
