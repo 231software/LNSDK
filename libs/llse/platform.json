@@ -1,12 +1,11 @@
 {
     "isNodeJS":true,
     "unsupported_packages":[
-        "sqlite3",
-        "yaml"
+        "sqlite3"
     ],
     "lib":"nolib",
     "features":{
-        "yml":["js-yaml","^4.1.0"],
+        "yml":["yaml","^2.5.1"],
         "xml":["xml","^1.0.1"],
         "ws":["ws","8.18.0"],
         "sqlite3":["internal",""],

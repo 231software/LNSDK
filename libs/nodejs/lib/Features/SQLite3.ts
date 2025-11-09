@@ -1,3 +1,4 @@
+import { FMPDirectory, FMPFile } from "../File"
 import {FMPLogger} from "../Logger"
 const sqlite3=require("better-sqlite3")
 /**
@@ -156,6 +157,10 @@ export class FMPSQLite3{
      * @param path 数据库路径
      */
     constructor(path:string){
+        //前提是路径必须存在，所以此处需要初始化一下路径
+        const dbFileDataPath=new FMPDirectory(path)
+        dbFileDataPath.up()
+        FMPFile.initDirSync(dbFileDataPath.toString())
         this.rawdbsession=new sqlite3(path)
     }
     /**

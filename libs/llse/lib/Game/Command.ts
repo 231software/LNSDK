@@ -10,6 +10,8 @@ export interface FMPCommandRegisterPositions{
     operator?:boolean
     anyPlayer?:boolean
 }
+//这样做的话，一旦有一个低权限者可以执行，那么权限就放到这个级别
+//然后对于原版高权限者的限制由满月平台自行处理
 export function toll2PermType(perm:FMPCommandRegisterPositions):PermType{
     if(perm.anyPlayer)return PermType.Any
     if(perm.operator)return PermType.GameMasters
@@ -119,11 +121,19 @@ export class FMPCommandExecutor{
     /** 命令执行者原始对象，undefined代表未知 */
     object:any
     rawObject:any
+    rawOutput:CommandOutput
     commandExecutorType:FMPCommandExecutorType
-    constructor(object:any,type:FMPCommandExecutorType,rawObject?:any){
+    constructor(object:any,type:FMPCommandExecutorType,rawObject?:any,rawOutput?:any){
         this.object=object;
         this.commandExecutorType=type;
         this.rawObject=rawObject
+        this.rawOutput=rawOutput
+    }
+    sendSuccess(msg:string){
+        this.rawOutput.success(msg)
+    }
+    sendError(msg:string){
+        this.rawOutput.error(msg)
     }
     /**强制获取玩家，如果执行者不为玩家或玩家已离线则返回undefined */
     asPlayer():FMPPlayer|undefined{
@@ -152,9 +162,11 @@ export class FMPCommandExecutor{
 export class FMPCommandResult{
     executor:FMPCommandExecutor
     params:Map<string,{param:FMPCommandParam,value:any}>
-    constructor(executor:FMPCommandExecutor,params:Map<string,{param:FMPCommandParam,value:any}>){
+    command:FMPCommand
+    constructor(executor:FMPCommandExecutor,params:Map<string,{param:FMPCommandParam,value:any}>,command:FMPCommand){
         this.executor=executor
         this.params=params
+        this.command=command
     }
 }
 
@@ -202,7 +214,7 @@ export class FMPCommand{
         args:Array<FMPCommandParam>=[],
         overloads:Array<Array<string>>=[[]],
         callback:(result:FMPCommandResult)=>void,
-        registerPositions:FMPCommandRegisterPositions,
+        registerPositions:FMPCommandRegisterPositions={operator:true,console:true,internal:true},
         aliases:Array<string>=[],
         description:string|undefined=undefined,
         usageMessage:string|undefined=undefined,
@@ -282,9 +294,9 @@ export class FMPCommand{
         }
         FMPLogger.debug("指令注册：设置回调");
         ll2cmd.setCallback((cmd,ll2origin,output,ll2results)=>{
-            const executor_type=fromll2commandExecutorType(ll2origin.type)
+            const executorType=fromll2commandExecutorType(ll2origin.type)
             let origin:any=undefined
-            switch(executor_type){
+            switch(executorType){
                 case FMPCommandExecutorType.Player:
                     if(typeof ll2origin.player==="undefined")break;
                     origin=new FMPPlayer(ll2origin.player);break;
@@ -293,6 +305,23 @@ export class FMPCommand{
                     origin=new FMPEntity(ll2origin.entity);break;
                 case FMPCommandExecutorType.Console:origin=undefined;break;
             }
+            //在此处检查权限
+            //anyPlayer一旦不允许将被服务器底层拒绝，所以此处无需判断
+            //operator
+            if(
+                executorType===FMPCommandExecutorType.Player
+                &&(origin as FMPPlayer).isOp()
+                &&!command.registerPositions.operator
+            ){
+                output.error("Command \""+command.name+"\" is only for members. As an operator, you don't have permission to execute it.")
+                return;
+            }
+            //console
+            if(executorType===FMPCommandExecutorType.Console&&!command.registerPositions.console){
+                output.error("Unknown command: "+command.name+". Please check that the command exists and that you have permission to use it.")
+                return;
+            }
+            //目前LLSE似乎无法识别来自internal的执行
             const ParamsResult:Map<string,{param:FMPCommandParam,value:any}>=new Map()
             for(let paramString of Object.keys(ll2results)){
                 const param=command.args.get(paramString);
@@ -302,7 +331,7 @@ export class FMPCommand{
                     value:ll2results[paramString]
                 })
             }
-            const result=new FMPCommandResult(new FMPCommandExecutor(origin,executor_type,ll2origin),ParamsResult);
+            const result=new FMPCommandResult(new FMPCommandExecutor(origin,executorType,ll2origin,output),ParamsResult,command);
             command.callback(result)
         })
         FMPLogger.debug("指令注册：设置重载")

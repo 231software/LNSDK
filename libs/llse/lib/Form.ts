@@ -74,8 +74,8 @@ export class FMPSimpleForm{
     content:string
     buttons:FMPSimpleFormButton[]=[]
     onClose:(session:FMPSimpleFormSession)=>void
-    rawform:SimpleForm;
-    defaultCallback:(session:FMPSimpleFormSession)=>void
+    rawform:SimpleForm=mc.newSimpleForm();
+    defaultCallback:(session:FMPSimpleFormSession)=>void=session=>{}
     constructor(title=" ",content="",buttons:FMPSimpleFormButton[]=[],onClose?:(session:FMPSimpleFormSession)=>void) {
         this.title=title
         this.content=content
@@ -169,13 +169,25 @@ export class FMPSimpleFormSession extends FMPFormSession{
      * 如果是跳转过来的但是不想返回，直接传入玩家即可。通常从跳转过来的会话中取出玩家传入即可
      */
     constructor(form:FMPSimpleForm,lastSessionOrPlayer:FMPSimpleFormSession|FMPCustomFormSession|FMPModalFormSession|FMPPlayer){
-        /**为了防止后续对原始表单的修改导致全局的表彰发生变化，就在这里把原表单的按钮列表拷贝一份*/
-        const originalFormButtons:FMPSimpleFormButton[]=[];
-        for(let button of form.buttons){
-            originalFormButtons.push(button);
+        if(FMPFormSession.isSession(lastSessionOrPlayer)){
+            super(form,lastSessionOrPlayer.player,lastSessionOrPlayer)
         }
+        else if(lastSessionOrPlayer instanceof FMPPlayer){
+            super(form,lastSessionOrPlayer)
+        }
+        else throw new Error("lastSessionOrPlayer类型不兼容！")
+        //调用修改操作
+        this.modifyButtons(lastSessionOrPlayer)
+    }
+    //修改按钮的操作
+    modifyButtons(lastSessionOrPlayer:FMPSimpleFormSession|FMPCustomFormSession|FMPModalFormSession|FMPPlayer):void{
         //传入了表单会话，指明了跳转来源，就可以使用这个跳转来源进行后退操作了。
         if(FMPFormSession.isSession(lastSessionOrPlayer)){
+            /**为了防止后续对原始表单的修改导致全局的表彰发生变化，就在这里把原表单的按钮列表拷贝一份*/
+            const newFormButtons:FMPSimpleFormButton[]=[];
+            for(let button of this.form.buttons){
+                newFormButtons.push(button);
+            }
             /**
              * 专门用于跳转返回上个表单的按钮  
              * 如果是从上一个表单跳转过来，证明玩家不变，直接取用上一个会话的玩家即可，这个会话不强制传入玩家也是这个原因
@@ -187,21 +199,19 @@ export class FMPSimpleFormSession extends FMPFormSession{
                 },undefined,FMPSimpleFormButtonType.Back
             );
             //表单按钮列表的第一个是返回键
-            if(originalFormButtons[0]?.type==FMPSimpleFormButtonType.Back){
-                originalFormButtons[0]=backButton;
+            if(newFormButtons[0]?.type==FMPSimpleFormButtonType.Back){
+                newFormButtons[0]=backButton;
             }
             else{
-                originalFormButtons.unshift(backButton)
+                newFormButtons.unshift(backButton)
             }
-            //使用修改后的按钮重新生成一个新表单传入
-            super(new FMPSimpleForm(form.title,form.content,originalFormButtons,form.onClose),lastSessionOrPlayer.player,lastSessionOrPlayer)
+            //使用修改后的按钮重新生成一个新表单
+            this.form=new FMPSimpleForm(this.form.title,this.form.content,newFormButtons,this.form.onClose)
         }
         //只传入了玩家却不传入表单，证明没有上个表单
         if(lastSessionOrPlayer instanceof FMPPlayer){
-            //这里直接传入原表单，是因为form
-            super(form,lastSessionOrPlayer)
+            //没有上个表单的话，就暂时不修改了
         }
-        
     }
     send():boolean{
         if(this.lastSession!=undefined){

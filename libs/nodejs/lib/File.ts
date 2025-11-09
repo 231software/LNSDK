@@ -1,5 +1,6 @@
 //import * as fs from "fs";
 import * as afs from "fs/promises"
+import * as fs from "fs"
 import { FMPLogger } from "./Logger";
 import { execSync } from "child_process";
 const onWindows=process.platform === 'win32'
@@ -32,8 +33,32 @@ export class FMPFile{
                 FMPLogger.info("尝试从上一层文件夹开始创建")
                 const dir=new FMPDirectory(path);
                 dir.folders.pop()//去掉最后一个文件夹
-                FMPFile.initDir(dir.toString(onWindows))//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
-                FMPFile.initDir(path)
+                await FMPFile.initDir(dir.toString(onWindows))//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
+                await FMPFile.initDir(path)
+            }
+        }
+    }
+    /**
+     * 新建文件夹  
+     * 如果当前目录已有同名文件夹，则不执行任何操作
+     * @param path 要新建的文件夹的路径，如果要在程序当前工作目录下新建，直接传入文件夹名即可
+     */
+    static initDirSync(path:string){
+        try{
+            fs.readdirSync(path);
+        }
+        catch(e){
+            try{
+                fs.mkdirSync(path);
+            }
+            catch(e){
+                //如果创建失败，他会去掉最后一个文件夹后重新尝试创建
+                FMPLogger.warn("文件夹创建失败！原因："+e)
+                FMPLogger.info("尝试从上一层文件夹开始创建")
+                const dir=new FMPDirectory(path);
+                dir.folders.pop()//去掉最后一个文件夹
+                FMPFile.initDirSync(dir.toString(onWindows))//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
+                FMPFile.initDirSync(path)
             }
         }
     }

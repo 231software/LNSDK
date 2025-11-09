@@ -14,14 +14,12 @@ export enum FMPGameMode{
 }
 export class FMPPlayer extends FMPActor{
     xuid:string;
-    name:string;
     location:FMPLocation
     gameMode:FMPGameMode
     inAir:boolean
     constructor(xuid:string,name:string,location:FMPLocation,gameMode:FMPGameMode){
-        super(FMPCommandExecutorType.Player)
+        super(FMPCommandExecutorType.Player,name)
         this.xuid=xuid;
-        this.name=name;
         this.location=location;
         this.gameMode=gameMode
         this.inAir=false
