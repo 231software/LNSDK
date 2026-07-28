@@ -16,6 +16,7 @@ export class FMPTickEvent{
             tickSimulator(new FMPTickEvent())
         },50)
         //开启循环后还要开启commandReactor来提供关闭tick循环的stop命令
+        //开启命令交互器不再由插件是否注册命令决定，而是总是会开启，因为它的目的是模拟完整的服务器环境
         startCommandReactor()
         tickSimulator=callback
     }

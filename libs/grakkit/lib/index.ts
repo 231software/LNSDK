@@ -8,7 +8,7 @@ export  {FMPLogger as Logger} from "./Logger.js";
 export {
     FMPFile as File,
     FMPDirectory as Directory,
-    JsonFile
+    JSONFile
 } from "./File.js"
 
 core
