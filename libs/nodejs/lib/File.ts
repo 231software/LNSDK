@@ -196,7 +196,7 @@ export class FMPFile{
                                 dir.folders.push(file)
                                 const targetDir=new FMPDirectory(destination)
                                 targetDir.folders.push(file)
-                                FMPFile.copy(dir.toString(onWindows),targetDir.toString(onWindows),options)
+                                await FMPFile.copy(dir.toString(onWindows),targetDir.toString(onWindows),options)
                             }                            
                         }
                         catch(e){
@@ -207,9 +207,9 @@ export class FMPFile{
                     //设置了替换文件夹
                     else if(options.replaceFolder==true){
                         //删除目标已存在的文件
-                        FMPFile.permanentlyDelete(destination)
+                        await FMPFile.permanentlyDelete(destination)
                         //再重新移动一遍
-                        FMPFile.copy(source,destination,options)
+                        await FMPFile.copy(source,destination,options)
                         return
                     }
 

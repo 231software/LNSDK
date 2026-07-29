@@ -33,8 +33,8 @@ export class FMPFile{
                 FMPLogger.info("尝试从上一层文件夹开始创建")
                 const dir=new FMPDirectory(path);
                 dir.folders.pop()//去掉最后一个文件夹
-                FMPFile.initDir(dir.toString(onWindows))//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
-                FMPFile.initDir(path)
+                await FMPFile.initDir(dir.toString(onWindows))//尝试初始化外面一层的文件夹，如果这层失败了，他会递归回到上面那里再去掉一层文件夹
+                await FMPFile.initDir(path)
             }
         }
     }
@@ -172,7 +172,7 @@ export class FMPFile{
                                 dir.folders.push(file)
                                 const targetDir=new FMPDirectory(destination)
                                 targetDir.folders.push(file)
-                                FMPFile.copy(dir.toString(onWindows),targetDir.toString(onWindows),options)
+                                await FMPFile.copy(dir.toString(onWindows),targetDir.toString(onWindows),options)
                             }                            
                         }
                         catch(e){
@@ -183,9 +183,9 @@ export class FMPFile{
                     //设置了替换文件夹
                     else if(options.replaceFolder==true){
                         //删除目标已存在的文件
-                        FMPFile.permanentlyDelete(destination)
+                        await FMPFile.permanentlyDelete(destination)
                         //再重新移动一遍
-                        FMPFile.copy(source,destination,options)
+                        await FMPFile.copy(source,destination,options)
                         return
                     }
 
@@ -344,16 +344,16 @@ export class FMPFile{
                             dir.folders.push(file)
                             const targetDir=new FMPDirectory(target)
                             targetDir.folders.push(file)
-                            FMPFile.rename(dir.toString(onWindows),targetDir.toString(onWindows),options)
+                            await FMPFile.rename(dir.toString(onWindows),targetDir.toString(onWindows),options)
                         }
                         return
                     }
                     //设置了替换文件夹
                     else if(options.replaceFolder==true){
                         //删除目标已存在的文件
-                        FMPFile.permanentlyDelete(target)
+                        await FMPFile.permanentlyDelete(target)
                         //再重新移动一遍
-                        FMPFile.rename(path,target,options)
+                        await FMPFile.rename(path,target,options)
                         return
                     }
 
