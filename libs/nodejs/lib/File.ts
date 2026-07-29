@@ -1,7 +1,7 @@
 //import * as fs from "fs";
 import * as afs from "fs/promises"
 import * as fs from "fs"
-import { FMPLogger } from "./Logger";
+import { FMPLogger } from "./Logger.js";
 import { execSync } from "child_process";
 const onWindows=process.platform === 'win32'
 export class FMPFile{

@@ -11,8 +11,8 @@
     "require_ScriptDone":true,
     "compilerOptions":{
         "resolveJsonModule":true,
-        "downlevelIteration":true,
         "moduleResolution":"node",
+        "target":"es2015",
         "forceConsistentCasingInFileNames":false
     }
 }

@@ -1,11 +1,11 @@
-import { FMPLogger } from "../Logger"
-import { FMPCommand,CommandList,commandReactor, FMPCommandResult, FMPCommandParam, FMPCommandParamType, FMPCommandParamDataType, startCommandReactor } from "../Game/Command"
-import { FMPInternalPermission } from "../Game/InternalPermission"
-import { FMPPlayerJoinEvent, playerJoinEventHandler } from "./Player"
-import { FMPGameMode, FMPPlayer } from "../Game/Player"
-import { FMPLocation } from "../Game/Location"
-import { FMPDimension } from "../Game/Dimension"
-import { onStopContainer } from "../Game/Command"
+import { FMPLogger } from "../Logger.js"
+import { FMPCommand,CommandList,commandReactor, FMPCommandResult, FMPCommandParam, FMPCommandParamType, FMPCommandParamDataType, startCommandReactor } from "../Game/Command.js"
+import { FMPInternalPermission } from "../Game/InternalPermission.js"
+import { FMPPlayerJoinEvent, playerJoinEventHandler } from "./Player.js"
+import { FMPGameMode, FMPPlayer } from "../Game/Player.js"
+import { FMPLocation } from "../Game/Location.js"
+import { FMPDimension } from "../Game/Dimension.js"
+import { onStopContainer } from "../Game/Command.js"
 export let ScriptDone=():boolean|void=>{}
 export let status:boolean=false
 export let player:FMPPlayer;

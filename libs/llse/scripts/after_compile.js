@@ -17,3 +17,8 @@ llmanifest.author=plugin_info.plugin_conf.author
 llmanifest.description=plugin_info.plugin_conf.description
 fs.writeFileSync("manifest.json",JSON.stringify(llmanifest,undefined,4))
 fs.close(manifestFile)
+//我们需要在package.json中加上type module
+const packagejsonstr=fs.readFileSync("package.json")
+const packagejson=JSON.parse(packagejsonstr)
+packagejson.type="module"
+fs.writeFileSync("package.json",JSON.stringify(packagejson,undefined,4))

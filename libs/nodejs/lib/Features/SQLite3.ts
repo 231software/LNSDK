@@ -1,5 +1,5 @@
-import { FMPDirectory, FMPFile } from "../File"
-import {FMPLogger} from "../Logger"
+import { FMPDirectory, FMPFile } from "../File.js"
+import {FMPLogger} from "../Logger.js"
 const sqlite3=require("better-sqlite3")
 /**
  * SQL数据类型枚举。  

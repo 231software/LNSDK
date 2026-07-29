@@ -1,7 +1,6 @@
-//import WebSocket, { WebSocketServer } from 'ws';
-const WebSocket=require("ws")
-const WebSocketServer=WebSocket.Server
-import {FMPLogger} from "../Logger"
+import * as WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
+import {FMPLogger} from "../Logger.js"
 import * as net from "net"
 
 interface FMPWSOptions{
@@ -12,7 +11,7 @@ interface FMPWSOptions{
 }
 
 export class FMPWS{
-    connection:any
+    connection:WebSocket.WebSocket|undefined
     host:string
     port:number
     heartbeat:any
@@ -39,18 +38,22 @@ export class FMPWS{
         this.heartbeat=this.startHeartbeat()
     }
     set onMessage(callback:(stream:Buffer)=>void){
+        if(!this.connection)throw new Error("Websocket Connection to "+this.host+":"+this.port+" is not initialized!")
         this.onMessageCallback=callback
         this.connection.on('message', this.onMessageCallback);  
     }
     set onOpen(callback:()=>void){
+        if(!this.connection)throw new Error("Websocket Connection to "+this.host+":"+this.port+" is not initialized!")
         this.onOpenCallback=callback
         this.connection.on('open', this.onOpenCallback); 
     }
     set onClose(callback:()=>void){
+        if(!this.connection)throw new Error("Websocket Connection to "+this.host+":"+this.port+" is not initialized!")
         this.onCloseCallback=callback
         this.connection.on('close', this.onCloseCallback); 
     }
     set onError(callback:(error:any)=>(boolean|void)){
+        if(!this.connection)throw new Error("Websocket Connection to "+this.host+":"+this.port+" is not initialized!")
         this.onErrorCallback=callback
         this.connection.on('error', this.onErrorCallback); 
     }
@@ -74,6 +77,7 @@ export class FMPWS{
         }
     }
     sendAllMessageFromQueue(){
+        if(!this.connection)throw new Error("Websocket Connection to "+this.host+":"+this.port+" is not initialized!")
         //队列长度为0时所有消息都发送完毕，直接结束
         if(this.sendQueue.length==0)return;
         //在回调中发送下一条消息，一条一条发
@@ -87,7 +91,7 @@ export class FMPWS{
         this.connection?.close()
         this.connection=undefined
         //新建连接
-        this.connection=new WebSocket(this.generateURL())
+        this.connection=new WebSocket.WebSocket(this.generateURL())
         //刷新好连接后，需要重新监听各种事件
         if(this.onMessageCallback!=undefined)this.connection.on('message', this.onMessageCallback);  
         if(this.onOpenCallback!=undefined)this.connection.on('open',this.onOpenCallback)
@@ -135,6 +139,7 @@ export class FMPWS{
     startHeartbeat(){
         //创建心跳包循环发送定时器
         return setInterval(() => {
+        if(!this.connection)throw new Error("Websocket Connection to "+this.host+":"+this.port+" is not initialized!")
             if(this.closed)return;
             //let wsconnected:WebSocket|undefined = ws;
             //发现断开后开始重连
@@ -182,7 +187,7 @@ export class FMPWS{
         //停止心跳
         clearInterval(this.heartbeat)
         //关闭原始对象的连接
-        this.connection.close()
+        this.connection?.close()
     }
 }
 
@@ -549,12 +554,12 @@ export class OneBot{
 //此部分代码在chatwss网络控制部分基础上修改
 let online_status=false;
 /**当前正在进行的websocket连接 */
-let ws:any;
+let ws:WebSocket.WebSocket;
 let heartbeatInterval:NodeJS.Timeout|undefined
 //setTimeout(wsctrl,3000);
 //开启一次新的websocket连接
 function connect(){
-    ws=new WebSocket('ws://[::1]:6848');
+    ws=new WebSocket.WebSocket('ws://[::1]:6848');
     //log("连接中")
     ws.on("error",()=>{
         //log("无法连接")

@@ -1,4 +1,4 @@
-import { FMPPlayer } from "../Game/Player";
+import { FMPPlayer } from "../Game/Player.js";
 export let playerJoinEventHandler=(event:FMPPlayerJoinEvent):boolean|void=>{}
 export class FMPPlayerJoinEvent{
     player:FMPPlayer

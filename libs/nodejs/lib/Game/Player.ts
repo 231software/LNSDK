@@ -1,6 +1,6 @@
-import { FMPLogger } from "../Logger";
-import { FMPEulerAngles, FMPLocation } from "./Location";
-import {FMPInternalPermission} from "../Game/InternalPermission"
+import { FMPLogger } from "../Logger.js";
+import { FMPEulerAngles, FMPLocation } from "./Location.js";
+import {FMPInternalPermission} from "../Game/InternalPermission.js"
 import {FMPItem} from "../Game/Item.js"
 import { FMPActor } from "./Actor.js";
 import { FMPCommandExecutorType } from "./Command.js";

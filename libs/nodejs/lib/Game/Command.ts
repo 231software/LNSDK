@@ -1,8 +1,8 @@
-import { tickSimulatorLoop } from "../Events/Server";
-import {FMPPlayer} from "./Player"
-import { FMPInternalPermission } from "./InternalPermission";
+import { tickSimulatorLoop } from "../Events/Server.js";
+import {FMPPlayer} from "./Player.js"
+import { FMPInternalPermission } from "./InternalPermission.js";
 import * as readline from "readline";
-import { FMPLogger } from "../Logger";
+import { FMPLogger } from "../Logger.js";
 export const onStopContainer={onStop:()=>{}}
 
 export interface FMPCommandRegisterPositions{

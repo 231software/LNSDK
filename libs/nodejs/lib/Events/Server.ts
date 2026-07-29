@@ -1,4 +1,4 @@
-import {startCommandReactor } from "../Game/Command"
+import {startCommandReactor } from "../Game/Command.js"
 
 export let tickSimulator=(event:FMPTickEvent)=>{
 

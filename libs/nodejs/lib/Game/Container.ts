@@ -1,4 +1,4 @@
-import { FMPItem } from "./Item";
+import { FMPItem } from "./Item.js";
 
 export enum FMPContainerType{
     Chest,

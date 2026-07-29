@@ -1,8 +1,8 @@
-import { FMPActor } from "./Actor";
-import { FMPCommandExecutorType } from "./Command";
-import {FMPDimension } from "./Dimension";
-import { FMPEulerAngles, FMPLocation } from "./Location";
-import {FMPGameMode, FMPPlayer} from "./Player"
+import { FMPActor } from "./Actor.js";
+import { FMPCommandExecutorType } from "./Command.js";
+import {FMPDimension } from "./Dimension.js";
+import { FMPEulerAngles, FMPLocation } from "./Location.js";
+import {FMPGameMode, FMPPlayer} from "./Player.js"
 export class FMPEntity extends FMPActor{
     constructor(name:string){
         super(FMPCommandExecutorType.Entity,name)

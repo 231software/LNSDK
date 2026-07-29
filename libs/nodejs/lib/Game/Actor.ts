@@ -1,6 +1,6 @@
-import { FMPCommandExecutor } from "./Command";
-import { FMPInventory } from "./Container";
-import { FMPEulerAngles, FMPLocation } from "./Location";
+import { FMPCommandExecutor } from "./Command.js";
+import { FMPInventory } from "./Container.js";
+import { FMPEulerAngles, FMPLocation } from "./Location.js";
 
 export class FMPActor extends FMPCommandExecutor{
     //actor在nodejs中暂时没有对应的类，所以所有被重写的类都被忽略

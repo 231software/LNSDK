@@ -1,4 +1,4 @@
-import {FMPDimension} from "./Dimension";
+import {FMPDimension} from "./Dimension.js";
 export class FMPManualConstructedLocation{
     x:number;
     y:number;
