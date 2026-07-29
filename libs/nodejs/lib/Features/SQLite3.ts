@@ -416,7 +416,7 @@ export class FMPSQLSingleArrayTable{
                     b.FMPSQLite3SingleArrayTableArrayIndexColumn
             )
     }
-    push(bindedColumnValue:any,...values:{columnName:string,value:any}[][]){
+    push(bindedColumnValue:any,...values:{columnName:string,value:any}[][]):number{
         const currentValue=this.get(bindedColumnValue)
         if(values.length==0)return currentValue.length
         const firstData=values.shift();

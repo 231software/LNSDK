@@ -8,5 +8,11 @@
         "sqlite3":["better-sqlite3","^11.3.0"],
         "pluginevent":["internal",""]
     },
-    "data_path":"plugins/<data_path>"
+    "data_path":"plugins/<data_path>",
+    "compilerOptions":{
+        "resolveJsonModule":true,
+        "downlevelIteration":true,
+        "moduleResolution":"node",
+        "forceConsistentCasingInFileNames":false
+    }
 }

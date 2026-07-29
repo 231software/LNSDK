@@ -3,5 +3,11 @@
     "unsupported_packages":[],
     "lib":"nolib",
     "data_path":"plugins/<data_path>",
-    "require_ScriptDone":true
+    "require_ScriptDone":true,
+    "compilerOptions":{
+        "resolveJsonModule":true,
+        "downlevelIteration":true,
+        "moduleResolution":"node",
+        "forceConsistentCasingInFileNames":false
+    }
 }

@@ -23,7 +23,7 @@ export class FMPItem{
  */
 export class FMPToolItem extends FMPItem{
     /**工具的剩余耐久度 */
-    damage:number
+    damage:number | undefined
     constructor(type:string,count:number=1,name?:string){
         super(type,count,name)
     }
@@ -32,7 +32,7 @@ export class FMPToolItem extends FMPItem{
  * 代表游戏角色背包中的一个槽位
  */
 export class FMPSlot{
-    item:FMPItem
+    item:FMPItem | undefined
     constructor(){
 
     }

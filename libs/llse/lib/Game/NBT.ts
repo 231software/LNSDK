@@ -13,7 +13,7 @@ export enum FMPNBTType{
     BOOLEAN
 }
 export abstract class FMPNBTObjectLike{
-    rawNBT:NbtList|NbtCompound
+    rawNBT:NbtList | NbtCompound | undefined
     abstract getRawTag(tagName:string|number):NbtType|null
     abstract getRawTagType(tagName:string|number):NBT
     abstract setRawTag(tagName:string|number,data:NbtType):void

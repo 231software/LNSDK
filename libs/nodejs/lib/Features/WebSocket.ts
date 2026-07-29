@@ -19,10 +19,10 @@ export class FMPWS{
     sendQueue:string[]=[]
     options:FMPWSOptions
     closed:boolean=false
-    onMessageCallback:(data:Buffer)=>void|undefined
-    onOpenCallback:()=>void|undefined
-    onCloseCallback:()=>void|undefined
-    onErrorCallback:(error)=>(boolean|void)
+    onMessageCallback:((data:Buffer)=>void)|undefined
+    onOpenCallback:(()=>void)|undefined
+    onCloseCallback:(()=>void)|undefined
+    onErrorCallback:((error:any)=>(boolean|void))|undefined
     constructor(host:string,port:number,options:FMPWSOptions={}){
         // 使用 Object.assign 为 options 设置默认值
         const defaultOptions = {
@@ -50,7 +50,7 @@ export class FMPWS{
         this.onCloseCallback=callback
         this.connection.on('close', this.onCloseCallback); 
     }
-    set onError(callback:(error)=>(boolean|void)){
+    set onError(callback:(error:any)=>(boolean|void)){
         this.onErrorCallback=callback
         this.connection.on('error', this.onErrorCallback); 
     }
@@ -92,7 +92,7 @@ export class FMPWS{
         if(this.onMessageCallback!=undefined)this.connection.on('message', this.onMessageCallback);  
         if(this.onOpenCallback!=undefined)this.connection.on('open',this.onOpenCallback)
         if(this.onCloseCallback!=undefined)this.connection.on('close',this.onCloseCallback)
-        this.connection.on('error',(e)=>{
+        this.connection.on('error',(e:any)=>{
             if(this.onErrorCallback?.call(this,e)===false){
                 FMPLogger.info("拦截了连接出错时的处理逻辑")
                 return;
@@ -293,7 +293,7 @@ export interface OneBotMessageData{
     message:OneBotMessage[],
     raw_message:string,
     font:number,
-    sub_type,//poke,normal,lift_ban
+    sub_type:unknown,//poke,normal,lift_ban
     group_id?:number
 }
 
@@ -388,7 +388,7 @@ export class OneBot{
     onNotifiedCallback=(user_id:number,group_id?:number)=>{
 
     }
-    constructor(host:string,port:number,mode:OneBotConnectionMode,access_token?:string,options?){
+    constructor(host:string,port:number,mode:OneBotConnectionMode,access_token?:string,options?:any){
         this.host=host
         this.port=port
         this.access_token=access_token
@@ -443,7 +443,7 @@ export class OneBot{
             callback()
         }
     }
-    set onError(callback:(error)=>(boolean|void)){
+    set onError(callback:(error:any)=>(boolean|void)){
         this.connection.onError=(error)=>{
             callback(error)
         }
@@ -564,7 +564,7 @@ function connect(){
         FMPLogger.info("成功连接至OneBDS节点")
     });
     //连接成功后收到任何数据都会触发这个
-    ws.on('message', (stream)=>{
+    ws.on('message', (stream:Buffer)=>{
         FMPLogger.info(stream.toString())
     });
     ws.on('close',()=>{

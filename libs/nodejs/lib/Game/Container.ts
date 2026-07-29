@@ -5,8 +5,8 @@ export enum FMPContainerType{
     Inventory
 }
 export class FMPContainer{
-    size:string;
-    type:FMPContainer
+    size:string | undefined;
+    type:FMPContainer | undefined
     put(item:FMPItem,slot?:number):boolean{
         return false;
     }

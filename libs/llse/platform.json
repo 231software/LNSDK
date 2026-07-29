@@ -11,5 +11,11 @@
         "sqlite3":["internal",""],
         "pluginevent":["internal",""]
     },
-    "data_path":"plugins/<data_path>"
+    "data_path":"plugins/<data_path>",
+    "compilerOptions":{
+        "target":"es2015",
+        "forceConsistentCasingInFileNames":false,
+        "moduleResolution":"nodenext",
+        "module":"nodenext"
+    }
 }     
