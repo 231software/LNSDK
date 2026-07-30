@@ -71,7 +71,7 @@ export class HTTPRequest{
         const NodeJSHTTPOptions:http.RequestOptions=this.toRawRequestOptions()
         NodeJSHTTPOptions.method=HTTPMethodTostring(options.method!=undefined?options.method:HTTPMethod.GET)
         //request里面传入的回调只有在end之后才会被调用，所以此处需要取得下面的send方法内部的resolve
-        this.rawRequest=http.request(this.toRawRequestOptions(),result=>{
+        this.rawRequest=http.request(NodeJSHTTPOptions,result=>{
             let downloadFinishResolve:(result:string)=>void
             //在这里立一个promise，resolve扔给下面的数据接收去解决
             this.sendResolve(new HTTPIncomingMessage(result,new Promise<string>(resolve=>downloadFinishResolve=resolve)))
