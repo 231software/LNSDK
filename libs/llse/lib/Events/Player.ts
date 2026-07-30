@@ -1,4 +1,4 @@
-import { FMPPlayer } from "../Game/Player";
+import { FMPPlayer } from "../Game/Player.js";
 export class FMPPlayerJoinEvent{
     player:FMPPlayer
     constructor(player:FMPPlayer){

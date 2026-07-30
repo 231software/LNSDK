@@ -1,7 +1,5 @@
-//import WebSocket, { WebSocketServer } from 'ws';
-const WebSocket=require("ws")
-const WebSocketServer=WebSocket.Server
-import {FMPLogger} from "../Logger"
+import WebSocket, { WebSocketServer } from 'ws';
+import {FMPLogger} from "../Logger.js"
 import * as net from "net"
 
 interface FMPWSOptions{

@@ -1,6 +1,6 @@
 import {Logger} from "../index.js"
-import { FMPLogger } from "../Logger"
-import { FMPPlayer } from "./Player";
+import { FMPLogger } from "../Logger.js"
+import { FMPPlayer } from "./Player.js";
 import { earlyRegisteredCommands,serverStarted } from "../Events/Process.js";
 import { FMPEntity } from "./Entity.js";
 

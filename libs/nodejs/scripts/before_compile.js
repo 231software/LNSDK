@@ -1,6 +1,6 @@
 const fs=require("fs")
 const plugin_info=JSON.parse(Buffer.from((process.argv[2]),"base64").toString("utf-8"))
-process.chdir("temp/build/llse")
+process.chdir("temp/build/nodejs")
 // 我们需要在package.json中加上type module，而且得是在编译之前就加的
 addTypeModule("package.json")
 addTypeModule("js/package.json")

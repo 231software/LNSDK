@@ -10,8 +10,8 @@
     "data_path":"<data_path>",
     "require_ScriptDone":true,
     "compilerOptions":{
-        "resolveJsonModule":true,
-        "moduleResolution":"node",
+        "moduleResolution":"nodenext",
+        "module":"nodenext",
         "target":"es2015",
         "forceConsistentCasingInFileNames":false
     }

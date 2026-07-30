@@ -1,6 +1,6 @@
-import { FMPLogger } from "../Logger";
-import { FMPDimension, fromll2dimid, toll2dimid } from "./Dimension";
-import {LNSDKInternalError} from "../LNSDKInternalError"
+import { FMPLogger } from "../Logger.js";
+import { FMPDimension, fromll2dimid, toll2dimid } from "./Dimension.js";
+import {LNSDKInternalError} from "../LNSDKInternalError.js"
 
 export class FMPManualConstructedLocation{
     x:number;

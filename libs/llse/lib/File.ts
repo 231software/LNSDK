@@ -1,6 +1,6 @@
 /// <reference path="./HelperLib/SystemAPI/File.d.ts" />
 import { execSync } from "child_process";
-import { FMPLogger } from "./Logger";
+import { FMPLogger } from "./Logger.js";
 import * as afs from "fs/promises";
 const onWindows=process.platform === 'win32'
 

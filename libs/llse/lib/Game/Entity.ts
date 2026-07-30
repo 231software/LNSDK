@@ -1,5 +1,5 @@
-import { FMPEulerAngles, FMPLocation } from "./Location";
-import {FMPPlayer} from "./Player"
+import { FMPEulerAngles, FMPLocation } from "./Location.js";
+import {FMPPlayer} from "./Player.js"
 export class FMPEntity{
     rawentity:Entity
     constructor(rawentity:Entity){

@@ -1,5 +1,5 @@
-import { FMPCommand } from "../Game/Command";
-import { FMPScoreboard } from "../Game/Scoreboard";
+import { FMPCommand } from "../Game/Command.js";
+import { FMPScoreboard } from "../Game/Scoreboard.js";
 export let ScriptDone=():boolean|void=>{}
 export let serverStarted=false;
 export const earlyRegisteredCommands:FMPCommand[]=[]

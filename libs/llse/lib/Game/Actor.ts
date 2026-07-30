@@ -1,6 +1,6 @@
-import { FMPCommandExecutor } from "./Command";
-import { FMPInventory } from "./Container";
-import { FMPEulerAngles, FMPLocation } from "./Location";
+import { FMPCommandExecutor } from "./Command.js";
+import { FMPInventory } from "./Container.js";
+import { FMPEulerAngles, FMPLocation } from "./Location.js";
 
 export class FMPActor extends FMPCommandExecutor{
     //uuid:string

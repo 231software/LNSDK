@@ -1,6 +1,6 @@
-import { Directory, Logger } from ".."
-import { FMPFile } from "../File"
-import { FMPLogger } from "../Logger"
+import { Directory, Logger } from "../index.js"
+import { FMPFile } from "../File.js"
+import { FMPLogger } from "../Logger.js"
 /**
  * SQL数据类型枚举。  
  * 注释来自[菜鸟教程](https://www.runoob.com/sql/sql-datatypes-general.html)
@@ -426,7 +426,7 @@ export class FMPSQLSingleArrayTable{
                     b.FMPSQLite3SingleArrayTableArrayIndexColumn
             )
     }
-    push(bindedColumnValue:any,...values:{columnName:string,value:any}[][]){
+    push(bindedColumnValue:any,...values:{columnName:string,value:any}[][]):number{
         const currentValue=this.get(bindedColumnValue)
         if(values.length==0)return currentValue.length
         const firstData=values.shift();

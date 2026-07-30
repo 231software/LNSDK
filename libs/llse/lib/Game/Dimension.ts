@@ -1,5 +1,5 @@
-import { Logger } from "..";
-import { TwoWayMap } from "../Tools";
+import { Logger } from "../index.js";
+import { TwoWayMap } from "../Tools.js";
 export function fromll2dimid(ll2dimid:number):FMPDimension{
     switch(ll2dimid){
         case 0:return FMPDimension.getDimension("overworld");

@@ -1,5 +1,5 @@
 import * as http from "http"
-import { FMPLogger } from "./Logger"
+import { FMPLogger } from "./Logger.js"
 import { resolve } from "path"
 
 export enum HTTPMethod{

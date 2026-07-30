@@ -1,7 +1,7 @@
-import { FMPLogger } from "../Logger";
-import { FMPActor } from "./Actor";
-import { FMPItem } from "./Item";
-import { FMPPlayer } from "./Player";
+import { FMPLogger } from "../Logger.js";
+import { FMPActor } from "./Actor.js";
+import { FMPItem } from "./Item.js";
+import { FMPPlayer } from "./Player.js";
 
 export enum FMPContainerType{
     CHEST,

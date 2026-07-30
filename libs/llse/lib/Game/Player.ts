@@ -1,9 +1,9 @@
-import { FMPLogger } from "../Logger";
-import { FMPActor } from "./Actor";
-import { FMPCommandExecutorType } from "./Command";
-import { FMPInventory, FMPPlayerInventory } from "./Container";
-import { FMPItem } from "./Item";
-import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location";
+import { FMPLogger } from "../Logger.js";
+import { FMPActor } from "./Actor.js";
+import { FMPCommandExecutorType } from "./Command.js";
+import { FMPInventory, FMPPlayerInventory } from "./Container.js";
+import { FMPItem } from "./Item.js";
+import { FMPEulerAngles, FMPLocation, toll2DirectionAngle } from "./Location.js";
 export enum FMPGameMode{
     Survival=0,
     Creative=1,

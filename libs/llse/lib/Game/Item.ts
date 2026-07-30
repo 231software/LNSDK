@@ -1,6 +1,6 @@
-import { Logger, NBTByte } from ".."
-import { FMPContainer } from "./Container"
-import { FMPNBTByte, FMPNBTCompound } from "./NBT"
+import { Logger, NBTByte } from "../index.js"
+import { FMPContainer } from "./Container.js"
+import { FMPNBTByte, FMPNBTCompound } from "./NBT.js"
 
 /**
  * 代表游戏角色背包中的一件物品（包括物品栈）  

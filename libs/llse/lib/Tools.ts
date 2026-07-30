@@ -1,5 +1,5 @@
-import { FMPDimension } from "./Game/Dimension";
-import { FMPLocation } from "./Game/Location";
+import { FMPDimension } from "./Game/Dimension.js";
+import { FMPLocation } from "./Game/Location.js";
 import { randomBytes } from 'crypto';
 
 export class TwoWayMap<L,R>{
