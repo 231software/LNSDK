@@ -1,6 +1,6 @@
 import { FMPDirectory, FMPFile } from "../File.js"
 import {FMPLogger} from "../Logger.js"
-const sqlite3=require("better-sqlite3")
+import sqlite3 from "better-sqlite3"
 /**
  * SQL数据类型枚举。  
  * 注释来自[菜鸟教程](https://www.runoob.com/sql/sql-datatypes-general.html)
