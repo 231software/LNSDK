@@ -172,7 +172,18 @@ export class FMPSQLite3{
      * @param params 预准备语句要绑定的参数
      */
     runSync(SQLstring:string,...params:any[]){
-        this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).run(...params))()
+        const sqliteParams:any=[]
+        params.forEach(param=>{
+            let sqliteParam;
+            if(typeof param==="boolean"){
+                sqliteParam=Number(param)
+            }
+            else{
+                sqliteParam=param
+            }
+            sqliteParams.push(sqliteParam)
+        })
+        this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).run(...sqliteParams))()
     };
     /**
      * 同步预准备执行SQL语句  
@@ -184,7 +195,18 @@ export class FMPSQLite3{
      * @returns 执行结果
      */
     queryAllSync(SQLstring:string,...params:any[]):any[]{
-        return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...params))();
+        const sqliteParams:any=[]
+        params.forEach(param=>{
+            let sqliteParam;
+            if(typeof param==="boolean"){
+                sqliteParam=Number(param)
+            }
+            else{
+                sqliteParam=param
+            }
+            sqliteParams.push(sqliteParam)
+        })
+        return this.rawdbsession.transaction(()=>this.rawdbsession.prepare(SQLstring).all(...sqliteParams))();
     }
     close(){
         return this.rawdbsession.close();
