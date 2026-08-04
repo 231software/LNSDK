@@ -205,8 +205,22 @@ export class FMPSimpleFormSession extends FMPFormSession{
             else{
                 newFormButtons.unshift(backButton)
             }
+            //原有代码 this.form=new FMPSimpleForm(this.form.title,this.form.content,newFormButtons,this.form.onClose)
+            //这个是在写FMPAnnouncements的时候发现的，具体来说就是下面的这个新表单导致了SimpleForm的继承类中的重写总是会失败
             //使用修改后的按钮重新生成一个新表单
-            this.form=new FMPSimpleForm(this.form.title,this.form.content,newFormButtons,this.form.onClose)
+            //目前的方案是用浅拷贝克隆表单实例，这样一来，我们就实现了原有表单不被污染
+            // 1. 克隆表单实例（保留所有属性和原型链）
+            const clonedForm = Object.create(Object.getPrototypeOf(this.form));
+            Object.assign(clonedForm, this.form);
+
+            // 2. 替换按钮列表（此时替换的是克隆体的 buttons，原实例不受影响）
+            clonedForm.buttons = newFormButtons;
+
+            // 3. 重新构建底层 rawform（让新加的返回键生效）
+            clonedForm.build();
+
+            // 4. 赋值给 this.form
+            this.form = clonedForm;
         }
         //只传入了玩家却不传入表单，证明没有上个表单
         if(lastSessionOrPlayer instanceof FMPPlayer){
@@ -432,9 +446,9 @@ export class FMPCustomFormLabel extends FMPCustomFormElements{
 export class FMPCustomFormSwitch extends FMPCustomFormElements{
     defaultValue:boolean|undefined
     declare value:boolean
-    constructor(name:string,title:string,defaultValue?:boolean){
+    constructor(name:string,title:string,defaultValue?:unknown){
         super(name,title)
-        this.defaultValue=defaultValue
+        this.defaultValue = typeof defaultValue === 'undefined' ? defaultValue : Boolean(defaultValue)
     }
 }
 export class FMPCustomFormDropdown extends FMPCustomFormElements{
